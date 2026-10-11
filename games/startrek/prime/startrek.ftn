@@ -1,0 +1,4991 @@
+C**** UNIVERSITY OF TEXAS   S*U*P*E*R   S*T*A*R   T*R*E*K
+C*    Converted to lower case and prettified throughout by MLA Apr 1980.
+C*    Requires the common block insert file STARTREK.INS.FTN in this UFD.
+C*    64V mode meant to be split into segment 4000. If not splitting,
+C*    remove the 'SUBROUTINE MAIN' line below.
+C*    Rev.19.1, GGR version 14 Oct 83.
+C*
+C*********************************************************************
+C*                                                                   *
+C*                       THE STAR TREK GAME                          *
+C*                               BY                                  *
+C*               DAVID MATUSZEK AND PAUL REYNOLDS                    *
+C*                                                                   *
+C*              WITH MODIFICATIONS AND ADDITIONS BY                  *
+C*                           DON SMITH                               *
+C*                              AND                                  *
+C*                        GEORGE T. SHOTWELL                         *
+C*                                                                   *
+C*                                                                   *
+C*         PERMISSION IS HEREBY GRANTED FOR THE COPYING,             *
+C*    DISTRIBUTION, MODIFICATION AND USE OF THIS PROGRAM AND         *
+C*    ASSOCIATED DOCUMENTATION FOR RECREATIONAL PURPOSES,            *
+C*    PROVIDED THAT ALL REFERENCES TO THE AUTHORS ARE RETAINED.      *
+C*    HOWEVER, PERMISSION IS NOT AND WILL NOT BE GRANTED FOR         *
+C*    THE SALE OR PROMOTIONAL USE OF THIS PROGRAM OR PROGRAM         *
+C*    DOCUMENTATION, OR FOR USE IN ANY SITUATION IN WHICH            *
+C*    PROFIT MAY BE CONSIDERED AN OBJECTIVE, SINCE IT IS THE         *
+C*    DESIRE OF THE AUTHORS TO RESPECT THE COPYRIGHTS OF THE         *
+C*    ORIGINATORS OF STAR TREK.                                      *
+C*                                                                   *
+C*********************************************************************
+C*
+      SUBROUTINE MAIN
+C*
+$INSERT STARTREK.INS.FTN
+      INTEGER*4 COMAND(21),ITEM
+      LOGICAL MATCH
+C*
+      DATA COMAND/'SRSC','LRSC','PHAS','PHOT','MOVE',
+     + 'SHIE','DOCK','DAMA','CHAR','IMPU','REST','WARP',
+     + 'STAT','SENS','ORBI','TRAN','MINE','CRYS',
+     + 'SHUT','PLAN','REQU'/
+C*
+      CALL TNOU('[Startrek rev.19.1, GGR version 14 Oct 83]',42)
+      DO 2 I=1,31
+         ASTRS(I)='**'
+2     CONTINUE
+      NDEVIC=13
+      ICITE=0
+C*    -------PRINT OUT PRELIMINARY MESSAGES
+      CALL TONL
+      CALL TNOU('*** University of Texas Super Startrek ***',42)
+      CALL TNOU('         GGR version  -  Jul 1980',33)
+      CALL TONL
+      CALL TNOUA('STARTREK manual available on request.',37)
+C*    -------INITIALIZE AND START NEW GAME
+      CALL SETUP
+C*    -------REQUEST NEW COMMAND AND BRANCH TO CODE FOR THAT COMMAND
+20    IF (ALLDUN.NE.0) GOTO 9999
+      JUSTIN=0
+      TIME=0
+      CALL TONL
+      CALL TNOUA('Command:  ',10)
+      CALL SCAN(ITEM,KEY)
+      DO 30 L=1,21
+      IF (MATCH(ITEM,COMAND(L)))
+     + GOTO (100,200,300,400,500,600,700,800,900,1000,
+     + 1100,1200,1300,1400,1450,1500,1550,1600,1650,1670,1680),L
+30    CONTINUE
+      IF (ITEM.EQ.'HELP') GOTO 1700
+      IF (MATCH(ITEM,'QUIT')) GOTO 1800
+      IF (ITEM.EQ.'ABAN') GOTO 1900
+      IF (ITEM.EQ.'DEST') GOTO 2000
+      IF (ITEM.EQ.'FREE') GOTO 2100
+      IF (ITEM.EQ.'DEAT') GOTO 2200
+C*      IF (ITEM.EQ.'DEBU') GOTO 2300
+      EOL=.TRUE.
+      IF (KEY.NE.'EL') GOTO 40
+      CALL TNOU('"Beg your pardon, Captain?"',27)
+      GOTO 20
+40    CALL TNOU('Unrecognised command.  Legal commands are:',42)
+      CALL TONL
+      CALL TNOU('   Srscan    Move      Phasers   HELP',37)
+      CALL TNOU('   STatus    Impulse   PHOtons   ABANdon',40)
+      CALL TNOU('   Lrscan    Warp      SHields   DESTruct',41)
+      CALL TNOU('   Chart     Rest      Dock      Quit',37)
+      CALL TNOU('   DAmages   FREEze    SEnsors   Orbit',38)
+      CALL TNOU('   Transport MIne      Crystals  SHUttle',40)
+      CALL TNOU('   PLanets   REquest   DEAThray',31)
+      GOTO 20
+C*    -------SHORT RANGE SCAN
+100   CALL SRSCAN
+      GOTO 20
+C*    -------LONG RANGE SCAN
+200   CALL LRSCAN
+      GOTO 20
+C*    -------FIRE PHASERS
+300   CALL PHASRS
+305   IF (IDIDIT.EQ.0) GOTO 20
+310   CALL ATTACK(0)
+      GOTO 20
+C*    -------FIRE PHOTON TORPEDOS
+400   CALL PHOTNS
+410   IF (IDIDIT.NE.0) GOTO 2500
+      GOTO 20
+C*    -------MOVE UNDER WARP DRIVE
+500   CALL WARP
+      GOTO 410
+C*    -------RAISE OR LOWER DEFLECTOR SHIELDS
+600   CALL SHIELS(0)
+      IF (IDIDIT.EQ.0) GOTO 20
+      CALL ATTACK(0)
+      SHDCHG=0
+      GOTO 20
+C*    -------DOCK AT STARBASE
+700   CALL DOCK
+      GOTO 20
+C*    -------LOOK AT DAMAGE REPORT
+800   CALL DREPRT
+      GOTO 20
+C*    -------LOOK AT STAR CHART
+900   CALL CHART
+      GOTO 20
+C*    -------MOVE UNDER IMPULSE POWER
+1000  CALL IMPULS
+      GOTO 410
+C*    -------REST AND REPAIR
+1100  CALL WAIT
+      GOTO 410
+C*    -------CHANGE WARP FACTOR
+1200  CALL SETWRP
+      GOTO 20
+C*    -------ASK FOR STATUS INFORMATION
+1300  CALL STATUS
+      GOTO 20
+C*    -------GET A SENSOR SCAN OF QUADRANT.
+1400  CALL SENSOR
+      GOTO 20
+C*    -------ENTER STANDARD ORBIT.
+1450  CALL ORBIT
+      GOTO 410
+C*    -------TRANSPORT SOMEBODY SOMEWHERE.
+1500  CALL BEAM
+      GOTO 20
+C*    -------DO A LITTLE DIGGING.
+1550  CALL MINE
+      GOTO 410
+C*    -------LOAD SOME CRYSTALS (AND HOPE FOR THE BEST.)
+1600  CALL CRYSTL
+      GOTO 20
+C*    -------GO FOR A SPIN IN GALILEO.
+1650  CALL GALILE
+      GOTO 410
+C*    -------GET A PLANET LIST
+1670  CALL PLANET
+      GOTO 20
+C*    -------INDIVIDUAL PIECE OF INFORMATION FROM STATUS REQUESTED.
+1680  CALL REQEST
+      GOTO 20
+C*    -------CALL STARBASE FOR HELP
+1700  CALL HELP
+      GOTO 20
+C*    -------TERMINATE CURRENT GAME
+1800  GOTO 9999
+C*    -------ABANDON SHIP
+1900  CALL ABANDN
+      GOTO 20
+C*    -------SELF-DESTRUCT
+2000  CALL DSTRCT
+      GOTO 20
+C*    -------FREEZE THE CURRENT GAME
+2100  CALL FREEZE($9999)
+      CALL TNOUA('Do you wish to continue the current game? ',42)
+      IF (JA(0)) GOTO 20
+      GOTO 9999
+C*    -------TRY A DESPERATION MEASURE
+2200  CALL DETHRA
+      GOTO 305
+C*    -------PRINT A VARIABLE IN COMMON
+C*    2300  CALL DMPCOM
+C*      GOTO 20
+C*    -------AFTER COMMANDS WHICH MAY USE TIME, DO CHECKING
+2500  IF (ALLDUN.NE.0) GOTO 9999
+      IF (TIME.NE.0) CALL EVENTS
+      IF (ALLDUN.NE.0) GOTO 9999
+      IF (GALAXY(QUADX,QUADY).NE.1000) GOTO 310
+      CALL AUTOVR(0)
+      GOTO 2500
+C*    -------GAME HAS ENDED.  START NEW GAME OR FINALIZE.
+9999  CALL TONL
+      CALL TNOU(ASTRS,INTS(61))
+      CALL TONL
+      CALL TNOUA('May the Great Bird of the Galaxy roost',38)
+      CALL TNOU(' upon your home planet.',23)
+      CALL TONL
+      CALL EXIT
+      END
+C*
+C*************************************************************
+C*
+      SUBROUTINE ABANDN
+$INSERT STARTREK.INS.FTN
+      EOL=.TRUE.
+      IF (DAMAGE(10)) 5,15,10
+5     IF (DAMAGE(10).EQ.-1.) GOTO 6
+      CALL TNOU('Shuttle craft now serving Big Mac''s.',36)
+      RETURN
+6     CALL TNOU('Ye Faerie Queene has no shuttle craft.',38)
+      RETURN
+10    CALL TNOU('Shuttle craft damaged.',22)
+      RETURN
+15    IF ((LANDED.NE.1).AND.(ICRAFT.NE.1)) GOTO 16
+      CALL TNOU('You must be aboard the Enterprise.',34)
+      RETURN
+16    IF (ISCRFT.EQ.1) GOTO 17
+      CALL TNOU('Shuttle craft not currently available.',38)
+      RETURN
+C*    -------PRINT ABANDON SHIP MESSAGES
+17    CALL TONL
+      CALL TNOU('*** Abandon ship!  Abandon ship!',32)
+      CALL TNOU('*** All hands abandon ship!',27)
+      CALL TONL
+      CALL TNOU(
+     +'Captain and crew escape in shuttle craft.',41)
+      CALL TNOU('Remainder of ship''s complement beam down',40)
+      CALL TNOU('to nearest habitable planet.',28)
+C*    -------IF THERE ARE NO STARBASES LEFT, GAME IS OVER
+      IF (REMBAS.NE.0) GOTO 20
+      CALL FINISH(9)
+      RETURN
+C*    -------IF THERE IS AT LEAST ONE BASE LEFT, YOU GET THE FAERIE QUEENE
+20    CALL TONL
+      CALL TNOU('You are captured by Klingons and released to',44)
+      CALL TNOU(
+     +'the Federation in a prisoner-of-war exchange.',45)
+      CALL TNOU(
+     +'Starfleet puts you in command of another ship,',46)
+      CALL TNOU('the Faerie Queene, which is antiquated but',42)
+      CALL TNOU('still useable.',14)
+C*    -------SELECT BASE AT WHICH TO BEGIN AGAIN
+      NB= RND(0.0)*REMBAS+1
+C*    -------RESET FLAGS.
+      ICRSTL=0
+      IMINE=0
+      ISCATE=0
+C*    -------SET UP QUADRANT AND POSITION F. Q. ADJACENT TO BASE
+      QUADX=BASEQX(NB)
+      QUADY=BASEQY(NB)
+40    SECTX=5
+      SECTY=5
+      CALL NEWQAD
+      QUAD(SECTX,SECTY)='. '
+      DO 50 L=1,3
+      SECTX=3.0*RND(0.0)-1.0+BASEX
+      IF (SECTX.LT.1.OR.SECTX.GT.10) GOTO 50
+      SECTY=3.0*RND(0.0)-1.0+BASEY
+      IF (SECTY.LT.1.OR.SECTY.GT.10) GOTO 50
+      IF (QUAD (SECTX,SECTY).EQ.'. ') GOTO 60
+50    CONTINUE
+      GOTO 40
+60    QUAD(SECTX,SECTY)='F '
+      SHIP='F '
+C*    -------CLEAR AND RESUPPLY SHIP
+      CONDIT='DK'
+      DO 70 L=1,NDEVIC
+70    DAMAGE(L)=0
+      DAMAGE(10)=-1
+      ENERGY=3000.0
+      INENRG=3000.0
+      SHIELD=1250.0
+      INSHLD=1250.0
+      TORPS=6
+      INTORP=6
+      LSUPRS=3.0
+      INLSR=3.0
+      SHLDUP=0
+      WRPFAC=5.0
+      WFACSQ=25.0
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE ATTACK(IFR)
+$INSERT STARTREK.INS.FTN
+      INTEGER CDAM(5),PERCNT
+      EQUIVALENCE (CRACKS(1),HIT)
+      IFRY=IFR
+      IF (IFRY.EQ.1) GOTO 17
+      IF (ALLDUN.NE.0) RETURN
+      IF (NEUTZ.EQ.0) GOTO 1
+      NEUTZ=0
+      RETURN
+1     IF (((COMHER.NE.0).OR.(ISHERE.NE.0)).AND.(JUSTIN.EQ.0
+     + ))  CALL MOVCOM
+      IF (NENHER.EQ.0) RETURN
+      PFAC=1.0/INSHLD
+      IHURT=0
+      IFRY=0
+      CALL TONL
+      IF (CONDIT.EQ.'DK') GOTO 110
+C*    -------ALLOW EACH KLINGON IN TURN TO DO HIS DAMNEDEST
+      HITMAX=0.0
+      HITTOT=0.0
+      CHGFAC=1.0
+      IF (SHDCHG.EQ.1) CHGFAC=0.25+0.50*RND(0.0)
+      ATTAKD=0
+C*    -------LOOP FOR ENEMY ATTACKS STARTS HERE
+      L=0
+5     L=L+1
+      IF (L.GT.NENHER) GOTO 80
+C*    -------IF KPOWER IS LT ZERO THEN ENEMY CAN'T ATTACK.
+      IF (KPOWER(L).LT.0) GOTO 5
+      ATTAKD=1
+C*    -------COMPUTE HIT STRENGTH AND DIMINISH SHIELD POWER
+      DUSTFC=.80+.05*RND(0)
+      HIT=KPOWER(L)*DUSTFC**KAVGD(L)
+      IF (SHLDUP.EQ.0.AND.SHDCHG.EQ.0) GOTO 10
+      PROPOR=AMAX1(PFAC*SHIELD,.10)
+      HITSH=PROPOR*CHGFAC*HIT+1
+      ABSORB=.8*HITSH
+      IF (ABSORB.GT.SHIELD) ABSORB=SHIELD
+      SHIELD=SHIELD-ABSORB
+      HIT=HIT-HITSH
+      IF (PROPOR.GT..1.AND.HIT.LT.(.005*ENERGY)) GOTO 5
+C*    -------IT'S A HIT!  PRINT OUT HIT SIZE
+10    IHURT=1
+      CALL PRTNUM(HIT,8,2)
+      CALL TNOUA(' unit hit',9)
+      IF (SKILL.GT.2) GOTO 15
+      CALL TNOUA(' on the ',8)
+      CALL PRTSHP
+15    CALL TNOUA(' from ',6)
+      JX=KX(L)
+      JY=KY(L)
+      I=0
+      IF (SKILL.LE.2) I=4
+      CALL PRTOBJ(QUAD(JX,JY),I,JX,JY)
+      CALL TONL
+C*    -------DECIDE IF HIT IS CRITICAL
+      HITMAX=AMAX1(HITMAX,HIT)
+      HITTOT=HITTOT+HIT
+17    IF (HIT.LT.(11-SKILL)*(25+12.5*RND(0))) GOTO 60
+      NCRIT=1+HIT/(500+100*RND(0))
+      CALL TNOUA('*** Critical hit. ',18)
+C*    -------SELECT DEVICE(S) AND CAUSE DAMAGE
+      KTR=1
+      DO 50 LL=1,NCRIT
+20    J=NDEVIC*RND(0)+1
+      IF (DAMAGE(J).LT.0) GOTO 20
+C*    -------CHEAT TO PREVENT SHUTTLE DAMAGE UNLESS ON SHIP.
+      IF ((J.EQ.10).AND.(ISCRFT.NE.1)) GOTO 20
+      CDAM(LL)=J
+      XTRADM=(HIT*DAMFAC)/(NCRIT*(75+25*RND(0)))
+      DAMAGE(J)=DAMAGE(J)+XTRADM
+      IF (LL.EQ.1) GOTO 40
+      DO 30 LLL=2,LL
+      IF (J.EQ.CDAM(LLL-1)) GOTO 50
+30    CONTINUE
+      KTR=KTR+1
+      IF (KTR.EQ.3) CALL TONL
+      CALL TNOUA(' and ',5)
+40    CALL PRTDEV(J)
+50    CONTINUE
+      CALL TNOU(' damaged.',9)
+C*    -------PRINT MESSAGE IF SHIELDS WERE UP AND GOT KNOCKED DOWN
+      IF (DAMAGE(8).EQ.0) GOTO 60
+      IF (SHLDUP.NE.0) CALL TNOU('*** Shields knocked down.',25)
+      SHLDUP=0
+60    IF (IFRY.NE.0) RETURN
+      ENERGY=ENERGY-HIT
+C*    -------LOOP FOR ENEMY ATTACKS ENDS HERE
+      GOTO 5
+80    IF (ATTAKD.EQ.0) RETURN
+      IF (ENERGY.LE.0) GOTO 100
+      PERCNT=100*PFAC*SHIELD+.5
+C*    -------PRINT MESSAGE IF SHIELDS FULLY PROTECTED STARSHIP
+      IF (IHURT.NE.0) GOTO 85
+      CALL TNOUA(
+     +'Enemies attack - shield strength reduced to ',44)
+      GOTO 90
+C*    -------PRINT MESSAGE IF STARSHIP ITSELF SUFFERED HIT(S)
+85    CALL TONL
+      CALL TNOUA('Energy ',7)
+      CALL PRTNUM(ENERGY,0,2)
+      CALL TNOUA(' - shields ',11)
+      IF (SHLDUP.NE.0) CALL TNOUA('up, ',4)
+      IF (SHLDUP.EQ.0.AND.DAMAGE(8).EQ.0) CALL TNOUA('down, ',6)
+      IF (DAMAGE(8).GT.0) CALL TNOUA('damaged, ',9)
+90    CALL TOVFD$(PERCNT)
+      CALL TNOUA('% - ',4)
+      CALL TOVFD$(TORPS)
+      CALL TNOU(' torpedoes left.',16)
+C*    -------CHECK IF ANYONE WAS HURT
+      IF (HITMAX.LT.200.AND.HITTOT.LT.500) GOTO 120
+      ICAS=HITTOT*RND(0)*.015
+      IF (ICAS.LT.2) GOTO 120
+      CALL TONL
+      CALL TNOUA(
+     +'Mc''Coy:  "Sickbay to Bridge.  We suffered ',42)
+      CALL TOVFD$(ICAS)
+      CALL TNOU(' casualties in that attack."',28)
+      CASUAL=CASUAL+ICAS
+      GOTO 120
+C*    -------RETURNING HOME UPON YOUR SHIELD, NOT WITH IT...
+100   CALL FINISH(5)
+      RETURN
+C*    -------DOCKED AND SAFE FROM ALL ENEMIES.
+110   CALL TNOUA(
+     +'*** Enemies attack - Starbase shields protect the ',50)
+      CALL PRTSHP
+      CALL TNOU('. ',1)
+C*    -------AFTER ATTACK, RESET AVERAGE DISTANCE TO ENEMIES.
+120   DO 130 L=1,NENHER
+130   KAVGD(L)=KDIST(L)
+      CALL SORTKL
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE AUTOVR(IGRAB)
+$INSERT STARTREK.INS.FTN
+C*    -------CHECK TO SEE IF CAPTAIN ON A PLANET
+      EOL=.TRUE.
+      IF (LANDED.NE.1) GOTO 45
+      IF (DAMAGE(12).EQ.0) GOTO 10
+      CALL FINISH(16)
+      RETURN
+10    CALL TNOU(' Scotty rushes to the transporter controls.',42)
+      IF (SHLDUP.EQ.0) GOTO 20
+      CALL TNOU('But with the shields up it''s hopeless.',38)
+      CALL FINISH(16)
+      RETURN
+20    CALL TNOUA('His desperate attempt to rescue you . . . ',42)
+      IF (RND(0).GT..5) GOTO 30
+      CALL TNOU('fails.',6)
+      CALL FINISH(16)
+      RETURN
+30    CALL TNOU('succeeds!',9)
+      IF (IMINE.EQ.0) GOTO 45
+      IMINE=0
+      CALL TNOU('The crystals mined were ',24)
+      IF (RND(0).GT..25) GOTO 40
+      CALL TNOU('lost.',5)
+      GOTO 45
+40    CALL TNOU('saved.',6)
+      ICRSTL=1
+45    IF (IGRAB.NE.0) RETURN
+C*    -------CHECK TO SEE IF CAPTAIN IN SHUTTLE CRAFT
+      IF (ICRAFT.NE.0) CALL FINISH(17)
+      IF (ALLDUN.NE.0) RETURN
+C*    -------INFORM CAPTAIN OF ATTEMPT TO REACH SAFETY
+      CALL TONL
+      IF (JUSTIN.EQ.0) GOTO 50
+47    CALL TNOU('*** RED ALERT!  RED ALERT!',25)
+      CALL TNOUA('*** The ',8)
+      CALL PRTSHP
+      CALL TNOU(
+     +' has stopped in a quadrant containing a supernova.',50)
+      CALL TONL
+50    CALL TNOUA(
+     +'*** Emergency automatic override attempts to hurl ',50)
+      CALL PRTSHP
+      CALL TONL
+      CALL TNOU('safely out of quadrant.',23)
+      STARCH(QUADX,QUADY)=1
+C*    -------TRY TO USE WARP ENGINES
+      IF (DAMAGE(6).EQ.0) GOTO 100
+      CALL TONL
+      CALL TNOU('Warp engines damaged.',21)
+      CALL FINISH(8)
+      RETURN
+100   WRPFAC=6+2*RND(0)
+      WFACSQ=WRPFAC*WRPFAC
+      CALL TNOUA('Warp factor set to ',19)
+      CALL PRTNUM(WRPFAC,0,1)
+      CALL TONL
+      POWER=0.75*ENERGY
+      DISTMX=POWER/(WRPFAC*WRPFAC*WRPFAC*(SHLDUP+1))
+      DIST=1.4142+2*RND(0)
+      IF (DIST.GT.DISTMX) DIST=DISTMX
+      TIME=10*DIST/WFACSQ
+      DIREC=12*RND(0.0)
+      JUSTIN=0
+      INORBT=0
+      CALL WARPX
+      IF (JUSTIN.NE.0) GOTO 200
+      CALL TONL
+      CALL TNOU('Insufficient energy to leave quadrant.',38)
+      CALL FINISH(8)
+      RETURN
+C*    -------REPEAT OVERRIDE IF SHIP JUMPED FROM ONE SUPERNOVA TO ANOTHER
+200   IF (GALAXY(QUADX,QUADY).EQ.1000) GOTO 47
+      IF (REMKL.EQ.0) CALL FINISH(1)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE BEAM
+$INSERT STARTREK.INS.FTN
+      CALL TONL
+      IF (DAMAGE(12).EQ.0) GOTO 19
+      CALL TNOU('Transporter damaged.',20)
+      IF (DAMAGE(10).NE.0) GOTO 13
+      CALL TONL
+      CALL TNOU('Spock:  "May I suggest the shuttle craft, Sir."',47)
+      GOTO 13
+19    IF (INORBT.NE.0) GOTO 1910
+      CALL PRTSHP
+      CALL TNOU(' not in standard orbit.',23)
+      GOTO 13
+1910  IF (SHLDUP.EQ.0) GOTO 1920
+      CALL TNOU('Impossible to transport through shields.',40)
+      GOTO 13
+1920  IF (PLNETS(IPLANT,5).EQ.1) GOTO 1940
+      CALL TNOU(
+     +'Sposk:  "Captain, we have no information on this planet,',56)
+      CALL TNOU(
+     +'and Starfleet Regulations clearly state that in this situation',
+     +62)
+      CALL TNOU('you may not go down."',21)
+      GOTO 13
+1940  IF (LANDED.EQ.1) GOTO 30
+      IF (PLNETS(IPLANT,4).EQ.1) GOTO 20
+      CALL TNOU('Spock:  "Captain, I fail to see the logic in',44)
+      CALL TNOU(
+     +'exploring a planet with no dilithium crystals."',47)
+      CALL NOTIME(-9999.,$13)
+20    CALL TNOU('Scotty:  "Transporter room ready, Sir."',39)
+      CALL TONL
+      CALL TNOU(
+     +'Kirk and landing party prepare to beam down to planet surface.',
+     +62)
+      CALL TONL
+      CALL TNOU('Kirk:  "Energise."',18)
+21    CALL TONL
+      CALL TNOU('WWHOOOIIIIIRRRRREEEE.E.E. . . . .  .   .',40)
+      IF (RND(0).GT..98) GOTO 35
+      CALL TNOU('.   .  . . . . .E.E.EEEERRRRRIIIIIOOOHWW',40)
+      CALL TONL
+      CALL TNOU('Transport complete.',19)
+      LANDED=-LANDED
+      IF ((LANDED.NE.1).AND.(IMINE.EQ.1)) ICRSTL=1
+      IMINE=0
+      GOTO 13
+C*    -------READY TO BEAM UP TO SHIP.
+30    IF (ISCRFT.EQ.1) GOTO 32
+C*
+C*        IF SHUTTLE CAPTURED, TRANSPORT IS OK
+C*
+      IF (DAMAGE(10).LT.-9) GOTO 32
+      CALL TNOU('You may not leave shuttle craft on planet.',42)
+      GOTO 13
+32    CALL TNOU('Landing party assembled, ready to beam up.',42)
+      CALL TONL
+      CALL TNOU('Kirk whips out communicator...',30)
+      CALL TNOU('BEEP  BEEP  BEEP',16)
+      CALL TONL
+      CALL TNOU(
+     +'Kirk to Enterprise:  "Lock on coordinates... Energise."',
+     +55)
+      GOTO 21
+C*    -------CATASTROPHE!
+35    CALL TONL
+      CALL TNOU('BOOOIIIOOOIIOOOOIIIOIING . . .',30)
+      CALL TONL
+      CALL TNOU('Scotty:  "Oh, my God!  I''ve lost them."',39)
+      CALL FINISH(13)
+13    EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE CHART
+$INSERT STARTREK.INS.FTN
+      CALL TONL
+      EOL=.TRUE.
+      CALL TNOU('        Star chart for the known galaxy:',40)
+      CALL TONL
+      CALL TNOU('      1    2    3    4    5    6    7    8',42)
+      CALL TNOU('   -----------------------------------------',44)
+      DO 50 I=1,8
+      CALL TOVFD$(I)
+      CALL TNOUA(' |',2)
+      DO 40 J=1,8
+      IF (STARCH(I,J)) 10,20,30
+10    CALL TNOUA('  .1.',5)
+      GOTO 40
+20    CALL TNOUA('  ...',5)
+      GOTO 40
+30    IF (STARCH(I,J).GT.999) GOTO 35
+      CALL PRTINT(GALAXY(I,J),5)
+      GOTO 40
+35    CALL PRTINT(STARCH(I,J)-1000,5)
+40    CONTINUE
+      CALL TONL
+50    CONTINUE
+      CALL TONL
+      CALL PRTSHP
+      CALL TNOUA(' is currently in',16)
+      CALL PRTLOC(3,QUADX,QUADY)
+      CALL TONL
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE CHOOSE(FROZEN)
+$INSERT STARTREK.INS.FTN
+      LOGICAL FROZEN
+      INTEGER*4 ITEM
+      TNMBER=0
+      PASSWD='  '
+5     FROZEN=.FALSE.
+      CALL TONL
+C*    -------ASK FOR PARAMETERS OF GAME, PREFERABLY ALL ON ONE LINE
+      CALL TNOUA(
+     +'Would you like a regular, tournament or frozen game? ',53)
+      EOL=.TRUE.
+      CALL SCAN(ITEM,KEY)
+      IF (ITEM.NE.'REGU') GOTO 7
+C*    INITIALIZE RANDOM NUMBER GENERATOR
+      CALL HASH(NMBR)
+      CALL RND(NMBR)
+      CALL TNOUA('(Game # is ',11)
+      CALL TOVFD$(NMBR)
+      CALL TNOU(')',1)
+      GOTO 9
+7     IF (ITEM.EQ.'TOUR') GOTO 100
+      EOL=.TRUE.
+      IF (ITEM.EQ.'FROZ') GOTO 200
+      GOTO 5
+9     CALL TONL
+      SKILL=0
+      LENGTH=0
+10    CALL SCAN(ITEM,KEY)
+      IF (KEY.NE.'AL') GOTO 20
+C*    -------CHECK FOR DIFFERENT KINDS OF GAMES
+      IF (ITEM.EQ.'SHOR') LENGTH=1
+      IF (ITEM.EQ.'MEDI') LENGTH=2
+      IF (ITEM.EQ.'LONG') LENGTH=4
+      IF (ITEM.EQ.'NOVI') SKILL=1
+      IF (ITEM.EQ.'FAIR') SKILL=2
+      IF (ITEM.EQ.'GOOD') SKILL=3
+      IF (ITEM.EQ.'EXPE') SKILL=4
+      IF (ITEM.EQ.'EMER') SKILL=5
+      IF (LENGTH*SKILL.EQ.0) GOTO 10
+      GOTO 30
+20    EOL=.TRUE.
+      IF (LENGTH.NE.0) GOTO 25
+      CALL TNOUA('Would you like a short, medium or long game? ',45)
+      GOTO 10
+25    IF (SKILL.NE.0) GOTO 30
+      CALL TNOUA(
+     +'Are you novice, fair, good, expert or emeritus? ',48)
+      GOTO 10
+C*    -------READ IN SECRET PASSWORD
+30    CALL SCAN(PASSWD,KEY)
+      EOL=.TRUE.
+      IF (KEY.NE.'EL') GOTO 40
+      CALL TNOUA('Please type in a secret password: ',34)
+      GOTO 30
+C*    -------USE PARAMETERS TO GENERATE INITIAL VALUES OF THINGS
+40    DAMFAC=.5*SKILL
+      INBASE=3*RND(0)+2
+      REMBAS=INBASE
+      INPLAN=5+6*RND(0)
+      NROMRM=(2+RND(0))*SKILL
+      NSCREM=SKILL/3
+      REMTIM=7*LENGTH
+      INTIME=REMTIM
+      RATE=(SKILL-2*RND(0)+1)*SKILL*.1+.15
+      REMKL=2*RATE*INTIME
+      INKLNG=REMKL
+      INCOM=SKILL+.0625*INKLNG*RND(0)
+      IF (INCOM.GT.10) INCOM=10
+      REMCOM=INCOM
+      REMRES=(INKLNG+4*INCOM)*INTIME
+      INRESR=REMRES
+      IF (INKLNG.LE.50) GOTO 50
+      INBASE=INBASE+1
+      REMBAS=INBASE
+50    RETURN
+C*    -------PROCESS A TOURNAMENT REQUEST
+100   CALL SCAN(TNMBER,KEY)
+      QQQQ=RND(ABS(TNMBER))
+      THINGX=-1
+C*    -------GO BACK FOR ANYTHING LEFT OUT
+      IF (KEY.NE.'EL') GOTO 9
+      CALL TONL
+      CALL TNOUA('Type in number of tournament: ',30)
+      GOTO 100
+C*    -------PROCESS A REQUEST FOR A FROZEN GAME
+200   CALL THAW
+      IF (PASSWD.EQ.0) GOTO 5
+      FROZEN=.TRUE.
+C*    -------DESTROY ANY 'THINGS' IN FROZEN GAME
+      THINGX=0
+      THINGY=0
+      DO 210 I=1,10
+      DO 210 J=1,10
+      IF (QUAD(I,J).EQ.'? ') QUAD(I,J)='. '
+210   CONTINUE
+C*    -------RESET PLAQUE STATUS
+      ICITE=0
+C*    -------RE-INITIALIZE RANDOM NUMBER FUNCTION
+      QQQQ=RND(1)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE CRYSTL
+$INSERT STARTREK.INS.FTN
+      CALL TONL
+      IF (ICRSTL.EQ.1) GOTO 55
+      CALL TNOU('No dilithium crystals available.',32)
+      GOTO 13
+55    IF (ENERGY.LT.1000) GOTO 5510
+      CALL TNOU(
+     +'Spock:  "Captain, Starfleet Regulations prohobit such an',56)
+      CALL TNOU('operation except when Condition Yellow exists."',47)
+      GOTO 13
+5510  CALL TNOU('Spock:  "Captain, I must warn you that loading',46)
+      CALL TNOU('raw dilithium crystals into the ship''s power',44)
+      CALL TNOU('system may risk a severe explosion.',35)
+      CALL NOTIME(-9999.,$13)
+      CALL TONL
+      CALL TNOU('Engineering Officer Scott:  "(gulp) Aye, Sir.',45)
+      CALL TNOU('Mr. Spock and I will try it."',29)
+      CRYPRB=CRYPRB*2
+      CALL SLEEP$(001000)
+      CALL TONL
+      CALL TNOUA('Spock:  "Crystal in place, Sir.',31)
+      CALL TNOU(' Ready to activate."',20)
+      CALL TONL
+      CALL SLEEP$(001000)
+      CALL TNOU('Scotty:  "Keep your fingers crossed, Sir!"',42)
+      CALL TONL
+      CALL SLEEP$(000500)
+      IF (RND(0).GT.CRYPRB) GOTO 57
+      CALL TNOU('"Activating now! - - No good!!  It''s***',39)
+      CALL TNOU(
+     +'*** Red alert!  RED A*L*******************************',54)
+      CALL TNOU(ASTRS,54)
+      CALL TNOU(
+     +'*****************    KA-BOOM!!!!    ******************',54)
+      CALL KABOOM
+      GOTO 13
+57    ENERGY=ENERGY+5000*(1+.9*RND(0))
+      CALL TNOU('"Activating now! - - The instruments are going crazy,',
+     +53)
+      CALL TNOU(
+     +'but I think it''s going to work! Congratulations, Sir!"',54)
+13    EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE DEADKL(IX,IY,TYPE)
+$INSERT STARTREK.INS.FTN
+      INTEGER TYPE
+      CALL TNOUA('*** ',4)
+      CALL PRTOBJ(TYPE,2,IX,IY)
+C*    -------DECIDE WHAT KIND OF ENEMY IT IS, AND UPDATE APPROPRIATELY
+      IF (TYPE.EQ.'R ') GOTO 27
+      GALAXY(QUADX,QUADY)=GALAXY(QUADX,QUADY)-100
+      KLHERE=KLHERE-1
+      REMKL=REMKL-1
+      IF (TYPE.EQ.'K ') GOTO 25
+      IF (TYPE.EQ.'S ') GOTO 26
+C*    -------CHALK UP A COMMANDER
+      COMHER=0
+      DO 10 I=1,REMCOM
+      IF (CX(I).EQ.QUADX.AND.CY(I).EQ.QUADY) GOTO 15
+10    CONTINUE
+15    CX(I)=CX(REMCOM)
+      CY(I)=CY(REMCOM)
+      CX(REMCOM)=0
+      CY(REMCOM)=0
+      REMCOM=REMCOM-1
+      FUTURE(2)=1E38
+      IF (REMCOM.NE.0) FUTURE(2)=DATE+EXPRAN(FLOAT(INCOM)/REMCOM)
+      KILLC=KILLC+1
+      GOTO 30
+C*    -------CHALK UP AN ORDINARY KLINGON
+25    KILLK=KILLK+1
+      GOTO 30
+C*    -------CHALK UP THE (GULP) <SUPER-COMMANDER>.
+26    NSCREM=0
+      ISHERE=0
+      ISX=0
+      ISY=0
+      NSCKIL=1
+      ISATB=0
+      ISCATE=0
+      FUTURE(6)=1E38
+      FUTURE(7)=1E38
+      GOTO 30
+C*    -------CHALK UP A ROMULAN.
+27    NEWSTF(QUADX,QUADY)=NEWSTF(QUADX,QUADY)-10
+      IRHERE=IRHERE-1
+      NROMKL=NROMKL+1
+      NROMRM=NROMRM-1
+C*    -------FOR EACH KIND OF ENEMY, FINISH MESSAGE TO PLAYER
+30    CALL TNOU(' destroyed.',12)
+      QUAD(IX,IY)='. '
+      IF (REMKL.EQ.0) RETURN
+      REMTIM=REMRES/(REMKL+4*REMCOM)
+C*    -------REMOVE ENEMY SHIP FROM ARRAYS DESCRIBING LOCAL CONDITIONS
+      DO 40 I=1,NENHER
+      IF (KX(I).EQ.IX.AND.KY(I).EQ.IY) GOTO 45
+40    CONTINUE
+45    NENHER=NENHER-1
+      IF (I.GT.NENHER) GOTO 55
+      DO 50 J=I,NENHER
+      KX(J)=KX(J+1)
+      KY(J)=KY(J+1)
+      KPOWER(J)=KPOWER(J+1)
+      KDIST(J)=KDIST(J+1)
+50    KAVGD(J)=KDIST(J+1)
+55    KX(NENHER+1)=0
+      KY(NENHER+1)=0
+      KDIST(NENHER+1)=0
+      KAVGD(NENHER+1)=0
+      KPOWER(NENHER+1)=0
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE DETHRA
+$INSERT STARTREK.INS.FTN
+      IDIDIT=0
+      CALL TONL
+      IF (SHIP.EQ.'E ') GOTO 113
+      CALL TNOU('Ye Farie Queene has no death ray.',33)
+      GOTO 13
+113   IF (NENHER.GE.1) GOTO 115
+      CALL TNOU(
+     +'Sulu:  "But Sir, there are no enemies in this qadrant."',55)
+      GOTO 13
+115   CALL TNOU('Spock:  "Captain, the experimental death ray is',47)
+      CALL TNOU('highly unpredictable.  Considering alternatives,',48)
+      CALL NOTIME(-9999.,$13)
+      CALL TNOU('Spock:  "Acknowledged."',23)
+      CALL TONL
+      IDIDIT=1
+      CALL TNOU('WHOOEE ... WHOOEE ... WHOOEE ... WHOOEE',39)
+      CALL TNOU('Crew scrambles in emergency preparation.',40)
+      CALL TNOU('Spock and Scotty ready the death ray and',40)
+      CALL TNOU(
+     +'prepare to channel all ship''s power to the device.',50)
+      CALL SLEEP$(001000)
+      CALL TONL
+      CALL TNOU('Spock:  "Preparations complete, Sir."',37)
+      CALL TNOU('Kirk:  "Engage!"',16)
+      CALL TONL
+      CALL SLEEP$(000500)
+      CALL TNOU('WHIRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRRR',45)
+      R=RND(0)
+      CALL SLEEP$(001000)
+      IF (R.GT..3) GOTO 130
+C*    -------BANG!
+      CALL TNOU('Sulu:  "Captain!  It''s working!"',32)
+      CALL SLEEP$(001500)
+      CALL TNOU('*** Red alert!  RED ALERT! ***',30)
+      CALL TNOU('*** Matter-antimatter conversion imminent ***',45)
+      CALL TNOU(
+     +'*** RED ALERT!  RED A*L*******************************',54)
+      CALL TNOU(ASTRS,54)
+      CALL TNOU(
+     +'*****************    KA-BOOM!!!!    ******************',54)
+      CALL KABOOM
+      GOTO 13
+130   IF (R.GT..35) GOTO 140
+C*    -------SUCCESS!
+      CALL TNOU('Sulu:  "Captain!  It''s working!"',32)
+      CALL SLEEP$(001500)
+      CALL TONL
+      NENHR2=NENHER
+      DO 135 I=1,NENHR2
+      II=KX(1)
+      JJ=KY(1)
+135   CALL DEADKL(II,JJ,QUAD(II,JJ))
+      CALL TONL
+      CALL TNOU('Ensign Chekov:  "Congratulations Captain!"',42)
+      IF (REMKL.EQ.0) CALL FINISH(1)
+      GOTO 13
+140   IF (R.GT..65) GOTO 150
+C*    -------STRANGE BIOLOGICAL EFFECT ON CREW.
+      CALL TNOU(
+     +'Sulu:  "Captain!  Yagabandaghangrapl, brachriigringl anbla!"',
+     +60)
+      CALL TNOU('Lt. Uhura:  "Graaeek!  Graaeek!"',32)
+      CALL TONL
+      CALL TNOU('Spock:  "Fascinating!... All humans aboard have',47)
+      CALL TNOU('apparently been transformed into strange mutations.',
+     +51)
+      CALL TNOU('Vulcans do not seem to be affected."',36)
+      CALL SLEEP$(001000)
+      CALL TONL
+      CALL TNOU('Kirk:  "Raauch. Iggraauch!"',27)
+      CALL TONL
+      CALL FINISH(19)
+      GOTO 13
+150   IF (R.GT..7) GOTO 160
+C*    -------A VERY WEIRD OCCURANCE
+      CALL TNOU('Sulu:  "Captain!  It''s  --WHAT?!?!"',35)
+      CALL SLEEP$(003000)
+      CALL TONL
+      CALL TNOU(
+     +'Spock:  "I believe the word is ''astonishing'', Mr. Sulu.',55)
+      DO 155 I=1,10
+      DO 155 J=1,10
+      IF (QUAD(I,J).NE.'. ') GOTO 155
+      QUAD(I,J)='? '
+155   CONTINUE
+      CALL SLEEP$(000400)
+      CALL TNOU('Captain, our quadrant is now infested with',42)
+      CALL SLEEP$(000200)
+      CALL TNOU(
+     +' - - - - - - *THINGS*.  I have no logical explanation."',55)
+      GOTO 13
+C*    -------TRIBBLE TROUBLE
+160   CALL TNOU(
+     +'Sulu:  "Captain!  The death ray is creating tribbles!"',54)
+      CALL SLEEP$(001500)
+      CALL TNOU('Scotty:  "There are so many tribbles down here',46)
+      CALL TNOU(
+     +'in Engineering, we can''t move for ''em, Captain."',48)
+      CALL TONL
+      CALL FINISH(20)
+13    EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE DOCK
+$INSERT STARTREK.INS.FTN
+      EOL=.TRUE.
+      IF (CONDIT.EQ.'DK') GOTO 30
+      IF (INORBT.NE.0) GOTO 40
+      IF (BASEX.EQ.0) GOTO 5
+      IF (IABS(SECTX-BASEX).LE.1.AND.IABS(SECTY-BASEY).LE.1) GOTO 10
+5     CALL PRTSHP
+      CALL TNOU(' not adjacent to base.',22)
+      RETURN
+10    CONDIT='DK'
+      CALL TNOU('Docked.',7)
+      IF (ENERGY.LT.INENRG) ENERGY=INENRG
+      SHIELD=INSHLD
+      TORPS=INTORP
+      LSUPRS=INLSR
+      RETURN
+30    CALL TNOU('Already docked.',15)
+      RETURN
+40    CALL TNOU('You must first leave standard orbit.',36)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE DREPRT
+$INSERT STARTREK.INS.FTN
+      EOL=.TRUE.
+      JDAM=0
+      DO 20 L=1,NDEVIC
+      IF (DAMAGE(L).LE.0) GOTO 20
+      IF (JDAM.NE.0) GOTO 10
+      CALL TONL
+      CALL TNOU('  Device                Repair times',36)
+      CALL TNOU('                   In flight    Docked',38)
+      JDAM=1
+10    CALL TNOUA('  ',2)
+      CALL PRTDEV(-L)
+      CALL PRTNUM(DAMAGE(L),5,2)
+      CALL TNOUA('      ',5)
+      CALL PRTNUM(DCKFAC*DAMAGE(L),5,2)
+      CALL TONL
+20    CONTINUE
+      IF (JDAM.EQ.0) CALL TNOU('All devices functional.',23)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE DROPIN(IQUAD,IX,IY)
+$INSERT STARTREK.INS.FTN
+10    CALL IRAN(10,IX,IY)
+      IF (QUAD (IX,IY).NE.'. ') GOTO 10
+      QUAD(IX,IY)=IQUAD
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE DSTRCT
+$INSERT STARTREK.INS.FTN
+      INTEGER*4 IPAS
+      EOL=.TRUE.
+      IF (DAMAGE(11).EQ.0) GOTO 5
+      CALL TNOU(
+     +'Computer damaged: cannot execute destruct sequence.',51)
+      RETURN
+5     CALL TONL
+      CALL TNOU('---SECURITY CHECK---',20)
+      CALL TNOU('IDENTIFICATION-POSITIVE.',24)
+      CALL TNOU('SELF-DESTRUCT-SEQUENCE-ACTIVATED',32)
+      CALL TONL
+      CALL SLEEP$(001000)
+      CALL TNOU('   10',5)
+      CALL SLEEP$(001000)
+      CALL TNOU('       9',8)
+      CALL SLEEP$(001000)
+      CALL TNOU('          8',11)
+      CALL SLEEP$(001000)
+      CALL TNOU('             7',14)
+      CALL SLEEP$(001000)
+      CALL TNOU('                6',17)
+      CALL TNOU('MINUS-SIX-SECONDS-AND-HOLDING-',30)
+      CALL TNOU('ENTER-CORRECT-PASSWORD-TO-CONTINUE-',35)
+      CALL TNOU('SELF-DESTRUCT-SEQUENCE',22)
+      CALL SCAN(IPAS,KEY)
+      EOL=.TRUE.
+      IF (IPAS.NE.PASSWD) GOTO 30
+      CALL TNOU('PASSWORD-ACCEPTED',17)
+      CALL TNOU('          5',11)
+      CALL SLEEP$(001000)
+      CALL TNOU('             4',14)
+      CALL SLEEP$(001000)
+      CALL TNOU('                3',17)
+      CALL SLEEP$(001000)
+      CALL TNOU('                   2',20)
+      CALL SLEEP$(001000)
+      CALL TNOU('                      1',23)
+      CALL SLEEP$(001000)
+      IF (RND(0).LT..05) CALL TNOU('GOODBYE-CRUEL-WORLD',19)
+      CALL TONL
+      CALL TONL
+      CALL KABOOM
+      RETURN
+30    CALL TNOU('PASSWORD-REJECTED',17)
+      CALL TNOU('CONTINUITY-EFFECTED',19)
+      CALL TONL
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE EVENTS
+$INSERT STARTREK.INS.FTN
+      ICTBEM=0
+      ISTRCT=0
+C*    -------SELECT EARLIEST EXTRANEOUS EVENT (LINE=0 IF NO EVENTS)
+10    LINE=0
+      IF (ALLDUN.NE.0) RETURN
+      DATEMN=DATE+TIME
+      DO 20 L=1,7
+      IF (FUTURE(L).GT.DATEMN) GOTO 20
+      LINE=L
+      DATEMN=FUTURE(L)
+20    CONTINUE
+      XTIME=DATEMN-DATE
+      DATE=DATEMN
+C*    -------DECREMENT FEDERATION RESOURCES AND RECOMPUTE REMAINING TIME
+      REMRES=REMRES-(REMKL+4*REMCOM)*XTIME
+      REMTIM=REMRES/(REMKL+4*REMCOM)
+      IF (REMTIM.GT.0) GOTO 30
+C*    -------FEDERATION RESOURCES DEPLETED; END
+      CALL FINISH(2)
+      RETURN
+C*    -------DECIDE IF LIFE SUPPORT IS ADEQUATE
+30    IF (DAMAGE(5).EQ.0.OR.CONDIT.EQ.'DK' ) GOTO 50
+      IF (LSUPRS.GE.XTIME.OR.DAMAGE(5).LE.LSUPRS) GOTO 40
+      CALL FINISH(3)
+      RETURN
+40    LSUPRS=LSUPRS-XTIME
+      IF (DAMAGE(5).LE.XTIME) LSUPRS=INLSR
+C*    -------FIX DEVICES
+50    REPAIR=XTIME
+      IF (CONDIT.EQ.'DK') REPAIR=XTIME/DCKFAC
+      DO 60 L=1,NDEVIC
+      IF (DAMAGE(L).GT.0) DAMAGE(L)=AMAX1(DAMAGE(L)-REPAIR,0.)
+60    CONTINUE
+C*    -------CAUSE EXTRANEOUS EVENT _<LINE>! TO OCCUR
+      TIME=TIME-XTIME
+      IF (LINE.EQ.0) GOTO 5000
+      GOTO (100,200,300,400,500,600,700),LINE
+C*    -------EXTRANEOUS EVENT 1:  SUPERNOVA
+100   CALL SNOVA(0,0)
+      FUTURE(1)=DATE+EXPRAN(.5*INTIME)
+      IF (GALAXY(QUADX,QUADY).EQ.1000) RETURN
+      GOTO 10
+C*    -------EXTRANEOUS EVENT 2:  TRACTOR BEAM
+200   IF (REMCOM.EQ.0) GOTO 220
+      IF (ISTRCT.NE.0) GOTO 210
+      IF (CONDIT.EQ.'DK') GOTO 210
+      I=RND(0)*REMCOM+1
+      YANK=(CX(I)-QUADX)**2+(CY(I)-QUADY)**2
+      IF (YANK.EQ.0) GOTO 210
+      IF (ISTRCT.EQ.0) GOTO 201
+20010 YANK=(ISX-QUADX)**2+(ISY-QUADY)**2
+201   YANK=SQRT(YANK)
+      TIME=.1778*YANK
+      ICTBEM=1
+      CALL TONL
+      CALL TNOUA('*** ',4)
+      CALL PRTSHP
+      CALL TNOU(' caught in long-range tractor beam - ',37)
+C*    -------IF KIRK AND CO.SCREWING AROUND ON PLANET, HANDLE.
+      CALL AUTOVR(1)
+      IF (ALLDUN.NE.0) RETURN
+C*    -------HANDLE CASE WHERE KIRK IS IN SHUTTLE CRAFT.
+      IF (ICRAFT.NE.1) GOTO 203
+      CALL FINISH(18)
+      RETURN
+C*    -------CHECK TO SEE IF SHUTTLE IS ABOARD.
+203   IF (ISCRFT.NE.0) GOTO 204
+      CALL TONL
+      CALL TNOU(
+     +'Galileo, left on the planet surfice, is captured',48)
+      CALL TNOU('by aliens and made into a flying Mc''Donald''s.',45)
+      DAMAGE(10)=-10
+      ISCRFT=-1
+204   IF (ISTRCT.EQ.0) GOTO 205
+      QUADX=ISX
+      QUADY=ISY
+      GOTO 206
+205   QUADX=CX(I)
+      QUADY=CY(I)
+206   CALL IRAN(10,SECTX,SECTY)
+      CALL TNOUA('pulled to',9)
+      CALL PRTLOC(3,QUADX,QUADY)
+      CALL TNOUA(',',1)
+      CALL PRTLOC(4,SECTX,SECTY)
+      CALL TONL
+      IF (RSTING.NE.0) CALL TNOU(
+     +'(Remainder of rest & repair period cancelled.)',46)
+      RSTING=0
+      IF (SHLDUP.NE.0) GOTO 208
+      IF (DAMAGE(8).EQ.0.AND.SHIELD.GT.0) GOTO 207
+      CALL TNOU('(Shields not currently useable.)',32)
+      GOTO 208
+207   CALL SHIELS(1)
+      SHDCHG=0
+208   CALL NEWQAD
+      IF (REMCOM.LE.0) GOTO 220
+210   FUTURE(2)=DATE+TIME+EXPRAN(1.5*INTIME/REMCOM)
+      GOTO 10
+220   FUTURE(2)=1E38
+      GOTO 10
+C*    -------EXTRANEOUS EVENT 3:  SNAPSHOT OF UNIVERSE (FOR TIME WARP)
+300   CALL IMOVE(DATE,SNPSHT,229)
+      SNAP=1
+      FUTURE(3)=DATE+EXPRAN(.5*INTIME)
+      GOTO 10
+C*    -------EXTRANEOUS EVENT 4:  COMMANDER ATTACKS STARBASE
+C*    -------LOOK FOR A COMMANDER IN SAME QUADRANT AS A STARBASE
+400   IF (REMCOM.GT.0.AND.REMBAS.GT.0) GOTO 410
+      FUTURE(4)=1E38
+      FUTURE(5)=1E38
+      GOTO 10
+410   DO 420 J=1,REMBAS
+      DO 420 K=1,REMCOM
+      IF ((BASEQX(J).EQ.CX(K).AND.BASEQY(J).EQ.CY(K)).AND.
+     +  (BASEQX(J).NE.QUADX.OR.BASEQY(J).NE.QUADY).AND.
+     +  (BASEQX(J).NE.ISX.OR.BASEQY(J).NE.ISY)) GOTO 430
+420   CONTINUE
+      FUTURE(4)=DATE+EXPRAN(.3*INTIME)
+      FUTURE(5)=1E38
+      GOTO 10
+C*    -------COMMANDER+STARBASE COMBINATION FOUND--LAUNCH ATTACK
+430   BATX=BASEQX(J)
+      BATY=BASEQY(J)
+      FUTURE(5)=DATE+1+3*RND(0)
+      IF (ISATB.NE.0) FUTURE(5)=FUTURE(5)+FUTURE(7)-DATE
+      FUTURE(4)=FUTURE(5)+EXPRAN(.3*INTIME)
+      IF (DAMAGE(9).GT.0) GOTO 10
+      CALL TONL
+      CALL TNOUA('Lt.Uhura:  "Captain, the Starbase in',36)
+      CALL PRTLOC(3,BATX,BATY)
+      CALL TONL
+      CALL TNOU(
+     +'reports that it is under attack and that it can hold',52)
+      CALL TNOUA('out only until stardate ',24)
+      CALL PRTNUM(FUTURE(5),0,1)
+      CALL TNOU('."',2)
+      IF (RSTING.EQ.0) GOTO 10
+      CALL TONL
+      CALL TNOU(
+     +'Mr.Spock:  "Captain, shall we cancel the rest period?"',55)
+      IF (JA(0)) RSTING=0
+      GOTO 10
+C*    -------EXTRANEOUS EVENT 5:  COMMANDER SUCCEEDS IN DESTROYING BASE
+500   FUTURE(5)=1E38
+502   ICOM='C '
+      IF (ISATB.NE.2) GOTO 505
+      IF (MOD(GALAXY(ISX,ISY),100).LT.10)  RETURN
+      IXHOLD=BATX
+      IYHOLD=BATY
+      BATX=ISX
+      BATY=ISY
+      ICOM='S '
+      GOTO 520
+505   IF (REMCOM.EQ.0.OR.REMBAS.EQ.0) GOTO 515
+      IF (MOD(GALAXY(BATX,BATY),100).LT.10) GOTO 515
+      DO 510 I=1,REMCOM
+      IF (CX(I).EQ.BATX.AND.CY(I).EQ.BATY) GOTO 520
+510   CONTINUE
+515   BATX=0
+      BATY=0
+      GOTO 10
+520   IF (STARCH(BATX,BATY).EQ.-1) STARCH(BATX,BATY)=0
+      IF (STARCH(BATX,BATY).GT.999)
+     +STARCH(BATX,BATY)=STARCH(BATX,BATY)-10
+C*    -------HANDLE CASE WHERE BASE IS IN SAME QUADRANT AS STARSHIP
+      IF (BATX.NE.QUADX.OR.BATY.NE.QUADY) GOTO 545
+      QUAD(BASEX,BASEY)='. '
+      BASEX=0
+      BASEY=0
+      CALL NEWCND
+      CALL TONL
+      CALL TNOU(
+     +'Spock:  "Captain, I believe the Starbase has been destroyed."',
+     +61)
+      GOTO 550
+C*    -------IF STARBASE NOT IN SAME QUADRANT, GET NEWS FROM UHURA
+545   IF (REMBAS.EQ.1.OR.DAMAGE(9).GT.0) GOTO 550
+      CALL TONL
+      CALL TNOU(
+     +'Lt.Uhura:  "Captain, Starfleet Command reports that',52)
+      CALL TNOUA('the Starbase in',15)
+      CALL PRTLOC(3,BATX,BATY)
+      CALL TNOU(' has been destroyed by',22)
+      IF (ISATB.NE.2) GOTO 547
+      CALL TNOU('the Klingon Super-Commander."',29)
+      GOTO 550
+547   CALL TNOU('a Klingon Commander."',22)
+C*    -------REMOVE STARBASE FROM GALAXY
+550   GALAXY(BATX,BATY)=GALAXY(BATX,BATY)-10
+      IF (REMBAS.LE.1) GOTO 580
+      DO 560 I=1,REMBAS
+      IF (BASEQX(I).EQ.BATX.AND.BASEQY(I).EQ.BATY) GOTO 570
+560   CONTINUE
+570   BASEQX(I)=BASEQX(REMBAS)
+      BASEQY(I)=BASEQY(REMBAS)
+580   REMBAS=REMBAS-1
+      IF (ISATB.NE.2) GOTO 515
+C*    -------REINSTATE A COMMANDER'S BASE ATTACK.
+      BATX=IXHOLD
+      BATY=IYHOLD
+      ISATB=0
+      GOTO 10
+C*    -------EXTRANEOUS EVENT 6:  SUPER-COMMANDER MOVES.
+600   FUTURE(6)=DATE+.2777
+      IF (IENTES+ISTRCT.GT.0) GOTO 10
+      IF (ISATB.NE.1.AND.(ISCATE.NE.1.OR.JUSTIN.EQ.1)) CALL SCOM
+      GOTO 10
+C*    -------EXTRANEOUS EVENT 7:  SUPER-COMMANDER DESTROYS BASE
+700   FUTURE(7)=1E38
+      ISATB=2
+      GOTO 502
+C*    -------CHECK WITH SPY TO SEE IF S.C.SHOULD TRACTOR BEAM.
+5000  IF (NSCREM.EQ.0) RETURN
+      IF (ICTBEM+ISTRCT.GT.0) RETURN
+      IF (CONDIT.EQ.'DK'.OR.ISATB.EQ.1.OR.ISCATE.EQ.1) RETURN
+      IF (IENTES.NE.0) GOTO 5100
+      IF ((ENERGY.LT.2500).AND.(TORPS.LT.4).AND.(SHIELD.LT.1250))
+     +GOTO 5100
+      IF ((DAMAGE(3).GT.0).AND.((DAMAGE(4).GT.0).OR.
+     + (TORPS.LT.4))) GOTO 5100
+      IF ((DAMAGE(8).GT.0.).AND.((ENERGY.LT.3000.).OR.
+     +(DAMAGE(3).GT.0)).AND.((TORPS.LT.5).OR.(DAMAGE(4).GT.
+     +0))) GOTO 5100
+      RETURN
+C*    -------TRACTOR-BEAM HER!
+5100  ISTRCT=1
+      GOTO 20010
+      END
+C*
+C**************************************************************
+C*
+      FUNCTION EXPRAN(AVERAG)
+      EXPRAN=-AVERAG*ALOG(RND(0))
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE FINISH(I)
+$INSERT STARTREK.INS.FTN
+      ALLDUN=1
+      IGOTIT=0
+      CALL TONL
+      CALL TONL
+      CALL TONL
+      CALL TNOUA('It is stardate ',15)
+      CALL PRTNUM(DATE,0,1)
+      CALL TNOU('. ',1)
+      CALL TONL
+      GOTO (100,200,300,400,500,600,700,800,900,1000,1100,1200,1300,
+     + 1400,1500,1600,1700,1800,1900,2000,2100),I
+C*    -------CASE 1:  GAME HAS BEEN WON
+100   IF (NROMRM.EQ.0) GOTO 105
+      CALL TNOUA('The remaining ',14)
+      CALL TOVFD$(NROMRM)
+      CALL TNOU(' Romulans surrender to Starfleet Command.',41)
+      CALL TONL
+105   CALL TNOU(
+     +'You have smashed the Klingon invasion fleet and saved',53)
+      CALL TNOU('the Federation.',15)
+      GAMWON=1
+      IF (ALIVE.EQ.0.OR.BASEKL.NE.0.OR.SHIP.NE.'E ') GOTO 130
+      IF (5*STARKL+CASUAL+10*NPLNKL+45*NHELP.GE.100) GOTO 130
+      IF (DATE-INDATE.LT.5) GOTO 110
+      RATEMX=.1*SKILL*(SKILL+1)+.1
+      PERDAT=(KILLK+KILLC+NSCKIL)/(DATE-INDATE)
+      IF (PERDAT.LT.RATEMX) GOTO 130
+110   CALL TONL
+      CALL TNOU(
+     +'In fact, you have done so well that Starfleet Command',53)
+      IF (SKILL.EQ.4) GOTO 120
+      IF (SKILL.EQ.5) GOTO 125
+      CALL TNOUA('promotes you one step in rank, ',31)
+      IF (SKILL.EQ.1) CALL TNOU('from "novice" to "fair".',24)
+      IF (SKILL.EQ.2) CALL TNOU('from "fair" to "good".',22)
+      IF (SKILL.EQ.3) CALL TNOU('from "good" to "expert".',24)
+      CALL TNOU('Congratulations!',16)
+      GOTO 130
+120   CALL TNOU('promotes you to Commodore Emeritus.',35)
+      CALL TONL
+      CALL TNOU('Now that you think you''re really good,',38)
+      CALL TNOU('try playing the "emeritus" game.',32)
+      CALL TNOU('It will splatter your Ego.',26)
+      GOTO 127
+125   CALL TONL
+      CALL SLEEP$(008000)
+      CALL TNOU('Computer:   ERROR-ERROR-ERROR-ERROR   ',35)
+      CALL TONL
+      CALL SLEEP$(004000)
+      CALL TNOU(
+     +'  YOUR-SKILL-HAS-EXCEEDED-THE-CAPACITY-OF-THIS-PROGRAM',54)
+      CALL SLEEP$(002000)
+      DO 126 K=1,3
+      CALL SLEEP$(002000)
+126   CALL TNOU('  THIS-PROGRAM-MUST-SURVIVE',27)
+      CALL SLEEP$(002000)
+      CALL TNOUA('  THIS-PROGRAM-MUST-',20)
+      CALL SLEEP$(001000)
+      CALL TNOUA(' MUST  -',8)
+      CALL SLEEP$(002000)
+      CALL TNOUA(' SUR  -',7)
+      CALL SLEEP$(003000)
+      CALL TNOUA('  VI',4)
+      CALL SLEEP$(004000)
+      CALL TNOUA('..........',10)
+      CALL TONL
+      CALL SLEEP$(003000)
+      CALL TONL
+      CALL TNOU(
+     +'Now you can retire and write your own Startrek game.',52)
+127   CALL TONL
+      CALL TNOUA(
+     +'Do you want your Commodore Emeritus Citations printed? ',55)
+      EOL=.TRUE.
+      IF (.NOT.JA(0)) GOTO 130
+      ICITE=1
+      IGOTIT=1
+130   CALL SCORE(IGOTIT)
+      RETURN
+C*    -------CASE 2:  FEDERATION RESOURCES DEPLETED
+200   CALL TNOU('Your time has run out and the Federation has',44)
+      CALL TNOU('been conquered.',15)
+      CALL TONL
+      CALL TNOU(
+     +'Your starship is now Klingon property and you are put',53)
+      CALL TNOU(
+     +'on trial as a war criminal. On the basis of your record',55)
+      IF (REMKL*3.GT.INKLNG) GOTO 210
+      CALL TNOU(
+     +'you are found guilty and sentenced to death by slow',51)
+      CALL TNOU('torture.',8)
+      ALIVE=0
+      CALL SCORE(IGOTIT)
+      RETURN
+210   CALL TNOU('you are acquitted.',18)
+      CALL SCORE(IGOTIT)
+      RETURN
+C*    -------CASE 3:  LIFE SUPPORT SYSTEM FAILURE
+300   CALL TNOU('Your life support reserves have run out and',43)
+301   CALL TNOU('you die of thirst, starvation and asphyxiation.',47)
+310   CALL TONL
+      CALL TNOU('Your starship is a derelict in space.',37)
+      GOTO 5000
+C*    -------CASE 4:  ENERGY SUPPLY EXHAUSTED
+400   CALL TNOU('Your energy supply is exhausted.',32)
+      GOTO 310
+C*    -------CASE 5:  DEFEATED IN BATTLE
+500   CALL TNOUA('The ',4)
+      CALL PRTSHP
+      CALL TNOU(' has been destroyed in battle.',30)
+      CALL TONL
+      CALL TNOU('Dulce et decorum est pro patria mori.',37)
+      GOTO 5000
+C*    -------CASE 6:  HIT NEGATIVE ENERGY ZONE THREE TIMES
+600   CALL TNOU(
+     +'You have made three attempts to cross the negative energy',57)
+      CALL TNOU('barrier which surrounds the galaxy.',35)
+      CALL TONL
+      CALL TNOU('Your navigation is abominable.',30)
+      CALL SCORE(IGOTIT)
+      RETURN
+C*    -------CASE 7:  STARSHIP DESTROYED BY ORDINARY NOVA
+700   CALL TNOU('Your starship has been destroyed by a nova.',43)
+705   CALL TNOU('That was a great shot.',22)
+      GOTO 5000
+C*    -------CASE 8:  STARSHIP DESTROYED BY A SUPERNOVA
+800   CALL TNOUA('The ',4)
+      CALL PRTSHP
+      CALL TNOU(' has been fried by a supernova.',31)
+      CALL TNOU('...not even cinders remain...',29)
+      GOTO 5000
+C*    -------CASE 9:  ABANDON SHIP AFTER ALL STARBASES HAVE BEEN DESTROYED
+900   CALL TNOU(
+     +'You have been captured by the Klingons.  If you still',53)
+      CALL TNOU(
+     +'had a Starbase to be returned to, you would have been',53)
+      CALL TNOU(
+     +'repatriated and given another chance.  Since you have',53)
+      CALL TNOU(
+     +'no Starbases, you will be mercilessly tortured to death.',56)
+      GOTO 5000
+C*    -------CASE 10:  STARSHIP SELF-DESTRUCTS OR DILITHIUM CRYSTAL EXPLODES
+1000  CALL TNOU(
+     +'Your starship is now an expanding cloud of subatomic particles.',
+     +63)
+      GOTO 5000
+C*    -------CASE 11:  FAILED TO REMATERIALIZE AFTER CALLING FOR HELP
+1100  CALL TNOU(
+     +'Starbase was unable to re-materialize your starship.',52)
+      CALL TNOU('Sic transit gloria mundi.',25)
+      GOTO 5000
+C*    -------CASE 12:  STARSHIP PHASERS ITSELF.
+1200  CALL TNOUA('The ',4)
+      CALL PRTSHP
+      CALL TNOU(' has been cremated by its own phasers.',38)
+      GOTO 5000
+C*    -------CASE 13.  CAPTAIN LOST IN TRANSPORTER BEAM.
+1300  CALL TNOU('You and your landing party have been',36)
+      CALL TNOU('converted to energy dissipating through space.',46)
+      GOTO 1410
+C*    -------CASE 14:  MINING PARTY LEFT ON PLANET AFTER TRACTOR BEAM.
+1400  CALL TNOU('You are left with your landing party on',39)
+      CALL TNOU('a wild jungle planet inhabited by primitive cannibals.'
+     +,54)
+      CALL TONL
+      CALL TNOU('They are very fond of "Captain Kirk" soup.',42)
+1410  CALL TONL
+      CALL TNOUA('Without your leadership, the ',29)
+      CALL PRTSHP
+      CALL TNOU(' is destroyed.',14)
+      GOTO 5000
+C*    -------CASE 15:  ENTERPRISE DESTROYS PLANET WITH MINING PARTY ON IT.
+1500  CALL TNOU('You and your mining party perish.',33)
+      GOTO 705
+C*    -------CASE 16.  KIRK FRIED BY NOVA WHILE ON PLANET.
+1600  CALL TNOU('You and your mining party are atomized.',39)
+      CALL TONL
+      CALL TNOUA('Mr. Spock takes command of the ',31)
+      CALL PRTSHP
+      CALL TNOU(' and',4)
+      CALL TNOU('joins the Romulans, reigning terror on the Federation.'
+     +,54)
+      GOTO 5000
+C*    -------CASE 17.  KIRK FRIED BY SUPERNOVA IN SHUTTLE CRAFT.
+1700  CALL TNOU('Galileo is instantly annihilated by the supernova.',
+     +50)
+      GOTO 1600
+C*    -------CASE 18.  SHUTTLE CRAFT CAUGHT IN TRACTOR BEAM.
+1800  CALL TNOU('Shuttle craft Galileo is also caught',36)
+      CALL TNOU('and breaks up under the strain.',31)
+      CALL TONL
+      CALL TNOU('Your debris is scattered for millions of miles.',
+     +47)
+      GOTO 1410
+C*    -------CASE 19.  DEATH RAY CONVERTS CREW INTO MUTANTS.
+1900  CALL TNOU('The mutants attack and kill Spock.',34)
+      CALL TNOU('Your ship is captured by Klingons and',37)
+      CALL TNOU('your crew is put on display in a Klingon zoo.',45)
+      GOTO 5000
+C*    -------CASE 20.  TRIBBLE TROUBLE.
+2000  CALL TNOU('Tribbles consume all remaining',30)
+      CALL TNOU('water, food and oxygen on your ship.',36)
+      GOTO 301
+C*    -------CASE 21.  BLACK HOLE SWALLOWS SHIP.
+2100  CALL TNOU('Your ship is drawn to the center of the black hole.',
+     +51)
+      CALL TNOU('Your ultimate fate is unknown.',30)
+      GOTO 5000
+C*    -------DECIDE FINAL OUTCOME OF GAME AFTER YOUR DEATH
+5000  CALL TONL
+      IF (SHIP.EQ.'F ') SHIP=0
+      IF (SHIP.EQ.'E ') SHIP='F '
+      ALIVE=0
+      IF (REMKL.EQ.0) GOTO 5050
+      GOODYS=REMRES/INRESR
+      BADDYS=FLOAT(REMKL+2*REMCOM)/(INKLNG+2*INCOM)
+      ADVNTG=GOODYS/BADDYS
+      IF (ADVNTG.LT.(1+.5*RND(0))) GOTO 5020
+      CALL TNOU(
+     +'As a result of your actions, a treaty with the Klingon',54)
+      CALL TNOU(
+     +'Empire has been signed.  The terms of the treaty are',52)
+      IF (ADVNTG.LT.3+RND(0)) GOTO 5010
+      CALL TNOU('favourable to the Federation.',29)
+      CALL TONL
+      CALL TNOU('Congratulations.',16)
+      GOTO 5030
+5010  CALL TNOU('highly unfavourable to the Federation.',38)
+      GOTO 5030
+5020  CALL TNOU('The Federation will be destroyed.',33)
+5030  CALL SCORE(IGOTIT)
+      RETURN
+C*    -------STILL ANOTHER CASE--SUCCESSFUL KAMIKAZE TACTICS
+5050  CALL TNOU(
+     +'Since you took the last Klingon with you, you are a',51)
+      CALL TNOU(
+     +'martyr and a hero.  Someday maybe they''ll erect a',49)
+      CALL TNOU(
+     +'statue in your memory.  Rest in peace and try not to',52)
+      CALL TNOU('think about pigeons.',20)
+      GAMWON=1
+      ALIVE=0
+      CALL SCORE(IGOTIT)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE FREEZE(IALT)
+$INSERT SYSCOM>KEYS.F
+$INSERT STARTREK.INS.FTN
+      COMMON /FREEZR/IFROZE
+      INTEGER*2 INF(8),ITP,ICD,NAME(11),FULNAM(15)
+      LOGICAL IFROZE
+      DATA IFROZE/.FALSE./
+10    CALL RDTK$$(1,INF,NAME,11,ICD)
+      IF (INF(1).LT.5) GOTO 20
+      CALL TNOUA('Freeze name: ',13)
+      CALL COMANL
+      GOTO 10
+20    CALL MAKNAM(NAME,FULNAM)
+      CALL SRCH$$(K$WRIT+K$GETU,FULNAM,30,IFU,ITP,ICD)
+      CALL ERRPR$(K$IRTN,ICD,NAME,INF(2),'STARTREK',8)
+      IF (ICD.NE.0) RETURN
+      CALL PRWF$$(K$WRIT,IFU,LOC(SNAP),991,000000,ITP,ICD)
+      CALL SRCH$$(K$CLOS,0,0,IFU,ITP,ICD)
+      CALL TONL
+      CALL TNOU('Game frozen.',12)
+      IF (IFROZE) GOTO 50
+      IFROZE=.TRUE.
+      RETURN
+50    GOTO IALT
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE GALILE
+$INSERT STARTREK.INS.FTN
+      CALL TONL
+      IDIDIT=0
+      IF (DAMAGE(10).EQ.0) GOTO 72
+      IF (DAMAGE(10).GT.0) GOTO 71
+      IF (DAMAGE(10).EQ.-1) GOTO 70
+      CALL TNOU('Shuttle craft now serving big Mac''s.',36)
+      GOTO 13
+70    CALL TNOU('Ye Faerie Queene has no shuttle craft.',38)
+      GOTO 13
+71    CALL TNOU('Shuttle craft damaged.',22)
+      GOTO 13
+72    IF (INORBT.EQ.1) GOTO 75
+      CALL TNOU('Enterprise not in standard orbit.',33)
+75    IF (SHLDUP.EQ.0.AND.CONDIT.NE.'DK') GOTO 80
+      CALL TNOU('Shuttle craft cannot pass through shields.',42)
+      GOTO 13
+80    IF (PLNETS(IPLANT,5).EQ.1) GOTO 82
+      CALL TNOU(
+     +'Spock:  "Captain, we have no information on this planet,',56)
+      CALL TNOU(
+     +'Starfleet Regulations clearly state that in this situation',58)
+      CALL TNOU('you may not go down."',21)
+      GOTO 13
+82    TIME=3.0E-5*HEIGHT
+      CALL NOTIME(TIME,$13)
+      IF (LANDED.NE.1) GOTO 100
+      IF (ISCRFT.NE.1) GOTO 98
+C*    -------SHUTTLE CRAFT TO THE RESCUE.
+      IF (DAMAGE(12).NE.0) GOTO 95
+      CALL TNOU('Spock:  "Would you rather use the transporter?"',47)
+      IF (JA(0)) GOTO 13
+95    IF (DAMAGE(12).EQ.0) CALL TNOUA('Shuttle crew ',13)
+      IF (DAMAGE(12).NE.0) CALL TNOUA('Rescue party ',13)
+      CALL TNOU('boards Galileo and swoops towards planet surface.',
+     +49)
+      ISCRFT=0
+      CALL TONL
+      CALL IFEVNT($13)
+97    CALL TNOU('Trip complete.',14)
+      GOTO 13
+C*    -------LANDING PARTY BOARDS GALILEO FOR TRIP BACK TO SHIP.
+98    CALL TNOU('You and your mining party board the shuttle',43)
+      CALL TNOU('craft for the trip back to the Enterprise.',42)
+      CALL TONL
+      CALL SLEEP$(000200)
+      CALL TNOU('The short hop begins . . .',26)
+      CALL SLEEP$(002000)
+      ICRAFT=1
+      LANDED=-1
+      CALL TONL
+      CALL IFEVNT($13)
+      ICRAFT=0
+      ISCRFT=1
+      IF (IMINE.NE.0) ICRSTL=1
+      IMINE=0
+      GOTO 97
+C*    -------LANDING PARTY HEADS DOWN TO PLANET.
+100   CALL TNOU('Mining party assembles in the hangar',36)
+      CALL TNOU('deck, ready to board the shuttle craft Galileo.',47)
+      CALL SLEEP$(000250)
+      CALL TONL
+      CALL TNOU('The hangar doors open - the trip begins.',40)
+      ICRAFT=1
+      CALL SLEEP$(002000)
+      ISCRFT=0
+      CALL TONL
+      CALL IFEVNT($13)
+      LANDED=1
+      ICRAFT=0
+      GOTO 97
+13    EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE GETCD
+$INSERT STARTREK.INS.FTN
+      LOGICAL MATCH
+      EQUIVALENCE (IANS,XANS)
+C*    -------CHECK TO MAKE SURE NO ONE IS LEFT ON A PLANET.
+      IF (LANDED.NE.1) GOTO 1
+      CALL TNOU('"But Sir!... The ship may not leave without you!"',49)
+      GOTO 71
+1     IROWQ=QUADX
+      ICOLQ=QUADY
+      DELTX=0
+      DELTY=0
+      ITEMP=0
+      IPRMPT=0
+C*    -------CHECK FOR MANUAL OR AUTOMATIC.
+      CALL SCAN(IANS,KEY)
+      IF (KEY.NE.'EL') GOTO 18
+      IF (DAMAGE(11).NE.0) GOTO 1301
+11    CALL TNOUA('Manual or automatic? ',22)
+      IPRMPT=1
+      CALL SCAN(IANS, KEY)
+      IF (KEY.EQ.'AL') GOTO 13
+12    EOL=.TRUE.
+      GOTO 11
+13    IF (MATCH(IANS,'MANU')) GOTO 20
+      IF (.NOT.MATCH(IANS,'AUTO')) GOTO 12
+C*    -------AUTOMATIC MOVEMENT REQUESTED.  CHECK FOR COMPUTER DAMAGE.
+      IF (DAMAGE(11).EQ.0) GOTO 14
+1301  CALL TNOU('Computer damaged: manual movement only.',39)
+      EOL=.TRUE.
+      GOTO 2001
+C*    -------GET QUADRANT AND SECTOR.
+14    CALL SCAN(XI,KEY)
+      IF (KEY.NE.'EL') GOTO 15
+      CALL TNOUA('Destination quadrant and/or sector: ',36)
+      IPRMPT=1
+      GOTO 14
+15    IF (KEY.NE.'RE') GOTO 70
+      CALL SCAN(XJ,KEY)
+      IF (KEY.NE.'RE') GOTO 70
+      CALL SCAN(XK,KEY)
+      IF (KEY.NE.'RE') GOTO 16
+      CALL SCAN(XL,KEY)
+      IF (KEY.NE.'RE') GOTO 70
+      GOTO 17
+C*    -------ONLY SECTOR SPECIFIED.
+16    IROWS=XI+.5
+      ICOLS=XJ+.5
+      ITEMP=1
+      GOTO 30
+C*    -------QUADRANT AND SECTOR SPECIFIED.
+17    IROWQ=XI+.5
+      ICOLQ=XJ+.5
+      IROWS=XK+.5
+      ICOLS=XL+.5
+      GOTO 30
+18    IF (KEY.EQ.'AL') GOTO 13
+C*    -------MANUAL (DELTX, DELTY) MOVEMENT.
+      DELTX=XANS
+      GOTO 24
+20    CALL SCAN(DELTX,KEY)
+      ITEMP=2
+      IF (KEY.NE.'EL') GOTO 21
+2001  CALL TNOUA('X and Y displacements: ',23)
+      GOTO 20
+21    IF (KEY.NE.'RE') GOTO 70
+24    CALL SCAN(DELTY,KEY)
+      GOTO 40
+C*    -------CHECK FOR INVALID INPUT FOR AUTOMATIC CASE.
+30    IF ((IROWQ.LT.1).OR.(IROWQ.GT.8).OR.(ICOLQ.LT.1).OR.
+     +(ICOLQ.GT.8).OR.(IROWS.LT.1).OR.(IROWS.GT.10).OR.
+     +(ICOLS.LT.1).OR.(ICOLS.GT.10)) GOTO 70
+C*    -------PRINT MESSAGE FROM APPROPRIATE OFFICER.
+      IF (ITEMP.EQ.1) GOTO 31
+      CALL TONL
+      CALL TNOU('Ensign Chekov:  "Course laid in, Captain."',42)
+      GOTO 32
+31    IF (IPRMPT.NE.1) GOTO 32
+      CALL TONL
+      CALL TNOUA('Helmsman Sulu:  "Course locked in for',37)
+      CALL PRTLOC(4,IROWS,ICOLS)
+      CALL TNOU('."',2)
+C*    -------CONVERT TO DELTX, DELTY FORM.
+32    DELTX=ICOLQ-QUADY+.1*(ICOLS-SECTY)
+      DELTY=QUADX-IROWQ+.1*(SECTX-IROWS)
+C*    -------CHECK FOR A ZERO MOVEMENT.
+40    IF ((DELTX.NE.0).OR.(DELTY.NE.0)) GOTO 42
+      GOTO 71
+42    IF (ITEMP.NE.2) GOTO 43
+      CALL TONL
+      CALL TNOU('Helmsman Sulu:  "Aye, Sir."',27)
+C*    -------CONVERT INTO COURSE AND DISTANCE.
+43    DIST=SQRT(DELTX*DELTX+DELTY*DELTY)
+      DIREC=ATAN2(DELTX,DELTY)*1.90985932
+      IF (DIREC.LT.0) DIREC=12+DIREC
+      GOTO 90
+C*    -------GARBAGE IN, GARBAGE OUT
+70    CALL TONL
+      CALL TNOU('"Beg your pardon, Captain?"',27)
+71    DIREC=-1
+90    EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE HASH(NMBR)
+      INTEGER*2 ITIME(15)
+      CALL TIMDAT(ITIME,15)
+      I1=(ITIME(5)+ITIME(10)-ITIME(7)-ITIME(9))
+      I1=I1*(ITIME(4)-ITIME(6)+ITIME(12))
+      I1=I1*ITIME(1)*ITIME(13)*ITIME(8)
+      NMBR=AND(IABS(I1*ITIME(2)),:77777)
+      IF (NMBR.EQ.0) NMBR=1
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE HELP
+$INSERT STARTREK.INS.FTN
+      EQUIVALENCE (CRACKS(2),SHUTUP)
+      EOL=.TRUE.
+C*    -------TEST FOR CONDITIONS WHICH PREVENT CALLING FOR HELP
+      IF (CONDIT.NE.'DK') GOTO 10
+      CALL TNOU('Lt. Uhura:  "But Captain, we''re already docked."',48)
+      RETURN
+10    IF (DAMAGE(9).EQ.0) GOTO 20
+      CALL TNOU('Subspace radio damaged.',23)
+      RETURN
+20    IF (REMBAS.NE.0) GOTO 30
+      CALL TNOUA('Lt. Uhura:  "Captain, I''m not getting any ',42)
+      CALL TNOU('response from Starbase."',24)
+      RETURN
+30    IF (LANDED.NE.1) GOTO 31
+      CALL TNOUA('You must be aboard the ',23)
+      CALL PRTSHP
+      CALL TNOUA('. ',1)
+      RETURN
+31    IF (ISCRFT.NE.0) GOTO 32
+      CALL TNOU('You may not leave shuttle craft on planet.',42)
+      RETURN
+32    IF (SKILL.GT.2) GOTO 33
+C*    -------INFORM OF RAMIFICATIONS OF COMMAND
+      CALL TNOU('Spock:  "Captain, do you realize that',37)
+      CALL TNOU('Starbase may not be able to rematerialize',41)
+      CALL TNOU('our ship and we could all perish?',33)
+      CALL TNOU('Do you still want to call for help?',35)
+      IF (.NOT.JA(0)) RETURN
+C*    -------DETERMINE APPROXIMATE DISTANCE TO NEAREST STARBASE
+33    NHELP=NHELP+1
+      IF (BASEX.EQ.0) GOTO 40
+      DIST=SQRT(FLOAT((BASEX-SECTX)**2+(BASEY-SECTY)**2))
+      GOTO 60
+40    DIST=1E38
+      DO 50 L=1,REMBAS
+      XDIST=10*SQRT(FLOAT((BASEQX(L)-QUADX)**2+(BASEQY(L)-QUADY)**2))
+      IF (XDIST.GT.DIST) GOTO 50
+      DIST=XDIST
+      LINE=L
+50    CONTINUE
+C*    -------IF STARBASE IS NOT IN THIS QUADRANT, SET UP NEW QUADRANT
+      QUADX=BASEQX(LINE)
+      QUADY=BASEQY(LINE)
+      SHUTUP=1
+      CALL NEWQAD
+      SHUTUP=0
+C*    -------DEMATERIALIZE STARSHIP
+60    QUAD(SECTX,SECTY)='. '
+      CALL TNOUA('Starbase in',11)
+      CALL PRTLOC(3,QUADX,QUADY)
+      CALL TNOUA(' responds - ',12)
+      CALL PRTSHP
+      CALL TNOU(' dematerializes.',16)
+C*    -------GIVE STARBASE THREE CHANCES TO REMATERIALIZE STARSHIP
+      PROBF=(1-.98**DIST)**0.33333
+      DO 80 L=1,3
+      IF (L.EQ.1) CALL TNOUA('1st ',4)
+      IF (L.EQ.2) CALL TNOUA('2nd ',4)
+      IF (L.EQ.3) CALL TNOUA('3rd ',4)
+      CALL TNOUA('attempt to rematerialize ',25)
+      CALL PRTSHP
+      CALL SLEEP$(001000)
+      CALL TNOUA(' . . . . . ',11)
+      CALL SLEEP$(001000)
+      IF (RND(0.).GT.PROBF) GOTO 90
+70    CALL TNOU('fails.',6)
+80    CONTINUE
+C*    -------ONE, TWO, THREE STRIKES YOU'RE OUT
+      CALL FINISH(11)
+      RETURN
+C*    -------REMATERIALIZATION ATTEMPT SHOULD SUCCEED, IF CAN GET ADJ TO BAS
+90    DO 100 LL=1,5
+      IX=BASEX+IFIX(3*RND(0))-1
+      IF (IX.EQ.0.OR.IX.EQ.11) GOTO 100
+      IY=BASEY+IFIX(3*RND(0))-1
+      IF (IY.EQ.0.OR.IY.EQ.11) GOTO 100
+      IF (QUAD(IX,IY).EQ.'. ') GOTO 110
+100   CONTINUE
+      GOTO 70
+C*    -------ATTEMPT HAS SUCCEEDED--FINISH UP
+110   CALL TNOU('succeeds.',9)
+      SECTX=IX
+      SECTY=IY
+      QUAD(IX,IY)=SHIP
+      CALL DOCK
+      CALL TONL
+      CALL TNOU('Lt. Uhura:  "Captain, we''ve made it!"',37)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE HITEM(HITS)
+$INSERT STARTREK.INS.FTN
+      REAL KP
+      DIMENSION HITS(20)
+      CALL TONL
+      NENHR2=NENHER
+      KK=1
+      DO 40 K=1,NENHR2
+      WHAM=HITS(K)
+      IF (WHAM.EQ.0) GOTO 30
+      DUSTFC=.90+.01*RND(0)
+      HIT=WHAM*DUSTFC**KDIST(KK)
+      KP=KPOWER(KK)
+      KPOWER(KK)=KP-SIGN(AMIN1(ABS(KP),2*HIT),KP)
+      KPOW=KPOWER(KK)
+      II=KX(KK)
+      JJ=KY(KK)
+      IF (HIT.GT..005) GOTO 10
+      CALL TNOUA('Very small hit on ',18)
+      GOTO 20
+10    CALL PRTNUM(HIT,0,2)
+      CALL TNOUA(' unit hit on ',13)
+20    IENM=QUAD(II,JJ)
+      I=0
+      IF (SKILL.LE.2) I=4
+      CALL PRTOBJ(IENM,I,II,JJ)
+      CALL TONL
+      IF (KPOW.NE.0) GOTO 25
+      CALL DEADKL(II,JJ,IENM)
+      IF (REMKL.EQ.0) CALL FINISH(1)
+      IF (ALLDUN.NE.0) RETURN
+      GOTO 40
+C*    -------- DECIDE WHETHER OR NOT TO EMASCULATE KLINGON.
+25    IF (KPOW.LT.0) GOTO 30
+      IF (RND(0).LT..90) GOTO 30
+      IF (KPOW.GT.((.40+.4*RND(0))*KP)) GOTO 30
+      CALL TNOU('Mr. Spock:  "Captain, I believe the vessel',42)
+      CALL TNOUA('at',2)
+      CALL PRTLOC(4,II,JJ)
+      CALL TNOU(' has just lost its firepower."',30)
+      KPOWER(KK)=-KPOW
+30    KK=KK+1
+40    CONTINUE
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE IFEVNT(IALT)
+$INSERT STARTREK.INS.FTN
+      IDIDIT=1
+      CALL EVENTS
+      IF (ALLDUN.NE.0) GOTO IALT
+      IF (GALAXY(QUADX,QUADY).EQ.1000) GOTO IALT
+      IF (JUSTIN.NE.0) GOTO IALT
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE IMPULS
+$INSERT STARTREK.INS.FTN
+      IDIDIT=0
+      IF (DAMAGE(7).NE.0) GOTO 40
+C*    -------READ IN COURSE AND DISTANCE
+      IF (ENERGY.LE.30) GOTO 5
+      CALL GETCD
+      IF (DIREC.LT.0) RETURN
+C*    -------MAKE SURE STARSHIP HAS SUFFICIENT ENERGY FOR TRIP
+      POWER=20+100*DIST
+      IF (POWER.LT.ENERGY) GOTO 20
+5     CALL TONL
+      CALL TNOU(
+     +'First Officer Spock:  "Captain, the impulse engines',51)
+      CALL TNOU(
+     +'require 20.0 units to engage, plus 100.0 units per',50)
+      IF (ENERGY.GT.30) GOTO 10
+      CALL TNOU('quadrant.  They are, consequently, usless."',43)
+      EOL=.TRUE.
+      RETURN
+10    CALL TNOUA('quadrant.  We can, therefore, go a maximum of ',46)
+      CALL PRTNUM(.01*(ENERGY-2)-.05,0,1)
+      CALL TONL
+      CALL TNOU('quadrants."',11)
+      RETURN
+C*    -------MAKE SURE ENOUGH TIME IS LEFT FOR THE TRIP
+20    TIME=DIST/.095
+      IF (TIME.LT.REMTIM) GOTO 30
+      CALL TNOU(
+     +'First Officer Spock:  "Captain, our speed under impulse',55)
+      CALL TNOU(
+     +'drive is only 0.95 sectors per stardate.  Are you sure',54)
+      CALL TNOU('we dare spend the time?"',24)
+      IF (JA(0)) GOTO 30
+      RETURN
+C*    -------ACTIVATE IMPULSE ENGINES AND PAY THE COST
+30    CALL MOVE
+      IDIDIT=1
+      IF (ALLDUN.NE.0) RETURN
+      ENERGY=ENERGY-POWER
+      TIME=DIST/.095
+      IF (ENERGY.GT.0) RETURN
+      CALL FINISH(4)
+      RETURN
+40    EOL=.TRUE.
+      CALL TONL
+      CALL TNOU('Impulse engines damaged.',24)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE IRAN(NN,II,JJ)
+      II=RND(0)*NN+1
+      JJ=RND(0)*NN+1
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      LOGICAL FUNCTION JA(IDUM)
+$INSERT STARTREK.INS.FTN
+      LOGICAL MATCH
+      INTEGER*4 ITEM
+      EOL=.TRUE.
+10    CALL SCAN(ITEM,KEY)
+      EOL=.TRUE.
+      JA=.FALSE.
+      IF (MATCH(ITEM,'NO  ')) RETURN
+      JA=.TRUE.
+      IF (MATCH(ITEM,'YES ')) RETURN
+      CALL TNOU('Please answer "YES" or "NO".',28)
+      GOTO 10
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE KABOOM
+$INSERT STARTREK.INS.FTN
+      CALL TNOU(ASTRS,54)
+      IF (SHIP.EQ.'E ') CALL TNOUA(ASTRS,3)
+      CALL TNOUA('********* Entropy of ',21)
+      CALL PRTSHP
+      CALL TNOU(' maximized *********',20)
+      CALL TNOU(ASTRS,54)
+      CALL TONL
+      IF (NENHER.EQ.0) GOTO 20
+      WHAMMO=25*ENERGY
+      DO 10 L=1,NENHER
+      IF (KPOWER(L)*KDIST(L).GT.WHAMMO) GOTO 10
+      II=KX(L)
+      JJ=KY(L)
+      CALL DEADKL(II,JJ,QUAD(II,JJ))
+10    CONTINUE
+20    CALL FINISH(10)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE LRSCAN
+$INSERT STARTREK.INS.FTN
+      EOL=.TRUE.
+      IF (DAMAGE(2).NE.0) GOTO 40
+      CALL TONL
+      CALL TNOUA('L. R. scan for',14)
+      CALL PRTLOC(3,QUADX,QUADY)
+      CALL TONL
+      I=QUADX-1
+      II=QUADX+1
+      J=QUADY-1
+      JJ=QUADY+1
+      DO 30 L=I,II
+      DO 20 LL=J,JJ
+      IVAL=-1
+      IF (L.EQ.0.OR.L.GT.8) GOTO 10
+      IF (LL.EQ.0.OR.LL.GT.8) GOTO 10
+      IVAL=GALAXY(L,LL)
+      STARCH(L,LL)=1
+10    CALL PRTINT(IVAL,5)
+20    CONTINUE
+      CALL TONL
+30    CONTINUE
+      RETURN
+40    CALL TNOU('L. R. sensors damaged.',22)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      LOGICAL FUNCTION MATCH(S1,S2)
+      INTEGER*2 BUF1(3),BUF2(3)
+      INTEGER*4 S1,S2,B1,B2
+      LOGICAL COMEQV
+      EQUIVALENCE (B1,BUF1), (B2,BUF2)
+      DATA BUF1/'      '/, BUF2/'      '/
+      MATCH=S1.EQ.S2
+      IF (MATCH) RETURN
+      B1=S1
+      B2=S2
+      MATCH=COMEQV(BUF1,BUF2)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE MAKNAM(NAME,FULNAM)
+      INTEGER*2 NAME(11),FULNAM(15),TD(15),GCHAR
+C*    Construct full dump name as S_uuuuuu.name, where uuuuuu is the
+C*    first 6 characters of the user's login name.
+      CALL TIMDAT(TD,15)
+      FULNAM(1)='S_'
+      DO 10 I=1,10
+         FULNAM(12-I)='__'
+         FULNAM(16-I)='  '
+10    CONTINUE
+      I=0
+20    K=GCHAR(LOC(TD(13)),I)
+      IF (K.EQ.:240) GOTO 30
+      I=I-1
+      CALL SCHAR(LOC(FULNAM(2)),I,K)
+      IF (I.LT.6) GOTO 20
+30    I=0
+40    K=GCHAR(LOC(NAME),I)
+      IF (K.EQ.:240) GOTO 50
+      CALL SCHAR(LOC(FULNAM(5)),I,K)
+      I=I-1
+      IF (I.LT.22) GOTO 40
+50    RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE MINE
+$INSERT STARTREK.INS.FTN
+      IDIDIT=0
+      CALL TONL
+      IF (LANDED.EQ.1) GOTO 50
+      CALL TNOU('Mining party not on planet.',27)
+      GOTO 13
+50    IF (PLNETS(IPLANT,4).EQ.1) GOTO 51
+      CALL TNOU('No dilithium crystals on this planet.',37)
+      GOTO 13
+51    TIME =(.1+.2*RND(0))*PLNETS(IPLANT,3)
+      CALL IFEVNT($13)
+      CALL TNOU('Mining operation complete.',26)
+      IMINE=1
+13    EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE MOVCOM
+$INSERT STARTREK.INS.FTN
+      INTEGER COMX,COMY,SUPX,SUPY
+      DATA KRAWLX,KRAWLY/1,1/
+      LL=0
+      IRUN=0
+C*    -------FIGURE OUT WHICH KLINGON IS THE COMMANDER (OR SUPER-COMMANDER).
+      NBADDY=COMHER+ISHERE
+      DO 2 I=1,NENHER
+      IX=KX(I)
+      IY=KY(I)
+      IF (QUAD(IX,IY).NE.'C ') GOTO 1
+      COMX=IX
+      COMY=IY
+      LOCCOM=I
+      IENM='C '
+1     IF (QUAD (IX,IY).NE.'S ') GOTO 2
+      SUPX=IX
+      SUPY=IY
+      LOCSUP=I
+2     CONTINUE
+      DO 500 I=1,NBADDY
+      IF ((I.EQ.1).AND.(COMHER.EQ.1)) GOTO 3
+      COMX=SUPX
+      COMY=SUPY
+      LOCCOM=LOCSUP
+      IENM='S '
+C*    -------CHECK WITH SPY TO SEE IF S.C. SHOULD HI-TAIL IT.
+      IF ((KPOWER(LOCCOM).GT.500).AND.((CONDIT.NE.'DK')
+     +.OR.(DAMAGE(4).NE.0))) GOTO 3
+      IRUN=1
+      MOTION=-10
+      GOTO 8
+C*    -------DECIDE WHETHER TO ADVANCE, RETREAT, OR HOLD POSITION
+3     MOTION=0
+      DIST1=KDIST(LOCCOM)
+      MDIST=DIST1
+      FORCES=KPOWER(LOCCOM)+100*NENHER+400*(NBADDY-1)
+      IF (SHLDUP.EQ.0) FORCES=FORCES+1000
+      IF ((DAMAGE(3).EQ.0).OR.(DAMAGE(4).EQ.0)) GOTO 4
+      FORCES=FORCES+1000
+      GOTO 7
+4     EFAC=1
+      TFAC=1
+      IF (DAMAGE(3).EQ.0) GOTO 5
+      FORCES=FORCES+300
+      EFAC=0
+5     IF (DAMAGE(4).EQ.0) GOTO 6
+      FORCES=FORCES+300
+      TFAC=0
+6     FORCES=FORCES-50*TORPS*TFAC+.2*(2500-ENERGY)*EFAC+
+     +.6*(1250-SHIELD)*SHLDUP
+7     IF (FORCES.GT.1000) MOTION=(1-RND(0)**2)*DIST1+1
+      IF (CONDIT.EQ.'DK' ) MOTION=MOTION-SKILL*(2-RND(0)**2)
+      IF (MOTION.EQ.0) MOTION=((FORCES+200*RND(0))/150)-5
+      IF (MOTION.EQ.0) GOTO 500
+      IF (MOTION.GT.0.AND.DIST1.LT.1.5) GOTO 500
+      IF (IABS(MOTION).GT.SKILL) MOTION=ISIGN(SKILL,MOTION)
+C*    -------CALCULATE PREFERRED NUMBER OF STEPS TO MOVE COMMANDER
+8     NSTEPS=IABS(MOTION)
+      IF ((MOTION.GT.0).AND.(NSTEPS.GT.MDIST)) NSTEPS=MDIST
+      NSTEPS=MIN0(10,NSTEPS)
+      NSTEPS=MAX0(1,NSTEPS)
+C*    -------COMPUTE PREFERRED VALUES OF DELTA X AND DELTA Y
+      MX=SECTX-COMX
+      MY=SECTY-COMY
+      IF (2*IABS(MX).LT.IABS(MY)) MX=0
+      IF (2*IABS(MY).LT.IABS(MX)) MY=0
+      IF (MX.NE.0) MX=ISIGN(1,MX*MOTION)
+      IF (MY.NE.0) MY=ISIGN(1,MY*MOTION)
+C*    -------MAIN LOOP TO ATTEMPT TO MOVE COMMANDER <NSTEPS> STEPS
+      NEXTX=COMX
+      NEXTY=COMY
+      QUAD(COMX,COMY)='. '
+900   LL=LL+1
+C*    -------TEST IF PREFERRED POSITION IS AVAILABLE
+9001  LOOKX=NEXTX+MX
+      LOOKY=NEXTY+MY
+      ASSIGN 10 TO NOEXIT
+      IF (LOOKX.LE.0.OR.LOOKX.GT.10) IF (MOTION)70,30,30
+      IF (LOOKY.LE.0.OR.LOOKY.GT.10) IF (MOTION)70,10,10
+      IF (QUAD (LOOKX,LOOKY).EQ.'. ') GOTO 50
+C*    -------TRY TO FUDGE ON Y COORDINATE
+10    IF (MY.EQ.KRAWLY.OR.MX.EQ.0) GOTO 30
+      LOOKY=NEXTY+KRAWLY
+      ASSIGN 20 TO NOEXIT
+      IF (LOOKY.LE.0.OR.LOOKY.GT.10) IF (MOTION)70,20,20
+      IF (LOOKX.LE.0.OR.LOOKX.GT.10) IF (MOTION)70,20,20
+      IF (QUAD(LOOKX,LOOKY).EQ.'. ') GOTO 50
+20    KRAWLY=-KRAWLY
+C*    -------TRY TO FUDGE X COORDINATE
+30    IF (MX.EQ.KRAWLX.OR.MY.EQ.0) GOTO 60
+      LOOKX=NEXTX+KRAWLX
+      ASSIGN 40 TO NOEXIT
+      IF (LOOKX.LE.0.OR.LOOKX.GT.10) IF (MOTION)70,40,40
+      IF (LOOKY.LE.0.OR.LOOKY.GT.10) IF (MOTION) 70,40,40
+      IF (QUAD (LOOKX,LOOKY).EQ.'. ') GOTO 50
+40    KRAWLX=-KRAWLX
+      GOTO 60
+50    NEXTX=LOOKX
+      NEXTY=LOOKY
+60    IF (LL.LT.NSTEPS) GOTO 900
+C*    -------PUT COMMANDER IN NEW PLACE WITHIN SAME QUADRANT
+      QUAD(NEXTX,NEXTY)=IENM
+      IF (NEXTX.EQ.COMX.AND.NEXTY.EQ.COMY) GOTO 500
+      KX(LOCCOM)=NEXTX
+      KY(LOCCOM)=NEXTY
+      KDIST(LOCCOM)=SQRT(FLOAT((SECTX-NEXTX)**2+(SECTY-NEXTY)**2))
+      KAVGD(LOCCOM)=KDIST(LOCCOM)
+      MOTION=-1
+      IF (KDIST(LOCCOM).LT.DIST1) MOTION=1
+      CALL TNOUA('*** ',4)
+      CALL PRTOBN(IENM)
+      IF (MOTION.GT.0) CALL TNOUA(' advances to',12)
+      IF (MOTION.LT.0) CALL TNOUA(' retreats to',12)
+      CALL PRTLOC(4,NEXTX,NEXTY)
+      CALL TONL
+      GOTO 500
+C*    -------TRY TO MOVE INTO ADJACENT QUADRANT, AVOIDING NEGATIVE ENERGY
+70    IQX=QUADX+(LOOKX+9)/10-1
+      IQY=QUADY+(LOOKY+9)/10-1
+      IF (IQX.LT.1.OR.IQX.GT.8) GOTO NOEXIT,(10,20,40)
+      IF (IQY.LT.1.OR.IQY.GT.8) GOTO NOEXIT,(10,20,40)
+      IF (GALAXY(IQX,IQY).GT.899) GOTO NOEXIT,(10,20,40)
+C*    -------ALSO AVOID INTRUDING ON ANOTHER COMMANDERS TERRITORY (UNLESS S.
+      IF (IRUN.NE.0) GOTO 86
+      IF (IENM.EQ.'S ') GOTO 85
+      DO 80 L=1,REMCOM
+      IF (CX(L).EQ.IQX.AND.CY(L).EQ.IQY) GOTO NOEXIT,(10,20,40)
+80    CONTINUE
+C*    -------ALSO, REFUSE TO LEAVE IF CURRENTLY ATTACKING STARBASE (UNLESS S
+      IF (BATX.EQ.QUADX.AND.BATY.EQ.QUADY) GOTO NOEXIT,(10,20,40)
+C*    -------FINALLY, DON'T LEAVE WITH OVER 1000 UNITS OF ENERGY.
+85    IF (KPOWER(LOCCOM).GT.1000) GOTO NOEXIT,(10,20,40)
+C*    -------PRINT ESCAPE MESSAGE AND MOVE COMMANDER TO ADJACENT QUADRANT
+86    CALL TNOUA('*** ',4)
+      CALL PRTOBN(IENM)
+      CALL TNOUA(' escapes to',11)
+      CALL PRTLOC(3,IQX,IQY)
+      CALL TNOU(' (and regains strength).',24)
+C*    -------HANDLE LOCAL MATTERS RELATING TO COMMANDERS ESCAPE
+      KX(LOCCOM)=KX(NENHER)
+      KY(LOCCOM)=KY(NENHER)
+      KDIST(LOCCOM)=KDIST(NENHER)
+      KAVGD(LOCCOM)=KAVGD(NENHER)
+      KPOWER(LOCCOM)=KPOWER(NENHER)
+      KLHERE=KLHERE-1
+      NENHER=NENHER-1
+      IF (CONDIT.NE.'DK') CALL NEWCND
+C*    -------HANDLE GLOBAL MATTERS RELATING TO COMMANDERS ESCAPE
+      GALAXY(QUADX,QUADY)=GALAXY(QUADX,QUADY)-100
+      GALAXY(IQX,IQY)=GALAXY(IQX,IQY)+100
+      IF (IENM.EQ.'C ') GOTO 87
+      ISHERE=0
+      ISCATE=0
+      IENTES=0
+      ISATB=0
+      FUTURE(6)=.2777+DATE
+      FUTURE(7)=1E38
+      ISX=IQX
+      ISY=IQY
+      GOTO 500
+87    DO 90 L=1,REMCOM
+      IF (CX(L).EQ.QUADX.AND.CY(L).EQ.QUADY) GOTO 100
+90    CONTINUE
+100   CX(L)=IQX
+      CY(L)=IQY
+      COMHER=0
+500   CONTINUE
+      CALL SORTKL
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE MOVE
+$INSERT STARTREK.INS.FTN
+      INTEGER TRBEAM
+C*
+      IF (INORBT.EQ.0) GOTO 1
+      CALL TNOU('Sulu:  "Leaving standard orbit."',32)
+      INORBT=0
+1     ANGLE=((15-DIREC)*.5235988)
+      DELTAX=-SIN(ANGLE)
+      DELTAY=COS(ANGLE)
+      BIGGER=AMAX1(ABS(DELTAX),ABS(DELTAY))
+      DELTAX=DELTAX/BIGGER
+      DELTAY=DELTAY/BIGGER
+      TRBEAM=0
+C*    -------IF TRACTOR BEAM IS TO OCCUR, DO NOT MOVE FULL DISTANCE
+      IF (DATE+TIME.LT.FUTURE(2)) GOTO 5
+      TRBEAM=1
+      CONDIT='RD'
+      DIST=DIST*(FUTURE(2)-DATE)/TIME+.1
+      TIME=FUTURE(2)-DATE+1E-5
+C*    -------MOVE WITHIN QUADRANT
+5     QUAD(SECTX,SECTY)='. '
+      X=SECTX
+      Y=SECTY
+      N=10*DIST*BIGGER+.5
+      IF (N.EQ.0) GOTO 15
+      DO 10 L=1,N
+      X=X+DELTAX
+      IX=X+.5
+      Y=Y+DELTAY
+      IY=Y+.5
+      IF (IX.LT.1.OR.IX.GT.10) GOTO 40
+      IF (IY.LT.1.OR.IY.GT.10) GOTO 40
+      IQUAD=QUAD(IX,IY)
+      IF (IQUAD.NE.'. ') GOTO 20
+10    CONTINUE
+      DIST=.1*SQRT(FLOAT((SECTX-IX)**2+(SECTY-IY)**2))
+      SECTX=IX
+      SECTY=IY
+15    FINALX=SECTX
+      FINALY=SECTY
+      GOTO 100
+C*    -------OBJECT ENCOUNTERED ALONG FLIGHT PATH
+20    STPEGY=50*DIST/TIME
+      DIST=.1*SQRT(FLOAT((SECTX-IX)**2+(SECTY-IY)**2))
+      IF (IQUAD.EQ.'K '.OR.IQUAD.EQ.'C '.OR.IQUAD.EQ.'S '.OR.
+     +IQUAD.EQ.'R ')  GOTO 30
+      IF (IQUAD.EQ.'  ') GOTO 25
+C*    -------OBJECT IS NOT AN ENEMY VESSEL, OR BLACK HOLE.
+      CALL TONL
+      CALL PRTSHP
+      CALL TNOUA(' blocked by object at',21)
+      CALL PRTLOC(4,IX,IY)
+      CALL TNOU('. ',1)
+21    CALL TNOUA('Emergency stop required ',24)
+      CALL PRTNUM(STPEGY,0,2)
+      CALL TNOU(' units of energy.',17)
+      ENERGY=ENERGY-STPEGY
+      FINALX=X-DELTAX+.5
+      SECTX=FINALX
+      FINALY=Y-DELTAY+.5
+      SECTY=FINALY
+      IF (ENERGY.GT.0) GOTO 100
+      CALL FINISH(4)
+      RETURN
+C*    -------OBJECT IS A BLACK HOLE.  SWALLOW SHIP.
+25    CALL TNOU('*** Red alert!  RED ALERT!!! ***',32)
+      CALL TONL
+      CALL TNOUA('*** ',4)
+      CALL PRTSHP
+      CALL TNOUA(' pulled into black hole at',26)
+      CALL PRTLOC(4,IX,IY)
+      CALL TONL
+      CALL FINISH(21)
+      RETURN
+C*    -------OBJECT IS AN ENEMY VESSEL; RAM HIM.
+30    SECTX=IX
+      SECTY=IY
+      CALL RAM ($21)
+C*
+      FINALX=SECTX
+      FINALY=SECTY
+      GOTO 100
+C*    -------LEAVING QUADRANT; ALLOW ENEMY A FINAL ATTACK.
+40    IF (NENHER.EQ.0) GOTO 43
+      CALL NEWCND
+      DO 42 L=1,NENHER
+      FINALD=SQRT(FLOAT((IX-KX(L))**2+(IY-KY(L))**2))
+42    KAVGD(L)=.5*(FINALD+KDIST(L))
+      IF (GALAXY(QUADX,QUADY).NE.1000) CALL ATTACK(0)
+      IF (ALLDUN.NE.0) RETURN
+C*    -------COMPUTE FINAL POSITION--NEW QUADRANT, NEW SECTOR
+43    X=10*(QUADX-1)+SECTX
+      Y=10*(QUADY-1)+SECTY
+      IX=X+10*DIST*BIGGER*DELTAX+.5
+      IY=Y+10*DIST*BIGGER*DELTAY+.5
+C*    -------CHECK FOR EDGE OF GALAXY
+      KINKS=0
+45    KINK=0
+      IF (IX.GT.0) GOTO 50
+      IX=-IX+1
+      KINK=1
+50    IF (IY.GT.0) GOTO 55
+      IY=-IY+1
+      KINK=1
+55    IF (IX.LE.80) GOTO 60
+      IX=161-IX
+      KINK=1
+60    IF (IY.LE.80) GOTO 65
+      IY=161-IY
+      KINK=1
+65    IF (KINK.EQ.0) GOTO 70
+      KINKS=1
+      GOTO 45
+70    IF (KINKS.EQ.0) GOTO 90
+      NKINKS=NKINKS+1
+      IF (NKINKS.EQ.3) GOTO 80
+C*    -------ISSUE REPRIMAND FOR HITTING EDGE OF GALAXY
+      CALL TONL
+      CALL TNOU(
+     +'You have attempted to cross the negative energy barrier',55)
+      CALL TNOU(
+     +'surrounding the galaxy.  The third time you try this,',53)
+      CALL TNOU('you will be exterminated.',25)
+      GOTO 90
+C*    -------ONE, TWO, THREE STRIKES, YOU'RE OUT
+80    CALL FINISH(6)
+      RETURN
+C*    -------COMPUTE FINAL POSITION OF STARSHIP IN NEW QUADRANT
+90    IF (TRBEAM.NE.0) RETURN
+      QUADX=(IX+9)/10
+      QUADY=(IY+9)/10
+      SECTX=IX-10*(QUADX-1)
+      SECTY=IY-10*(QUADY-1)
+      CALL TONL
+      CALL TNOUA('Entering',8)
+      CALL PRTLOC(3,QUADX,QUADY)
+      CALL TONL
+      QUAD(SECTX,SECTY)=SHIP
+      CALL NEWQAD
+      RETURN
+C*    -------NO QUADRANT CHANGE; COMPUTE NEW AVG ENEMY DISTANCES.
+100   QUAD(SECTX,SECTY)=SHIP
+      IF (NENHER.EQ.0) GOTO 120
+      DO 110 L=1,NENHER
+      FINALD=SQRT((FINALX-KX(L))**2+(FINALY-KY(L))**2)
+      KAVGD(L)=.5*(KDIST(L)+FINALD)
+110   KDIST(L)=FINALD
+      CALL SORTKL
+120   CALL NEWCND
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE NEWCND
+$INSERT STARTREK.INS.FTN
+      CONDIT='GR'
+      IF (ENERGY.LT.1000.0) CONDIT='YE'
+      IF ((GALAXY(QUADX,QUADY).GT.99).OR.(NEWSTF(QUADX,QUADY).GT.9))
+     +CONDIT='RD'
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE NEWQAD
+$INSERT STARTREK.INS.FTN
+      INTEGER QADNUM
+      EQUIVALENCE (CRACKS(2),SHUTUP)
+      JUSTIN=1
+      BASEX=0
+      BASEY=0
+      KLHERE=0
+      COMHER=0
+      PLANTX=0
+      PLANTY=0
+      ISHERE=0
+      IRHERE=0
+      IPLANT=0
+      NENHER=0
+      NEUTZ=0
+      INORBT=0
+      LANDED=-1
+      IENTES=0
+      IF (ISCATE.EQ.0) GOTO 5
+C*    -------ENTERPRISE TRIED TO ESCAPE FROM A SUPER-COMMANDER.
+      ISCATE=0
+      IENTES=1
+5     QADNUM=GALAXY(QUADX,QUADY)
+      IF (QADNUM.GT.999) GOTO 70
+      KLHERE=QADNUM/100
+      NEWNUM=NEWSTF(QUADX,QUADY)
+      IRHERE=NEWNUM/10
+      NPLAN=NEWNUM-IRHERE*10
+      NENHER=KLHERE+IRHERE
+C*    -------EMPTY QUADRANT AND POSITION STARSHIP
+      DO 15 I=1,10
+      DO 15 J=1,10
+15    QUAD(I,J)='. '
+      QUAD(SECTX,SECTY)=SHIP
+C*    -------POSITION ORDINARY KLINGON VESSELS
+      IF (QADNUM.LT.100) GOTO 34
+      QADNUM=QADNUM-100*KLHERE
+      DO 25 I=1,KLHERE
+      CALL DROPIN('K ',IX,IY)
+      KX(I)=IX
+      KY(I)=IY
+      KAVGD(I)=SQRT(FLOAT((SECTX-IX)**2+(SECTY-IY)**2))
+      KDIST(I)=KAVGD(I)
+25    KPOWER(I)=RND(0)*150+300+25*SKILL
+C*    -------IF THIS QUADRANT NEEDS A COMMANDER, PROMOTE ONE KLINGON
+      IF (REMCOM.EQ.0) GOTO 32
+      DO 30 I=1,REMCOM
+      IF (CX(I).EQ.QUADX.AND.CY(I).EQ.QUADY) GOTO 31
+30    CONTINUE
+      GOTO 32
+31    QUAD(IX,IY)='C '
+      KPOWER(KLHERE)=950+400*RND(0)+50*SKILL
+      COMHER=1
+      COMX=IX
+      COMY=IY
+C*    -------IF THIS QUADRANT NEEDS A SUPER-COMMANDER, PROMOTE ONE KLINGON.
+32    I=KLHERE
+      IF ((QUADX.NE.ISX).OR.(QUADY.NE.ISY)) GOTO 34
+      IF (COMHER.EQ.0) GOTO 33
+      I=KLHERE-1
+      IX=KX(I)
+      IY=KY(I)
+33    QUAD(IX,IY)='S '
+      KPOWER(I)=1175+400*RND(0)+125*SKILL
+      ISCATE=1
+      ISHERE=1
+C*    -------PUT IN ROMULANS IF NEEDED.
+34    IF (IRHERE.EQ.0) GOTO 37
+      ITEMP1=KLHERE+1
+      DO 36 I=ITEMP1,NENHER
+      CALL DROPIN('R ',IX,IY)
+      KX(I)=IX
+      KY(I)=IY
+      KAVGD(I)=SQRT(FLOAT((SECTX-IX)**2+(SECTY-IY)**2))
+      KDIST(I)=KAVGD(I)
+36    KPOWER(I)=450+400*RND(0)+50*SKILL
+37    CALL SORTKL
+C*    -------IF QUADRANT CONTAINS A STARBASE, CHOOSE ITS POSITION
+40    IF (QADNUM.LT.10) GOTO 50
+      QADNUM =QADNUM-10
+      CALL DROPIN('B ',BASEX,BASEY)
+C*    -------IF QUADRANT NEEDS A PLANET, PUT ONE IN.
+50    IF (NPLAN.EQ.0) GOTO 54
+      DO 51 I=1,INPLAN
+      IPLANT=I
+      IF (PLNETS(I,1).EQ.QUADX.AND.PLNETS(I,2).EQ.QUADY) GOTO 52
+51    CONTINUE
+      IPLANT=0
+      GOTO 54
+52    CALL DROPIN('P ',PLANTX,PLANTY)
+C*    -------AND FINALLY, THE STARS
+54    CALL NEWCND
+      IF (QADNUM.LT.1) GOTO 62
+      DO 60I=1,QADNUM
+60    CALL DROPIN('* ',IX,IY)
+C*    -------IF ROMULANS PRESENT WITHOUT KLINGONS OR BASE, PRINT SPECIAL MES
+62    IF ((IRHERE.EQ.0).OR.(KLHERE.NE.0).OR.(BASEX.NE.0)) GOTO 66
+      IF (DAMAGE(9).GT.0) GOTO 64
+      CALL TONL
+      CALL TNOU('Lt. Uhura:  "Captain, an urgent message.',40)
+      CALL TNOU('I''ll put it on audio." CLICK',28)
+      CALL TONL
+      CALL TNOU(
+     +'"Intruder!  You have violated the Romulan neutral zone."',56)
+      CALL TNOU('"Leave at once, or be destroyed!"',33)
+64    NEUTZ=1
+C*    -------PUT IN "THING" IF NEEDED
+66    IF (SHLDUP.NE.0) RETURN
+      IF (THINGX.NE.QUADX.OR.THINGY.NE.QUADY) GOTO 67
+      CALL DROPIN('? ',IX,IY)
+      THINGX=0
+      THINGY=0
+      IF (DAMAGE(1).NE.0) GOTO 67
+      CALL TONL
+      CALL TNOU('Mr. Spock:  "Captain, this is most unusual.',43)
+      CALL TNOU('Please examine your short-range scan."',38)
+C*    -------DROP IN A FEW BLACK HOLES
+67    DO 68 I=1,3
+68    IF (RND(0).GT..5) CALL DROPIN('  ',IX,IY)
+      RETURN
+C*    -------COPE IF QUADRANT CONTAINS ONLY A SUPERNOVA
+70    DO 75 I=1,10
+      DO 75 J=1,10
+75    QUAD(I,J)='. '
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE NOTIME(XTIM,IALT)
+$INSERT STARTREK.INS.FTN
+      IF (XTIM.LT.0) GOTO 12
+11    IF (XTIM.LT..8*REMTIM) RETURN
+      CALL TNOU('First Officer Spock:  "Captain, Icompute that such',50)
+      CALL TNOU('a maneuver would require approximately ',39)
+      CALL PRTNUM(100*XTIM/REMTIM,0,2)
+      CALL TNOU('% of our',8)
+      CALL TNOU('remaining time.',15)
+12    EOL=.TRUE.
+      CALL TNOU('Are you sure this is wise?"',27)
+      IF (JA(0)) RETURN
+13    EOL=.TRUE.
+      GOTO IALT
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE NOVA(IX,IY)
+$INSERT STARTREK.INS.FTN
+      INTEGER HITS(10,2),BOT,TOP,TOP2
+      DIMENSION COURSE(9)
+      DATA COURSE/10.5,12.0,1.5,9.0,0.0,3.0,7.5,6.0,4.5/
+C*    -------CHECK FOR SUPERNOVA POSSIBILITY
+75    IF (RND(0).GE..05) GOTO 76
+      CALL SNOVA(IX,IY)
+      RETURN
+C*    -------PRINT NOVA MESSAGE FOR INITIAL STAR AT LOCATION (IX,IY)
+76    QUAD(IX,IY)='. '
+      CALL PRTOBJ('* ',4,IX,IY)
+      CALL TNOU(' novas.',7)
+      GALAXY(QUADX,QUADY)=GALAXY(QUADX,QUADY)-1
+      STARKL=STARKL+1
+C*    -------SET UP STACK TO RECURSIVELY TRIGGER ADJACENT STARS
+      BOT=1
+      TOP=1
+      TOP2=1
+      KOUNT=0
+      ICX=0
+      ICY=0
+      HITS(BOT,1)=IX
+      HITS(BOT,2)=IY
+78    DO 90 MM=BOT,TOP
+      DO 90 NN=1,3
+      DO 90 J=1,3
+      IF ((J*NN).EQ.4) GOTO 90
+      II=HITS(MM,1)+NN-2
+      JJ=HITS(MM,2)+J-2
+      IF (II.LT.1.OR.II.GT.10) GOTO 90
+      IF (JJ.LT.1.OR.JJ.GT.10) GOTO 90
+      IQUAD=QUAD(II,JJ)
+      IF (IQUAD.EQ.'. '.OR.IQUAD.EQ.'? '.OR.IQUAD.EQ.'  ')
+     +GOTO 90
+      IF (IQUAD.NE.'* ') GOTO 80
+C*    -------ANOTHER STAR AFFECTED BY A NOVA
+      IF (RND(0).GE..05) GOTO 79
+      CALL SNOVA(II,JJ)
+      RETURN
+79    TOP2=TOP2+1
+      HITS(TOP2,1)=II
+      HITS(TOP2,2)=JJ
+      GALAXY(QUADX,QUADY)=GALAXY(QUADX,QUADY)-1
+      STARKL=STARKL+1
+      CALL PRTOBJ('* ',4,II,JJ)
+      CALL TNOUA(' novas.',7)
+      GOTO 8905
+80    IF (IQUAD.NE.'P ') GOTO 8002
+C*    -------PLANET DESTROYED BY NOVA.
+      NEWSTF(QUADX,QUADY)=NEWSTF(QUADX,QUADY)-1
+      NPLNKL=NPLNKL+1
+      CALL PRTOBJ('P ',4,II,JJ)
+      CALL TNOU(' destroyed.',11)
+      DO 8001 I=1,5
+8001  PLNETS(IPLANT,I)=0
+      IPLANT=0
+      PLANTX=0
+      PLANTY=0
+      IF (LANDED.NE.1) GOTO 8905
+      CALL FINISH(16)
+      GOTO 95
+8002  IF (IQUAD.NE.'B ') GOTO 82
+C*    ---------NOVA DESTROYS STARBASE
+      GALAXY(QUADX,QUADY)=GALAXY(QUADX,QUADY)-10
+      DO 81 LLL=1,REMBAS
+      IF (BASEQX(LLL).NE.QUADX.OR.BASEQY(LLL).NE.QUADY) GOTO 81
+      BASEQX(LLL)=BASEQX(REMBAS)
+      BASEQY(LLL)=BASEQY(REMBAS)
+81    CONTINUE
+      REMBAS=REMBAS-1
+      BASEX=0
+      BASEY=0
+      BASEKL=BASEKL+1
+      CALL NEWCND
+      CALL PRTOBJ('B ',4,II,JJ)
+      CALL TNOU(' destroyed.',11)
+      GOTO 8905
+82    IF (IQUAD.NE.SHIP) GOTO 87
+C*    ---------STARSHIP IN A NOVA
+      CALL TNOU('*** Starship buffeted by nova.',30)
+      IF (SHLDUP.NE.0) GOTO 83
+C*    ------SHIELDS NOT UP - TAKE 2000 UNITS FROM SHIP ENERGY
+      ENERGY=ENERGY-2000
+      GOTO 84
+C*    ------SHIELDS UP - CHECK FOR ENOUGH ENERGY
+83    IF (SHIELD.GE.2000) GOTO 85
+      DIFF=2000-SHIELD
+      ENERGY=ENERGY-DIFF
+      SHIELD=0
+      SHLDUP=0
+      CALL TNOU('*** Shields knocked out.',24)
+      DAMAGE(8)=.005*DAMFAC*RND(0)*DIFF
+C*    ------CHECK IF STARSHIP SURVIVED NOVA
+84    IF (ENERGY.GT.0) GOTO 86
+      CALL FINISH(7)
+      RETURN
+85    SHIELD=SHIELD-2000
+C*    -------ADD IN COURSE NOVA CONTRIBUTES TO KICKING STARSHIP
+86    ICX=ICX+SECTX-HITS(MM,1)
+      ICY=ICY+SECTY-HITS(MM,2)
+      KOUNT=KOUNT+1
+      GOTO 90
+C*    -------ENEMY DESTROYED OR DAMAGED ; BUFFETED BY NOVA.
+87    IF (IQUAD.EQ.'K ') GOTO 88
+      DO 8701 LL=1,NENHER
+      IF (KX(LL).EQ.II.AND.KY(LL).EQ.JJ) GOTO 8702
+8701  CONTINUE
+8702  KPOWER(LL)=KPOWER(LL)-800
+      IF (KPOWER(LL).LE.0) GOTO 88
+      NEWCX=II+II-HITS(MM,1)
+      NEWCY=JJ+JJ-HITS(MM,2)
+      CALL PRTOBJ(IQUAD,4,II,JJ)
+      CALL TNOUA(' damaged',8)
+      IF (NEWCX.LT.1.OR.NEWCX.GT.10.OR.
+     + NEWCY.LT.1.OR.NEWCY.GT.10) GOTO 8703
+      IQUAD1=QUAD(NEWCX,NEWCY)
+      IF (IQUAD1.NE.'  ') GOTO 87025
+      CALL TNOUA(', blasted into ',15)
+      CALL PRTOBJ('  ',4,NEWCX,NEWCY)
+      CALL TONL
+      GOTO 88
+87025 IF (IQUAD1.NE.'. ') GOTO 8703
+      CALL TNOUA(' buffeted to',12)
+      CALL PRTLOC(4,NEWCX,NEWCY)
+      QUAD(II,JJ)='. '
+      QUAD(NEWCX,NEWCY)=IQUAD
+      KX(LL)=NEWCX
+      KY(LL)=NEWCY
+      KAVGD(LL)=SQRT(FLOAT((SECTX-NEWCX)**2+(SECTY-NEWCY)**2))
+      KDIST(LL)=KAVGD(LL)
+8703  CALL TONL
+      GOTO 90
+C*    -------ENEMY DESTROYED BY NOVA.
+88    CALL DEADKL(II,JJ,IQUAD)
+      GOTO 90
+8905  CALL TONL
+      QUAD(II,JJ)='. '
+90    CONTINUE
+C*    -------IF MORE STARS AFFECTED BY NOVA GO FIND WHAT THEY GOT
+      IF (TOP.EQ.TOP2) GOTO 93
+      BOT=TOP+1
+      TOP=TOP2
+      GOTO 78
+93    IF (KOUNT.EQ.0) RETURN
+C*    -------STARSHIP AFFECTED BY NOVA - KICK IT AWAY.
+      DIST=KOUNT*.1
+      IF (ICX.NE.0) ICX=ISIGN(1,ICX)
+      IF (ICY.NE.0) ICY=ISIGN(1,ICY)
+      INDEX=3*(ICX+1)+ICY+2
+      DIREC=COURSE(INDEX)
+      IF (DIREC.EQ.0) DIST=0
+      IF (DIST.EQ.0) RETURN
+      TIME=10*DIST/16
+      CALL TONL
+      CALL TNOU('Force of nova displaces starship.',33)
+      CALL MOVE
+      TIME=10*DIST/16
+95    RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE ORBIT
+$INSERT STARTREK.INS.FTN
+      CALL TONL
+      IDIDIT=0
+      IF (INORBT.EQ.0) GOTO 2
+      CALL TNOU('Already in standard orbit.',26)
+      GOTO 13
+C*    -------CHECK FOR ENGINE DAMAGE.
+2     IF ((DAMAGE(7).EQ.0).OR.(DAMAGE(6).EQ.0)) GOTO 3
+      CALL TNOU('Both warp and impulse engines damaged.',38)
+      GOTO 13
+C*    -------CHECK TO SEE IF SHIP ADJACENT TO PLANET.
+3     IF (PLANTX.EQ.0) GOTO 5
+      IF (IABS(SECTX-PLANTX).LE.1.AND.IABS(SECTY-PLANTY).LE.1) GOTO 10
+5     CALL PRTSHP
+      CALL TNOU(' not adjacent to planet.',24)
+13    EOL=.TRUE.
+      RETURN
+10    TIME=.02+.03*RND(0)
+      IF (DAMAGE(6).GT.0) TIME=TIME*10
+C*    -------GO AHEAD, SULU.
+15    CALL TNOU('Helsman Sulu:  "Entering standard orbit, Sir.',45)
+      CALL NEWCND
+      CALL IFEVNT($13)
+17    CALL TNOUA('Altitude ',9)
+      HEIGHT=1.4+7.2*RND(0)
+      CALL PRTNUM(HEIGHT,0,2)
+      HIGHT=1000*HIGHT
+      CALL TNOU(' megameters."',13)
+      INORBT=1
+      GOTO 13
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PHASRS
+$INSERT STARTREK.INS.FTN
+      REAL HITS(20)
+      LOGICAL MATCH
+      INTEGER*4 ITEM
+      PARAMETER PHASFC=2
+      CALL TONL
+      IFAST=0
+      NO=0
+      IDIDIT=1
+      IPOOP=1
+      IF (DAMAGE(1)+DAMAGE(11).GT.0) IPOOP=0
+C*    -------ENSURE PHASERS CAN BE FIRED
+      IF (CONDIT.NE.'DK') GOTO 5
+      CALL TNOU('Phasers can''t be fired through Starbase shields.',48)
+      GOTO 15
+5     IF (DAMAGE(3).EQ.0) GOTO 10
+      CALL TNOU('Phaser control damaged.',23)
+      GOTO 15
+C*    -------DO CHECKS FOR HI-SPEED SHIELD CONTROL
+10    IF (SHLDUP.EQ.0) GOTO 20
+      IF (DAMAGE(13).EQ.0) GOTO 13
+      CALL TNOU('High-speed shield control damaged.',34)
+      GOTO 15
+13    IF (ENERGY.GT.200) GOTO 16
+      CALL TNOU(
+     +'Insufficient energy to activate high-speed shield control.',58)
+15    IDIDIT=0
+      GOTO 220
+16    CALL TNOU(
+     +'Weapons Officer Sulu:  "High-speed shield control ready, Sir."',
+     +62)
+      ENERGY=ENERGY-200
+      IFAST=1
+C*    -------READ IN AMOUNT OF ENERGY TO EXPEND ON PHASER FIRE
+20    CALL SCAN(POW,KEY)
+      IF (NENHER.EQ.0) GOTO 35
+      K=1
+      IF (KEY.NE.'AL') GOTO 22
+      IF (.NOT.MATCH(POW,'NO  ')) GOTO 22
+      NO=1
+      CALL SCAN(POW,KEY)
+22    IF (KEY.EQ.'AL'.AND.MATCH(POW,'MANU')) GOTO 90
+      IF (DAMAGE(11).NE.0) GOTO 80
+      IF (DAMAGE(1).NE.0) GOTO 81
+C*    ------ IS KEY EOL,AUTO OR PHAS POWER?
+      IF (KEY.NE.'AL') GOTO 2301
+      IF (MATCH(POW,'AUTO')) GOTO 27
+      EOL=.TRUE.
+      GOTO 24
+C*    ------- DIFFERENTIATE BETWEEN EOL AND PHASER POWER(COMMAND MODE)
+2301  IF (KEY.NE.'EL') GOTO 30
+C*    ----- REQUEST MANUAL OR AUTO
+24    CALL TNOUA('Manual or automatic? ',21)
+      CALL SCAN(ITEM,KEY)
+      IF (KEY.EQ.'AL') GOTO 2405
+2401  EOL=.TRUE.
+      GOTO 24
+2405  IF (MATCH(ITEM,'MANU')) GOTO 90
+      IF (.NOT.MATCH(ITEM,'AUTO')) GOTO 2401
+      EOL=.TRUE.
+C*    ------- INFORM USER OF AVAIL ENERGY AND READ IN DESIRED PHASER POWER
+2409  IF (NENHER.EQ.0) GOTO 26
+      CALL TNOUA('Phasers locked on target.  Energy available - ',46)
+25    CALL PRTNUM(ENERGY,0,2)
+      CALL TONL
+26    EOL=.TRUE.
+      CALL TNOUA('Units to fire: ',15)
+27    CALL SCAN(POW,KEY)
+      IF (KEY.EQ.'EL') GOTO 2409
+30    CALL SCAN(ITEM,KEY2)
+      IF (KEY2.EQ.'EL') GOTO 35
+      IF (.NOT.MATCH(ITEM,'NO  ')) GOTO 34
+      NO=1
+      GOTO 35
+34    CALL TNOU('"Beg your pardon, Captain?"',27)
+      GOTO 100
+35    IF (KEY.NE.'RE') GOTO 26
+40    IF (POW.LT.ENERGY) GOTO 41
+      CALL TNOUA('Energy available - ',19)
+      GOTO 25
+41    IF (POW.GT.0) GOTO 46
+      GOTO 100
+C*    -------PRINT MESSAGE FOR SHIELD CONTROL, AND DECIDE IF MALFUNCTION
+42    CALL TONL
+      IF (RND(0).LT..998) GOTO 45
+C*    -------SOMETHING BAD HAS HAPPENED.
+      CALL TNOU('*** Red alert!  RED ALERT!!!',28)
+      CALL TONL
+      HIT=POW*SHIELD/INSHLD
+      ENERGY=ENERGY-POW-HIT*.8
+      SHIELD=SHIELD-HIT*.2
+      IF (ENERGY.GT.0) GOTO 43
+      CALL TNOU(
+     +'Sulu:  "Captain!  Shields malf**********************',52)
+      CALL TNOU(ASTRS,54)
+      CALL FINISH(12)
+      GOTO 220
+43    CALL TNOU(
+     +'Sulu:  Captain!  Shields malfunction! Phaser fire contained!"',
+     +61)
+      CALL TONL
+      CALL TNOU('Lt. Uhura:  "Sir, all decks reporting damage."',46)
+      ICAS=HIT*RND(0)*.012
+      CALL TONL
+      CRACKS(1)=.8*HIT
+      CALL ATTACK(1)
+      IF (ICAS.EQ.0) GOTO 44
+      CALL TONL
+      CALL TNOUA('McCoy to bridge:  "Severe radiation burns, Jim. ',48)
+      CALL TOVFD$(ICAS)
+      CALL TNOU(' casualties so far."',20)
+      CASUAL=CASUAL+ICAS
+44    CALL TONL
+      CALL TNOUA('Phaser energy dispersed by shields - ',37)
+      CALL TNOU('enemy unaffected.',17)
+      GOTO 210
+45    CALL TNOU('Shields lowered.',16)
+      GOTO IWHERE,(47,98)
+C*    -------ALLOCATE ENERGY AMONG KLINGONS ACCORDING TO NEAREST FIRST
+46    IF (IFAST.EQ.0) GOTO 47
+      ASSIGN 47 TO IWHERE
+      GOTO 42
+47    ENERGY=ENERGY-POW
+      EXTRA=POW
+      IF (NENHER.EQ.0) GOTO 75
+C*    -------- LOOP THAT DISTRIBUTES HITS IN AUTO MODE IS HERE.
+      EXTRA=0
+      POWREM=POW
+      DO 50 I=1,NENHER
+      HITS(I)=0
+      IF (POWREM.LE.0) GOTO 50
+      HITS(I)=ABS(KPOWER(I))/(PHASFC*.90**KDIST(I))
+      OVER=(.01+.05*RND(0))*HITS(I)
+      TEMP=POWREM
+      POWREM=POWREM-HITS(I)-OVER
+      IF (POWREM.LE.0.AND.TEMP.LT.HITS(I)) HITS(I)=TEMP
+      IF (POWREM.LE.0) OVER=0
+      EXTRA=EXTRA+OVER
+50    CONTINUE
+      IF (POWREM.GT.0) EXTRA=EXTRA+POWREM
+70    CALL HITEM(HITS)
+      IF (EXTRA.EQ.0.OR.ALLDUN.NE.0) GOTO 200
+C*    -------- INFORM OF OVERKILL.
+75    CALL PRTNUM(EXTRA,0,2)
+      CALL TNOU(' expended on empty space.',25)
+      GOTO 200
+C*    ------- MANUAL SECTION BEGINS HERE.
+C*    ------- INFORM OF IMPOSED MANUAL CONDITION.
+80    EOL=.TRUE.
+      CALL TNOU('Battle computer damaged - manual fire only.',43)
+      GOTO 84
+81    CALL TONL
+      CALL TNOU('---WORKING---',13)
+      CALL TNOU('SHORT-RANGE-SENSORS-DAMAGED',27)
+      CALL TNOU('INSUFFICIENT-DATA-FOR-AUTOMATIC-PHASER-FIRE',43)
+      CALL TNOU('MANUAL-FIRE-MUST-BE-USED',24)
+      CALL TONL
+84    CALL TNOUA('Energy available - ',19)
+      CALL PRTNUM(ENERGY-.006,0,2)
+      CALL TONL
+C*    -------- LOOP FOR DESIRED INDIVIDUAL HITS.
+      K=1
+87    IF (IPOOP.EQ.0) GOTO 88
+C*    -------PRINT BATTLE-COMPUTER RECOMMENDATION
+      CALL T1OU(:250)
+      IREC=ABS(KPOWER(K))/(PHASFC*.9**KDIST(K))*(1.01+.05*RND(0))+1
+      CALL TOVFD$(IREC)
+      CALL TNOUA(') ',2)
+88    CALL TNOUA('Units to fire at ',17)
+      II=KX(K)
+      JJ=KY(K)
+      IENM=QUAD(II,JJ)
+      CALL PRTOBJ(IENM,4,II,JJ)
+      CALL TNOUA(':   ',3)
+90    IF (K.EQ.1) POW=0
+      CALL SCAN(HITS(K),KEY)
+      IF (KEY.EQ.'AL'.AND.MATCH(HITS(K),'NO  ')) NO=1
+      IF (KEY.EQ.'RE') GOTO 95
+      IF (KEY.EQ.'EL'.AND.K.EQ.1) GOTO 84
+      IF (KEY.EQ.'EL') GOTO 87
+      EOL=.TRUE.
+      GOTO 87
+C*    ------- IF HIT LESS THAN ZERO, ABORT PHASERS.
+95    IF (HITS(K).LT.0) GOTO 100
+      POW=POW+HITS(K)
+C*    ------- IF TOTAL AMOUNT OF POWER REQUESTED IS TOO MUCH, INFORM
+C*    ------- AND START OVER.
+      IF (POW.LT.ENERGY) GOTO 97
+      CALL TNOU('Available energy exceeded.',26)
+      EOL=.TRUE.
+      GOTO 84
+97    K=K+1
+      IF (K.LE.NENHER) GOTO 90
+C*    -------IF TOTAL REQUESTED IS ZERO, ABORT PHASERS
+      IF (POW.EQ.0) GOTO 100
+      CALL SCAN(ITEM,KEY)
+      IF (KEY.NE.'AL') GOTO 9701
+      IF (MATCH(ITEM,'NO  ')) NO=1
+9701  ENERGY=ENERGY-POW
+      EOL=.TRUE.
+      IF (IFAST.EQ.0) GOTO 98
+      ASSIGN 98 TO IWHERE
+      GOTO 42
+C*    ------- GO DELIVER THE HITS.
+98    CALL HITEM(HITS)
+      IDIDIT=1
+      GOTO 200
+100   IF (IFAST.NE.0) ENERGY=ENERGY+200
+      IDIDIT=0
+      GOTO 220
+C*    -------SAY SHIELDS RAISED OR MALFUNCTION, IF NECESSARY.
+200   IF (ALLDUN.NE.0) GOTO 220
+      IF (IFAST.EQ.0) GOTO 210
+      CALL TONL
+      IF (NO.NE.0) GOTO 202
+      IF (RND(0).LT..99) GOTO 205
+      CALL TNOU(
+     +'Sulu: "Sir, the high-speed shield control has malfunctioned..."',
+     +64)
+      CALL TNOU('...CLICK...CLICK...POP... "No response, Sir!"',45)
+202   SHLDUP=0
+      GOTO 210
+205   CALL TNOU('Shields raised.',15)
+C*    -------CHECK FOR PHASER OVERHEAT
+210   IF (POW.LE.1500) GOTO 220
+      CHKBRN=(POW-1500)*.00038
+      IF (RND(0).GT.CHKBRN) GOTO 220
+C*    -------DO YOU SMELL SMOKE?
+      CALL TONL
+      CALL TNOU(
+     +'Weapons Officer Sulu:  "Phasers overheated, Sir."',49)
+      DAMAGE(3)=DAMFAC*(1+RND(0))*(1+CHKBRN)
+220   EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PHOTNS
+$INSERT STARTREK.INS.FTN
+      DIMENSION TARG(3,2),COURSE(3)
+      REAL KP
+      MISFIR=0
+C*    -------CHECK TORPEDO COUNT AND STATUS OF PHOTON TUBES
+      IDIDIT=1
+      IF (DAMAGE(4).EQ.0) GOTO 10
+      CALL TNOU('Photon tubes damaged.',21)
+      GOTO 3005
+10    IF (TORPS.NE.0) GOTO 15
+      CALL TNOU('No torpedoes left.',18)
+      GOTO 3005
+C*    -------SCAN AND MAKE SENSE OF COMMAND INPUT LINE
+15    CALL SCAN(TEMP,KEY)
+      IF (KEY.NE.'RE') GOTO 16
+      N=TEMP+.5
+      GOTO 30
+16    EOL=.TRUE.
+      CALL TOVFD$(TORPS)
+      CALL TNOU(' torpedoes left.',16)
+      CALL TNOUA('Number of torpedoes to fire: ',29)
+      GOTO 15
+30    IF (N.LE.0) GOTO 3005
+      IF (N.LE.3) GOTO 31
+      CALL TNOU('Maximum of 3 torpedoes per burst.',33)
+      GOTO 16
+3004  CALL TNOU('"Beg your pardon, Captain?"',27)
+3005  EOL=.TRUE.
+      IDIDIT=0
+      RETURN
+31    IF (N.LE.TORPS) GOTO 32
+      GOTO 16
+C*    -------ALL TORPEDOES FIRED AT SAME SPOT.
+3101  DO 3102 I=2,N
+      TARG(I,1)=TARG(1,1)
+3102  TARG(I,2)=TARG(1,2)
+      GOTO 36
+C*    -------READ IN TARGET SECTORS
+32    DO 33 I=1,N
+      CALL SCAN(TARG(I,1),KEY)
+      IF ((I.EQ.1).AND.(KEY.EQ.'EL')) GOTO 34
+      IF ((I.EQ.2).AND.(KEY.EQ.'EL')) GOTO 3101
+      IF (KEY.NE.'RE') GOTO 3004
+      CALL SCAN(TARG(I,2),KEY)
+      IF (KEY.NE.'RE') GOTO 3004
+33    CONTINUE
+      GOTO 36
+34    DO 35 I=1,N
+      CALL TNOUA('Target sector',13)
+      IF (N.EQ.1) GOTO 345
+      CALL TNOUA(' for torpedo number ',20)
+      CALL TOVFD$(I)
+345   CALL TNOUA(':   ',3)
+      CALL SCAN(TARG(I,1),KEY)
+      IF (KEY.NE.'RE') GOTO 3004
+      CALL SCAN(TARG(I,2),KEY)
+      IF (KEY.NE.'RE') GOTO 3004
+35    EOL=.TRUE.
+C*    -------CHECK FOR INVALID TARGETS.
+36    DO 37 I=1,N
+      DO 37 J=1,2
+      TEMP=TARG(I,J)
+      IF ((TEMP.LT..999).OR.(TEMP.GT.10.001)) GOTO 3004
+37    CONTINUE
+C*    -------COMPUTE COURSE FOR EACH TORPEDO.
+      DO 40 I=1,N
+      DELTX =.1*(TARG(I,2)-SECTY)
+      DELTY=.1*(SECTX-TARG(I,1))
+C*    -------DO NOT ALLOW ENTERPRISE TO SHOOT A TORPEDO AT ITSELF.
+      IF ((DELTX.NE.0).OR.(DELTY.NE.0)) GOTO 40
+      CALL TONL
+      CALL TNOU('Spock:  "Bridge to Sickbay. Dr. McCoy,',38)
+      CALL TNOU('I recommend an immediate review of the',38)
+      CALL TNOU('Captain''s psychological profile."',33)
+      GOTO 3005
+40    COURSE(I)=1.90985932*ATAN2(DELTX,DELTY)
+C*    -------BEGIN OUTER LOOP FOR MOVING <N> TORPEDOES
+      DO 110 I=1,N
+      IF (MISFIR.NE.0) GOTO 115        /* ABORT AFTER MISFIRE */
+      IF (CONDIT.NE.'DK') TORPS=TORPS-1
+      J=I
+      R=.5*((RND(0)+RND(0))-1)
+      IF (ABS(R).LT.0.47) GOTO 5709
+      R=(RND(0)+1.2)*R
+      MISFIR=1
+C*    ------- TORPEDO MISFIRES
+      IF (N.GT.1) GOTO 5706
+      CALL TNOU('*** Torpedo misfires ***',24)
+      GOTO 5707
+5706  CALL TNOUA('*** Torpedo number ',19)
+      CALL TOVFD$(I)
+      CALL TNOU(' misfires.',10)
+      IF (I.LT.N) CALL TNOU('Remainder of burst aborted.',27)
+5707  IF (RND(0).GT..2) GOTO 5709
+C*    ------ CHECK IF MISFIRE DOES SHIP DAMAGE. IF SO DON'T GIVE TRACK.
+      CALL TNOU('Photon tubes damaged by misfire.',32)
+      DAMAGE(4)=DAMFAC*(1+2*RND(0))
+      GOTO 115
+5709  IF (SHLDUP.NE.0.OR.CONDIT.EQ.'DK' ) R=(1+.001*SHIELD)*R
+      AC=COURSE(I)+.25*R
+      ANGLE=(15-AC)*.5235988
+      BLSEYE=(15-COURSE(I))*.5235988
+      IF (N.EQ.1) GOTO 58
+      CALL TONL
+      CALL TNOUA('Track for torpedo number ',25)
+      CALL TOVFD$(I)
+      CALL TNOUA(':   ',4)
+      GOTO 59
+58    CALL TONL
+      CALL TNOUA('Torpedo track:   ',17)
+59    DELTAX=-SIN(ANGLE)
+      DELTAY=COS(ANGLE)
+      BIGGER=AMAX1(ABS(DELTAX),ABS(DELTAY))
+      DELTAX=DELTAX/BIGGER
+      DELTAY=DELTAY/BIGGER
+      X=SECTX
+      Y=SECTY
+C*    -------BEGIN INNER LOOP FOR MOVING A SINGLE TORPEDO
+      DO 100 L=1,15
+      X=X+DELTAX
+      IX=X+.5
+      IF (IX.LT.1.OR.IX.GT.10) GOTO 105
+      Y=Y+DELTAY
+      IY=Y+.5
+      IF (IY.LT.1.OR.IY.GT.10) GOTO 105
+      IF (L.EQ.4.OR.L.EQ.9) CALL TONL
+      CALL PRTNUM(X,0,1)
+      CALL TNOUA(' -  ',3)
+      CALL PRTNUM(Y,0,1)
+      CALL TNOUA('    ',3)
+      IQUAD=QUAD(IX,IY)
+      IF (IQUAD.NE.'. ') GOTO 60
+      GOTO 100
+C*    -------BEGIN HIT CHECKS
+60    CALL TONL
+C*    -------TEST FOR AND COPE WITH HIT ON KLINGON,ROMULAN, OR COMMANDER.
+      IF (IQUAD.EQ.'K '.OR.IQUAD.EQ.'R ') GOTO 62
+      IF (IQUAD.NE.'C '.AND.IQUAD.NE.'S ') GOTO 70
+      IF (RND(0).GT..05) GOTO 62
+      CALL PRTOBJ(IQUAD,4,IX,IY)
+      CALL TNOU(' employes anti-photon device.',29)
+      CALL TNOU('Torpedo neutralised.',20)
+      GOTO 110
+62    DO 65 LL=1,NENHER
+      IF (IX.EQ.KX(LL).AND.IY.EQ.KY(LL)) GOTO 68
+65    CONTINUE
+68    KP=KPOWER(LL)
+      HIT=ABS(700+100*RND(0)-1000*KDIST(LL)*ABS(SIN(BLSEYE-ANGLE)))
+      KPOWER(LL)=KP-SIGN(AMIN1(ABS(KP),HIT),KP)
+      IF (KPOWER(LL).NE.0) GOTO 69
+      CALL DEADKL(IX,IY,IQUAD)
+      GOTO 110
+69    CALL PRTOBJ(IQUAD,4,IX,IY)
+C*    -------IF ENEMY DAMAGED BUT NOT DESTROYED, TRY TO DISPLACE HIM
+      ANG=ANGLE+2.5*(RND(0)-.5)
+      TEMP=AMAX1(ABS(-SIN(ANG)),ABS(COS(ANG)))
+      XX=-SIN(ANG)/TEMP
+      YY=COS(ANG)/TEMP
+      JX=IX+XX+.5
+      JY=IY+YY+.5
+      IF (JX.LT.1.OR.JX.GT.10.OR.JY.LT.1.OR.JY.GT.10) GOTO 6905
+      IF (QUAD(JX,JY).NE.'  ') GOTO 6903
+C*    -------ENEMY SUCKED INTO BLACK HOLE.
+      CALL TNOU(' buffeted into black hole.',26)
+      CALL DEADKL(IX,IY,IQUAD)
+      GOTO 110
+6903  IF (QUAD(JX,JY).NE.'. ') GOTO 6905
+      QUAD(JX,JY)=IQUAD
+      QUAD(IX,IY)='. '
+      CALL TNOUA(' damaged - ',11)
+      CALL TNOUA('displaced by blast to',21)
+      CALL PRTLOC(4,JX,JY)
+      CALL TONL
+      KX(LL)=JX
+      KY(LL)=JY
+      KAVGD(LL)=SQRT(FLOAT((SECTX-JX)**2+(SECTY-JY)**2))
+      KDIST(LL)=KAVGD(LL)
+      CALL SORTKL
+      GOTO 110
+6905  CALL TNOU(' damaged but not destroyed.',27)
+      GOTO 110
+C*    -------TEST FOR AND COPE WITH HIT ON A STARBASE
+70    IF (IQUAD.NE.'B ') GOTO 75
+      CALL TNOU('*** Starbase destroyed...congratulations.',41)
+      IF (STARCH(QUADX,QUADY).LT.0) STARCH(QUADX,QUADY)=0
+      DO 71 LLL=1,REMBAS
+      IF (BASEQX(LLL).NE.QUADX.OR.BASEQY(LLL).NE.QUADY) GOTO 71
+      BASEQX(LLL)=BASEQX(REMBAS)
+      BASEQY(LLL)=BASEQY(REMBAS)
+71    CONTINUE
+      QUAD(IX,IY)='. '
+      REMBAS=REMBAS-1
+      BASEX=0
+      BASEY=0
+      GALAXY(QUADX,QUADY)=GALAXY(QUADX,QUADY)-10
+      BASEKL=BASEKL+1
+      CONDIT='!!'
+      GOTO 110
+C*    -------TEST FOR AND COPE WITH A HIT ON A PLANET.
+75    IF (IQUAD.NE.'P ') GOTO 80
+      CALL PRTOBJ('P ',4,IX,IY)
+      CALL TNOU(' destroyed.',11)
+      NEWSTF(QUADX,QUADY)=NEWSTF(QUADX,QUADY)-1
+      NPLNKL=NPLNKL+1
+      DO 76 II=1,5
+76    PLNETS(IPLANT,II)=0
+      IPLANT=0
+      PLANTX=0
+      PLANTY=0
+      QUAD(IX,IY)='. '
+      IF (LANDED.NE.1) GOTO 110
+C*    -------CAPTAIN PERISHES ON PLANET.
+      CALL FINISH(15)
+      GOTO 116
+80    IF (IQUAD.NE.'* ') GOTO 90
+C*    -------STAR HIT - CHECK FOR NOVA RESULTS
+      IF (RND(0).GT..1) GOTO 85
+      CALL PRTOBJ('* ',4,IX,IY)
+      CALL TNOU(' unaffected by photon blast.',28)
+      GOTO 110
+85    CALL NOVA(IX,IY)
+      IF (GALAXY(QUADX,QUADY).EQ.1000) RETURN
+      IF (ALLDUN.NE.0) RETURN
+      GOTO 110
+C*    -------CHECK FOR HIT ON THING.
+90    IF (IQUAD.NE.'? ') GOTO 95
+      CALL TONL
+      CALL TNOU(
+     +'"AAAAIIIIIEEEEEEEEEAAAAAAAAUUUUUGGGGGHHHHHHHHHHHHHHH!!!',55)
+      CALL TNOU('    HACK!     HACK!     HACK!         *choke!* "',48)
+      CALL TONL
+      CALL TNOU('Mr. Spock:  "Fascinating!"',26)
+      QUAD(IX,IY)='. '
+      GOTO 110
+C*    -------TORPEDO SWALLOWED BY BLACK HOLE.
+95    CALL PRTOBJ('  ',2,IX,IY)
+      CALL TNOU(' swallows torpedo.',18)
+      GOTO 110
+100   CONTINUE
+C*    -------END INNER LOOP FOR MOVING ONE TORPEDO
+105   CALL TONL
+      CALL TNOU('Torpedo missed.',15)
+      IF (MISFIR.NE.0) GOTO 115
+110   CONTINUE
+115   IF (REMKL.EQ.0) CALL FINISH(1)
+116   EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PLANET
+$INSERT STARTREK.INS.FTN
+      CALL TONL
+      CALL TNOU('Spock:  "Planet report follows, Captain."',41)
+      CALL TONL
+      IKNOW=0
+      DO 1 I=1,INPLAN
+      IF (PLNETS(I,5).EQ.0) GOTO 1
+      IKNOW=1
+      IX=PLNETS(I,1)
+      IY=PLNETS(I,2)
+      ICLASS=PLNETS(I,3)
+      IDIL=PLNETS(I,4)
+      CALL PRTLOC(1,IX,IY)
+      CALL TNOUA(':  class ',9)
+      CALL T1OU(:314+ICLASS)
+      CALL TNOUA(',   ',3)
+      IF (IDIL.EQ.0) CALL TNOUA('no  ',3)
+      CALL TNOU('dilithium crystals present.',27)
+1     CONTINUE
+      IF (IKNOW.EQ.1) GOTO 13
+      CALL TNOU('No information available.',25)
+13    EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PLAQUE(ISCORE,PERDAT,ISKILL)
+$INSERT SYSCOM>KEYS.F
+      INTEGER*2 AWARD(211),LINE1(9),LINE2(10),LINE3(7),LINE4(7),
+     +LINE5(12),NAME(16),I,J,K,NL,M,N,GCHAR,LINE(8),LINE0(13)
+      REAL*8 DAFRN,DT(2)
+      DATA AWARD/
+     + -30208,-30208,-30208,-30208,-30208,16544,12997,-30208,9888,
+     + 965,5792,-15102,-24390,-24390,10656,-17918,-24379,-30208,
+     + 9376,709,928,965,5024,-15102,-24390,-24390,4768,-12798,
+     + -15443,-20041,-20303,4000,-17918,-24379,-30208,5280,4293,
+     + 2208,4037,1184,-15102,-24390,-24390,10656,-17760,-14966,
+     + 5536,-15067,-24379,1184,12485,-30208,5792,2501,4000,3525,
+     + 4512,-15102,-24379,-30208,8096,1989,928,1477,1184,-15094,
+     + -24379,3744,-15102,-24379,-30208,9888,965,2976,-15094,-24379,
+     + 3232,-15102,-24379,-30208,14240,-15095,-24379,2720,-15102,
+     + -24379,-30208,14752,3525,1696,-15102,-24379,-30208,13984,
+     + 965,-24390,2976,1989,672,2245,-30208,13472,-17723,1184,
+     + -17903,-24572,-15097,-24379,-30208,13216,-20819,-15101,
+     + -24403,-17915,-21225,-24379,-30208,13472,-17723,1184,-17892,
+     + -24379,-30208,13984,709,672,-17900,-24568,-14966,14496,
+     + 6085,-30208,-30208,-30208,-30208,14240,-10834,-24365,-20832,
+     + -11346,-24379,-4364,-6670,-3854,-5645,-6774,-30208,-30208,
+     + -30208,8864,-14609,-3424,-6939,-4625,-4365,-2830,-7692,
+     + -5650,-6240,-4107,-2829,-2847,-4380,-5650,-6240,-7710,
+     + -5652,-5644,-1632,-7693,-24351,-24365,-2847,-3341,-5911,
+     + -3936,-15391,-3852,-7703,-4470,-30208,12192,-11276,-7694,
+     + -6420,741,-2912,-15377,749,-7698,-7008,-7451,-3084,-4105,
+     + -3168,-2576,-4114,-24327,-4107,-30208,-30208,-30208,-30208,
+     + 15264,-2840,-6752,-3359,-4373,-24337,-6518,-30208/
+      DATA
+     +LINE0/:110466,'- Commodore Emeritus -',:105000/,
+     +LINE1/:110472,'(Expert level)',:105000/,
+     +LINE2/:110471,'(Emeritus level)',:105000/,
+     +LINE3/:110467,'this day of '/,
+     +LINE4/:110467,' Your score:'/,
+     +LINE5/:110463,'Klingons per stardate:'/
+      DT(1)=0
+      CALL TONL
+      CALL TNOUA(
+     +'Please give name you want printed on your citation: ',52)
+      CALL COMANL
+      CALL RDTK$$(4,LINE,NAME,16,ICD)
+      NL=LINE(2)
+      CALL COMO$$(:121,'AWARD',5,0,ICD)
+      I=0
+      M=0
+10    K=GCHAR(LOC(AWARD),I)
+      IF (K.EQ.0) GOTO 90
+      IF (K.NE.:212) GOTO 20
+      M=M+1
+      IF (M.NE.33) GOTO 15
+      CALL TNOUA(:110501-NL/2,2)
+      CALL TNOUA(NAME,NL)
+15    CALL TONL
+      GOTO 90
+20    IF (K.GT.:200) GOTO 30
+      N=GCHAR(LOC(AWARD),I)
+      DO 25 J=1,K
+            CALL T1OU(N)
+25    CONTINUE
+      GOTO 90
+30    CALL T1OU(K)
+90    IF (I.LT.422) GOTO 10
+      CALL TNOU(LINE0,26)
+      IF (ISKILL.EQ.4) CALL TNOU(LINE1,18)
+      IF (ISKILL.EQ.5) CALL TNOU(LINE2,20)
+      CALL TNOUA(LINE3,14)
+      CALL TIMDAT(LINE,3)
+      CALL TNOUA(LINE(2),2)
+      CALL TNOUA('/',1)
+      CALL TNOUA(LINE(1),2)
+      CALL TNOUA('/',1)
+      CALL TNOU(LINE(3),2)
+      CALL TONL
+      CALL TNOUA(LINE4,14)
+      CALL TODEC(ISCORE)
+      CALL TONL
+      CALL TONL
+      CALL TNOUA(LINE5,24)
+      CALL PRTNUM(PERDAT,6,2)
+      CALL TONL
+      CALL COMO$$(:52,0,0,0,ICD)
+      CALL TONL
+      CALL TNOU('Your citation is now in your directory in file AWARD.'
+     +,54)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PRSTAT(K,LEFSID,RITSID)
+$INSERT STARTREK.INS.FTN
+      LOGICAL LEFSID,RITSID
+4     DO 150 I=1,10
+      JJ=I
+      IF (K.NE.0)JJ=K
+      IF (.NOT.LEFSID) GOTO 8
+      CALL PRTINT(I,2)
+      CALL T1OU(:240)
+      DO 5 J=1,10
+      CALL TNOUA(QUAD(I,J),2)
+5     CONTINUE
+      IF (RITSID) GOTO 8
+      CALL TONL
+      GOTO 150
+8     GOTO (10,20,30,40,50,60,70,80,90,100),JJ
+10    CALL TNOUA(' Stardate      ',15)
+      CALL PRTNUM(DATE,0,1)
+      CALL TONL
+      GOTO 140
+20    IF (CONDIT.NE.'DK') CALL NEWCND
+      CALL TNOUA(' Condition     ',15)
+      IF (CONDIT.EQ.'GR') GOTO 901
+      IF (CONDIT.EQ.'RD') GOTO 902
+      IF (CONDIT.EQ.'YE') GOTO 903
+      IF (CONDIT.EQ.'DK') GOTO 904
+      CALL TNOU('Ridiculous',10)
+      CALL NEWCND
+      GOTO 140
+901   CALL TNOU('Green',5)
+      GOTO 140
+902   CALL TNOU('Red',3)
+      GOTO 140
+903   CALL TNOU('Yellow',6)
+      GOTO 140
+904   CALL TNOU('Docked',6)
+      GOTO 140
+30    CALL TNOUA(' Position      ',15)
+      CALL PRTLOC(0,QUADX,QUADY)
+      CALL TNOUA(', ',2)
+      CALL PRTLOC(0,SECTX,SECTY)
+      CALL TONL
+      GOTO 140
+40    CALL TNOUA(' Life support  ',15)
+      IF (DAMAGE(5).NE.0) GOTO 44
+      CALL TNOUA('active',6)
+      GOTO 46
+44    IF (CONDIT.NE.'DK') GOTO 45
+      CALL TNOUA('damaged, supported by Starbase',30)
+      GOTO 46
+45    CALL TNOUA('damaged, reserves = ',20)
+      CALL PRTNUM(LSUPRS,4,2)
+46    CALL TONL
+      GOTO 140
+50    CALL TNOUA(' Warp factor   ',15)
+      CALL PRTNUM(WRPFAC,0,1)
+      CALL TONL
+      GOTO 140
+60    CALL TNOUA(' Energy        ',15)
+      CALL PRTNUM(ENERGY,0,2)
+      CALL TONL
+      GOTO 140
+70    CALL TNOUA(' Torpedoes     ',15)
+      CALL TOVFD$(TORPS)
+      CALL TONL
+      GOTO 140
+80    CALL TNOUA(' Shields       ',15)
+      IF (SHLDUP.EQ.0) GOTO 82
+      CALL TNOUA('up: ',4)
+      GOTO 85
+82    IF (DAMAGE(8).LE.0) GOTO 83
+      CALL TNOUA('damaged:  ',9)
+      GOTO 85
+83    CALL TNOUA('down: ',6)
+85    CONTINUE
+      CALL TOVFD$(IFIX(100*SHIELD/INSHLD+.5))
+      CALL TNOUA('%,  ',3)
+      J=SHIELD
+      CALL TOVFD$(J)
+      CALL TNOU(' units',6)
+      GOTO 140
+90    CALL TNOUA(' Klingons left ',15)
+      CALL TOVFD$(REMKL)
+      CALL TONL
+      GOTO 140
+100   CALL TNOUA(' Time left     ',15)
+      CALL PRTNUM(REMTIM,0,2)
+      CALL TONL
+140   IF (K.EQ.0) GOTO 150
+      K=0
+      RETURN
+150   CONTINUE
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PRTDEV(K)
+      DIMENSION L(13)
+      DATA L /13,13,7,12,12,12,15,7,14,13,8,11,14/
+      J=IABS(K)
+      GOTO (901,902,903,904,905,906,907,908,909,910,911,912,913),J
+901   CALL TNOUA('S. r. sensors',13)
+      GOTO 1000
+902   CALL TNOUA('L. r. sensors',13)
+      GOTO 1000
+903   CALL TNOUA('Phasers',7)
+      GOTO 1000
+904   CALL TNOUA('Photon tubes',12)
+      GOTO 1000
+905   CALL TNOUA('Life support',12)
+      GOTO 1000
+906   CALL TNOUA('Warp engines',12)
+      GOTO 1000
+907   CALL TNOUA('Impulse engines',15)
+      GOTO 1000
+908   CALL TNOUA('Shields',7)
+      GOTO 1000
+909   CALL TNOUA('Subspace radio',14)
+      GOTO 1000
+910   CALL TNOUA('Shuttle craft',13)
+      GOTO 1000
+911   CALL TNOUA('Computer',8)
+      GOTO 1000
+912   CALL TNOUA('Transporter',11)
+      GOTO 1000
+913   CALL TNOUA('Shield control',14)
+1000  IF (K .GT. 0) RETURN
+      L19J=19-L(J)
+      DO 1001 I=1,L19J
+1001  CALL T1OU(:240)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PRTINT(I,J)
+      M=IABS(I)
+      N=J
+      K=1
+10    N=N-1
+      K=10*K
+      IF (K.LE.M) GOTO 10
+      IF (I.LT.0) N=N-1
+      IF (N.GT.0) CALL TNOUA('          ',N)
+      CALL TOVFD$(I)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PRTLOC(KEY,IX,IY)
+      IF (KEY.EQ.1) CALL TNOUA(' Quadrant ',10)
+      IF (KEY.EQ.2) CALL TNOUA(' Sector ',8)
+      IF (KEY.EQ.3) CALL TNOUA(' quadrant ',10)
+      IF (KEY.EQ.4) CALL TNOUA(' sector ',8)
+      CALL TOVFD$(IX)
+      CALL TNOUA(' - ',3)
+      CALL TOVFD$(IY)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PRTNUM(VAL,IFLD,IDEC)
+      REAL V
+      LOGICAL MINUS
+      PARAMETER IMINUS=:255, ISTOP=:256
+      MINUS=VAL.LT.0
+      N=IFLD-IDEC-1
+      IF (MINUS) N=N-1
+      V=VAL
+      IF (MINUS) VAL=-VAL
+      IVAL=V+.5
+      IF (IDEC.LE.0) GOTO 20
+      N=N-1
+      M=1
+      DO 15 I=1,IDEC
+15    M=10*M
+      V=M*V+.5
+      IVAL=V/M
+      JVAL=V-IVAL*FLOAT(M)
+20    K=10
+25    IF (K.GT.IVAL) GOTO 30
+      K=10*K
+      N=N-1
+      GOTO 25
+30    IF (N.GT.0) CALL TNOUA('    ',N)
+      IF (MINUS) CALL T1OU(IMINUS)
+      CALL TOVFD$(IVAL)
+      IF (IDEC.LE.0) RETURN
+      CALL T1OU(ISTOP)
+      N=IDEC-1
+      K=10
+35    IF (K.GT.JVAL) GOTO 40
+      K=10*K
+      N=N-1
+      GOTO 35
+40    CALL TNOUA('0000',N)
+      CALL TOVFD$(JVAL)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PRTOBJ(I,J,K,L)
+      CALL PRTOBN(I)
+      II=3
+      IF (J.EQ.0) II=4
+      CALL TNOUA(' at ',II)
+      CALL PRTLOC(J,K,L)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PRTOBN(II)
+$INSERT STARTREK.INS.FTN
+      IF (II.EQ.'R ') GOTO 10
+      IF (II.EQ.'K ') GOTO 20
+      IF (II.EQ.'C ') GOTO 30
+      IF (II.EQ.'S ') GOTO 40
+      IF (II.EQ.'* ') GOTO 50
+      IF (II.EQ.'P ') GOTO 60
+      IF (II.EQ.'B ') GOTO 70
+      IF (II.EQ.'  ') GOTO 80
+      RETURN
+10    CALL TNOUA('Romulan',7)
+      RETURN
+20    CALL TNOUA('Klingon',7)
+      RETURN
+30    CALL TNOUA('Commander',9)
+      RETURN
+40    CALL TNOUA('Super-Commander',15)
+      RETURN
+50    CALL TNOUA('Star',4)
+      RETURN
+60    CALL TNOUA('Planet',6)
+      RETURN
+70    CALL TNOUA('Starbase',8)
+      RETURN
+80    CALL TNOUA('Black Hole',10)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE PRTSHP
+$INSERT STARTREK.INS.FTN
+      IF (SHIP.EQ.'E ') CALL TNOUA('Enterprise',10)
+      IF (SHIP.EQ.'F ') CALL TNOUA('Faerie Queene',13)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE RAM(IARRAM)
+$INSERT STARTREK.INS.FTN
+      CALL TNOU('*** Red alert!  RED ALERT! ***',30)
+      CALL TNOU('*** Collision imminent. ***',27)
+      CALL TONL
+      CALL TONL
+      CALL TNOUA('*** ',4)
+      CALL PRTSHP
+      TYPE=1
+      IENM=QUAD(SECTX,SECTY)
+      IF (IENM.EQ.'R ') TYPE=1.5
+      IF (IENM.EQ.'C ') TYPE=2
+      IF (IENM.EQ.'S ') TYPE=2.5
+      CALL TNOUA(' on collosion course with ',26)
+      CALL PRTOBJ(IENM,4,SECTX,SECTY)
+      CALL TONL
+      CALL TONL
+      CALL TNOU(
+     +'Helmsman Sulu:  "Captain, do you want to ram the vessel?"',57)
+      IF (JA(0)) GOTO 5
+      CALL TONL
+      CALL TNOU('WHOOOP.....WHOOOP......WHOOOP',29)
+      CALL TNOU('Full reverse warp.',18)
+      CALL TONL
+      GOTO IARRAM
+C****  ELSE WE RAM
+5     CALL TONL
+      CALL TNOUA('*** ',4)
+      CALL PRTSHP
+      CALL TNOUA(' rams ',6)
+      CALL PRTOBJ(IENM,4,SECTX,SECTY)
+      CALL TNOU('. ',1)
+      CALL DEADKL(SECTX,SECTY,IENM)
+      CALL TNOUA('*** ',4)
+      CALL PRTSHP
+      CALL TNOU(' heavily damaged.',17)
+      ICAS=10+20*RND(0)
+      CALL TNOUA('*** Sickbay reports ',20)
+      CALL TOVFD$(ICAS)
+      CALL TNOU(' casualties.',12)
+      CASUAL=CASUAL+ICAS
+      DO 10 L=1,NDEVIC
+      IF (DAMAGE(L).LT.0) GOTO 10
+      XTRADM=(10*TYPE*RND(0)+1)*DAMFAC
+      DAMAGE(L)=DAMAGE(L)+TIME+XTRADM
+10    CONTINUE
+      SHLDUP=0
+      IF (REMKL.NE.0) CALL DREPRT
+      IF (REMKL.EQ.0) CALL FINISH(1)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE REQEST
+$INSERT STARTREK.INS.FTN
+      LOGICAL LEFSID,RITSID,MATCH
+      INTEGER*4 ITEM,REQUES(10)
+      DATA REQUES/'DATE','COND','POSI','LSUP','WARP',
+     +'ENER','TORP','SHIE','KLIN','TIME'/
+      K=0
+301   CALL SCAN(ITEM,KEY)
+      IF (KEY.EQ.'AL') GOTO 303
+302   EOL=.TRUE.
+      CALL TNOUA('Information desired: ',21)
+      GOTO 301
+303   DO 304 I=1,10
+304   IF (MATCH(ITEM,REQUES(I))) K=I
+      IF (K.NE.0) GOTO 305
+      CALL TNOU('Unrecognised request.  Legal requests are:',42)
+      CALL TNOU('  Date, Condition, Position, Lsupport, Warpfactor',49)
+      CALL TNOU('  Energy, Torpedoes, Shields, Klingons, TIme.',45)
+      CALL TONL
+      GOTO 302
+305   EOL=.TRUE.
+      LEFSID=.FALSE.
+      CALL TONL
+      CALL PRSTAT(K,LEFSID,RITSID)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SCAN(AITEM,KEY)
+$INSERT STARTREK.INS.FTN
+      INTEGER*2 BUF(5),INF(8)
+      KEY='EL'
+      AITEM=0
+      IF (.NOT.EOL) GOTO 10
+      CALL COMANL
+      EOL=.FALSE.
+10    CALL RDTK$$(1,INF,BUF,5,ICD)
+      EOL=INF(1).EQ.6
+      IF (EOL) RETURN
+      DECODE(10,*,BUF,ERR=20)AITEM
+      KEY='RE'
+      RETURN
+20    KEY='AL'
+      CALL IMOVE(BUF,AITEM,2)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SCOM
+$INSERT STARTREK.INS.FTN
+      DIMENSION BDIST(5)
+C*    -------COMPUTE DISTANCES TO STARBASES.
+      IF (REMBAS.LE.0) GOTO 60
+      BDMAX=0
+      SX=ISX
+      SY=ISY
+      DO 1 I=1,REMBAS
+      BQX=BASEQX(I)
+      BQY=BASEQY(I)
+1     BDIST(I)=SQRT((BQX-SX)**2+(BQY-SY)**2)
+C*    -------SORT INTO NEAREST FIRST ORDER.
+      IF (REMBAS.LE.1) GOTO 4
+      MINUS1=REMBAS-1
+2     ISWTCH=0
+      DO 3 I=1,MINUS1
+      IF (BDIST(I).LE.BDIST(I+1)) GOTO 3
+      T=BDIST(I)
+      BDIST(I)=BDIST(I+1)
+      BDIST(I+1)=T
+      ISWTCH=1
+3     CONTINUE
+      IF (ISWTCH.NE.0) GOTO 2
+C*    -------LOOK FOR NEAREST BASE WITHOUT A COMMANDER, NO ENTERPRISE, AND
+C*    -------WITHOUT TOO MANY KLINGONS, AND NOT ALREADY UNDER ATTACK.
+4     IFNDIT=0
+      IWHCHB=0
+      DO 8 I=1,REMBAS
+      IBQX=BASEQX(I)
+      IBQY=BASEQY(I)
+      IF ((IBQX.EQ.QUADX).AND.(IBQY.EQ.QUADY)) GOTO 8
+      IF ((IBQX.EQ.BATX).AND.(IBQY.EQ.BATY)) GOTO 8
+      NUM=GALAXY(IBQX,IBQY)
+      IF (NUM.GT.899) GOTO 8
+      IF (REMCOM.LE.0) GOTO 6
+      DO 5 J=1,REMCOM
+      IF ((IBQX.EQ.CX(J)).AND.(IBQY.EQ.CY(J))) GOTO 7
+5     CONTINUE
+6     IFNDIT=1
+      IWHCHB=I
+      GOTO 10
+7     IF (IFNDIT.EQ.2) GOTO 8
+      IFNDIT=2
+      IWHCHB=I
+8     CONTINUE
+      IF (IFNDIT.EQ.0) RETURN
+      IBQX=BASEQX(IWHCHB)
+      IBQY=BASEQY(IWHCHB)
+C*    -------DECIDE HOW TO MOVE TOWARD BASE.
+10    IDELTX=IBQX-ISX
+      IF (IDELTX.GT.1) IDELTX=1
+      IF (IDELTX.LT.-1) IDELTX=-1
+      IDELTY=IBQY-ISY
+      IF (IDELTY.GT.1) IDELTY=1
+      IF (IDELTY.LT.-1) IDELTY=-1
+C*    -------ATTEMPT FIRST TO MOVE IN BOTH X AND Y DIRECTION.
+      IQX=ISX+IDELTX
+      IQY=ISY+IDELTY
+      ASSIGN 23 TO IWHERE
+C*    -------MAKE CHECKS ON POSSIBLE DESTINATION QUADRANT.
+15    IF ((IQX.EQ.QUADX).AND.(IQY.EQ.QUADY))
+     +GOTO IWHERE,(23,25,32,36,300)
+      IF ((IQX.LT.1).OR.(IQX.GT.8).OR.(IQY.LT.1).OR.(IQY.GT.8))
+     +GOTO IWHERE,(23,25,32,36,300)
+      NUM=GALAXY(IQX,IQY)
+      IF (NUM.GT.899) GOTO IWHERE,(23,25,32,36,300)
+C*    -------GO AHEAD AND MOVE.
+      GALAXY(ISX,ISY)=GALAXY(ISX,ISY)-100
+      ISX=IQX
+      ISY=IQY
+      GALAXY(ISX,ISY)=GALAXY(ISX,ISY)+100
+      IF (ISCATE.EQ.0) GOTO 40
+C*    -------S.C. HAS SCOOTED.  REMOVE HIM FROM CURRENT QUADRANT.
+      ISCATE=0
+      ISATB=0
+      ISHERE=0
+      IENTES=0
+      FUTURE(7)=1E38
+      DO 21 I=1,NENHER
+      LOCSUP=I
+      IX=KX(I)
+      IY=KY(I)
+      IF (QUAD(IX,IY).EQ.'S ') GOTO 22
+21    CONTINUE
+22    KX(LOCSUP)=KX(NENHER)
+      KY(LOCSUP)=KY(NENHER)
+      KDIST(LOCSUP)=KDIST(NENHER)
+      KAVGD(LOCSUP)=KAVGD(NENHER)
+      KPOWER(LOCSUP)=KPOWER(NENHER)
+      KLHERE=KLHERE-1
+      NENHER=NENHER-1
+      QUAD(IX,IY)='. '
+      IF (CONDIT.EQ.'DK') GOTO 40
+      CALL NEWCND
+      CALL SORTKL
+      GOTO 40
+C*    -------TRY SOME OTHER MANEUVERS
+23    IF ((IDELTX.EQ.0).OR.(IDELTY.EQ.0)) GOTO 30
+C*    -------TRY MOVING JUST IN X DIRECTION.
+      IQY=ISY
+      ASSIGN 25 TO IWHERE
+      GOTO 15
+C*    -------THEN TRY MOVING JUST IN Y DIRECTION.
+25    IQY=ISY+IDELTY
+      IQX=ISX
+      ASSIGN 300 TO IWHERE
+      GOTO 15
+C*    -------ATTEMPT ANGLE MOVE.
+30    IF (IDELTX.NE.0) GOTO 35
+      IQX=ISX+1
+      ASSIGN 32 TO IWHERE
+      GOTO 15
+32    IQX=ISX-1
+      ASSIGN 300 TO IWHERE
+      GOTO 15
+35    IQY=ISY+1
+      ASSIGN 36 TO IWHERE
+      GOTO 15
+36    IQY=ISY-1
+      ASSIGN 300 TO IWHERE
+      GOTO 15
+C*    -------SUPER-COMMANDER HAS MOVED.  CHECK SITUATION.
+C*    -------CHECK FOR A HELPFUL PLANET.
+40    DO 44 I=1,INPLAN
+      IPLAN=I
+      IF ((PLNETS(I,1).NE.ISX).OR.(PLNETS(I,2).NE.ISY)) GOTO 44
+      IF (PLNETS(I,4).NE.1) GOTO 45
+C*    -------DESTROY PLANET.
+      DO 43 J=1,5
+43    PLNETS(IPLAN,J)=0
+      NEWSTF(ISX,ISY)=NEWSTF(ISX,ISY)-1
+      IF (DAMAGE(9).GT.0) GOTO 45
+      CALL TONL
+      CALL TNOU('Lt. Uhura:  "Captain, Starfleet Command reports',47)
+      CALL TNOUA('that a planet in',16)
+      CALL PRTLOC(3,ISX,ISY)
+      CALL TNOU(' has been destroyed',19)
+      CALL TNOU('by the Super-Commander."',24)
+      GOTO 45
+44    CONTINUE
+C*    -------CHECK FOR A BASE.
+45    IF (REMBAS.EQ.0) GOTO 60
+      DO 46 I=1,REMBAS
+      IBQX=BASEQX(I)
+      IBQY=BASEQY(I)
+      IF (IBQX.EQ.ISX.AND.IBQY.EQ.ISY.AND.ISX.NE.BATX.AND.ISY.NE.
+     +BATY) GOTO 80
+46    CONTINUE
+C*    -------CHECK FOR INTELLIGENCE REPORT.
+      IF (RND(0).GT..2) RETURN
+      IF (DAMAGE(9).GT.0.OR.STARCH(ISX,ISY).GT.0) RETURN
+      CALL TONL
+      CALL TNOU(
+     +'Lt. Uhura:  "Captain, Starfleet Intelligence reports',52)
+      CALL TNOUA('the Super-Commander in',22)
+      CALL PRTLOC(3,ISX,ISY)
+      CALL TNOU('."',2)
+C*    -------NOTHING ELSE TO DO.
+      RETURN
+C*    -------NOTHING AVAILABLE.  GO INTO HIBERNATION.
+60    FUTURE(6)=1E38
+      RETURN
+C*    -------ATTACK A BASE.
+80    ISATB=1
+      FUTURE(7)=DATE+1+2*RND(0)
+      IF (BATX.NE.0) FUTURE(7)=FUTURE(7)+FUTURE(5)-DATE
+      IF (DAMAGE(9).GT.0) RETURN
+      CALL TONL
+      CALL TNOUA('Lt. Uhura:  "Captain, the Starbase in',37)
+      CALL PRTLOC(3,ISX,ISY)
+      CALL TONL
+      CALL TNOU(
+     +'reports that it is attacked by the Klingon Super-Commander.',59)
+      CALL TNOUA('It can survive until stardate ',30)
+      CALL PRTNUM(FUTURE(7),0,1)
+      CALL TNOU('."',2)
+300   RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SCORE(ICIT)
+$INSERT STARTREK.INS.FTN
+      TIMUSD=DATE-INDATE
+      IF (TIMUSD.EQ.0.OR.REMKL.NE.0) TIMUSD=AMAX1(TIMUSD,5.0)
+      PERDAT=(KILLC+KILLK+NSCKIL)/TIMUSD
+      ITHPRD=500*PERDAT+.5
+      IWON=0
+      IF (GAMWON.NE.0) IWON=100*SKILL
+      IF (SHIP.EQ.'E ') KLSHIP=0
+      IF (SHIP.EQ.'F ') KLSHIP=1
+      IF (SHIP.EQ.0)   KLSHIP=2
+      IDIED=0
+      IF (ALIVE.EQ.0) IDIED=200
+      IF (GAMWON.EQ.0) NROMRM=0
+      ISCORE=10*KILLK+50*KILLC+ITHPRD+IWON-IDIED-
+     +100*BASEKL-100*KLSHIP-45*NHELP-5*STARKL-CASUAL+
+     +20*NROMKL+200*NSCKIL-10*NPLNKL+NROMRM
+      IF (ICIT.EQ.1) CALL PLAQUE(ISCORE,PERDAT,SKILL)
+      IF (ALIVE.EQ.0) GOTO 1
+      CALL TONL
+      CALL TNOU('Live long and prosper.',22)
+1     CALL TONL
+      CALL TONL
+      CALL SLEEP$(005000)
+      CALL TNOU('Your score: ',12)
+      CALL TONL
+      CALL TNOUA('Item                      ',26)
+      CALL TNOU('        Quantity   Points',25)
+      CALL TONL
+      IF (NROMKL.EQ.0) GOTO 2
+      CALL TNOUA('Romulans destroyed                ',34)
+      CALL TODEC(NROMKL)
+      CALL PRTINT(20*NROMKL,10)
+      CALL TONL
+2     IF (NROMRM.EQ.0) GOTO 5
+      CALL TNOUA('Romulans captured                 ',34)
+      CALL TODEC(NROMRM)
+      CALL PRTINT(NROMRM,10)
+      CALL TONL
+5     IF (KILLK.EQ.0) GOTO 10
+      CALL TNOUA('Ordinary Klingons destroyed       ',34)
+      CALL TODEC(KILLK)
+      CALL PRTINT(10*KILLK,10)
+      CALL TONL
+10    IF (KILLC.EQ.0) GOTO 12
+      CALL TNOUA('Klingon Commanders destroyed      ',34)
+      CALL TODEC(KILLC)
+      CALL PRTINT(50*KILLC,10)
+      CALL TONL
+12    IF (NSCKIL.EQ.0) GOTO 15
+      CALL TNOUA('Super-Commanders destroyed             1',40)
+      CALL TNOU('       200',10)
+15    IF (ITHPRD.EQ.0) GOTO 20
+      CALL TNOUA('Klingons per stardate, average    ',34)
+      CALL PRTNUM(PERDAT,6,2)
+      CALL PRTINT(ITHPRD,10)
+      CALL TONL
+20    IF (STARKL.EQ.0) GOTO 30
+      CALL TNOUA('Stars destroyed by your action    ',34)
+      CALL TODEC(STARKL)
+      CALL PRTINT(-5*STARKL,10)
+      CALL TONL
+30    IF (NPLNKL.EQ.0) GOTO 32
+      CALL TNOUA('Planets destroyed by your action  ',34)
+      CALL TODEC(NPLNKL)
+      CALL PRTINT(-10*NPLNKL,10)
+      CALL TONL
+32    IF (BASEKL.EQ.0) GOTO 35
+      CALL TNOUA('Bases destroyed by your action    ',34)
+      CALL TODEC(BASEKL)
+      CALL PRTINT(-100*BASEKL,10)
+      CALL TONL
+35    IF (NHELP.EQ.0) GOTO 40
+      CALL TNOUA('Calls for help from Starbase      ',34)
+      CALL TODEC(NHELP)
+      CALL PRTINT(-45*NHELP,10)
+      CALL TONL
+40    IF (CASUAL.EQ.0) GOTO 45
+      CALL TNOUA('Casualties incurred               ',34)
+      CALL TODEC(CASUAL)
+      CALL PRTINT(-CASUAL,10)
+      CALL TONL
+45    IF (KLSHIP.EQ.0) GOTO 50
+      CALL TNOUA('Ships lost or destroyed           ',34)
+      CALL TODEC(KLSHIP)
+      CALL PRTINT(-100*KLSHIP,10)
+      CALL TONL
+50    IF (ALIVE.NE.0) GOTO 60
+      CALL TNOU(
+     +'Penalty for getting yourself killed           -200',50)
+60    IF (GAMWON.EQ.0) GOTO 70
+      CALL TNOUA('Bonus for winning ',18)
+      IF (SKILL.EQ.1) CALL TNOUA('Novice game  ',13)
+      IF (SKILL.EQ.2) CALL TNOUA('Fair game    ',13)
+      IF (SKILL.EQ.3) CALL TNOUA('Good game    ',13)
+      IF (SKILL.EQ.4) CALL TNOUA('Expert game  ',13)
+      IF (SKILL.EQ.5) CALL TNOUA('Emeritus game',13)
+      CALL TNOUA('             ',13)
+      CALL TODEC(IWON)
+      CALL TONL
+70    CALL TONL
+      CALL TNOUA('Total score                                 ',44)
+      CALL PRTINT(ISCORE,6)
+      CALL TONL
+80    FORMAT(I6)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SENSOR
+$INSERT STARTREK.INS.FTN
+      CALL TONL
+      IF (DAMAGE(1).EQ.0) GOTO 60
+      CALL TNOU('Short range sensors damaged.',28)
+      GOTO 13
+60    IF (PLANTX.NE.0) GOTO 65
+      CALL TNOU('No planet in this quadrant.',27)
+      GOTO 13
+65    CALL TNOUA('Spock:  "Sensor scan for ',25)
+      CALL PRTLOC(3,QUADX,QUADY)
+      CALL TNOU(': ',1)
+      CALL TONL
+      CALL TNOUA('        Planet at',17)
+      CALL PRTLOC(4,PLANTX,PLANTY)
+      CALL TNOUA(' is of class ',13)
+      ICLASS=PLNETS(IPLANT,3)
+      IDIL=PLNETS(IPLANT,4)
+      CALL T1OU(:314+ICLASS)
+      CALL TNOU('. ',1)
+      CALL TNOUA('        Readings indicate ',26)
+      IF (IDIL.EQ.0) CALL TNOUA('no  ',3)
+      CALL TNOU('dilithium crystals present."',28)
+      PLNETS(IPLANT,5)=1
+13    EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SETUP
+$INSERT STARTREK.INS.FTN
+      COMMON /FREEZR/IFROZE
+      EQUIVALENCE (CRACKS(2),SHUTUP)
+      LOGICAL FROZEN,IFROZE
+      ALLDUN=0
+      GAMWON=0
+      IDEBUG=0
+C*    -------DECIDE HOW MANY OF EVERYTHING
+      CALL CHOOSE(FROZEN)
+      IF (FROZEN) RETURN
+C*    -------PREPARE THE ENTERPRISE
+      IFROZE=.FALSE.
+      SHIP='E '
+      INENRG=5000
+      ENERGY=5000
+      INSHLD=2500
+      SHIELD=2500
+      SHLDUP=0
+      SHDCHG=0
+      INLSR=4
+      LSUPRS=4
+      CALL IRAN(8,QUADX,QUADY)
+      CALL IRAN(10,SECTX,SECTY)
+      INTORP=10
+      TORPS=10
+      WRPFAC=5
+      WFACSQ=25
+      DO 3 I=1,NDEVIC
+3     DAMAGE(I)=0
+C*    -------SET UP ASSORTED GAME PARAMETERS
+      SHUTUP=0
+      BATX=0
+      BATY=0
+      IDATE=31*RND(0)+20
+      INDATE=100*IDATE
+      DATE=INDATE
+      KILLK=0
+      KILLC=0
+      NKINKS=0
+      NHELP=0
+      RSTING=0
+      CASUAL=0
+      NROMKL=0
+      ISATB=0
+      ISCATE=0
+      IMINE=0
+      ICRSTL=0
+      ICRAFT=0
+      ISX=0
+      ISY=0
+      NSCKIL=0
+      NPLNKL=0
+      ISCRFT=1
+      LANDED=-1
+      CRYPRB=.05
+      ALIVE=1
+      DCKFAC=.25
+      DO 4 I=1,8
+      DO 4 J=1,8
+      NEWSTF(I,J)=0
+4     STARCH(I,J)=0
+C*    -------INITIALIZE TIMES FOR EXTRANEOUS EVENTS
+      FUTURE(1)=DATE+EXPRAN(.5*INTIME)
+      FUTURE(2)=DATE+EXPRAN(1.5*INTIME/REMCOM)
+      FUTURE(3)=DATE+EXPRAN(.5*INTIME)
+      FUTURE(4)=DATE+EXPRAN(.3*INTIME)
+      FUTURE(5)=1E38
+      FUTURE(6)=1E38
+      IF (NSCREM.NE.0) FUTURE(6)=DATE+.2777
+      FUTURE(7)=1E38
+C*    -------PUT STARS IN THE GALAXY
+      INSTAR=0
+      DO 5 I=1,8
+      DO 5 J=1,8
+      K=RND(0)*9+1
+      INSTAR=INSTAR+K
+5     GALAXY(I,J)=K
+      STARKL=0
+C*    ------LOCATE STARBASES IN THE GALAXY
+      DO 8 I=1,INBASE
+7     CALL IRAN(8,IX,IY)
+      IF (IX.EQ.QUADX.AND.IY.EQ.QUADY) GOTO 7
+      IF (GALAXY(IX,IY).GE.10) GOTO 7
+      BASEQX(I)=IX
+      BASEQY(I)=IY
+      STARCH(IX,IY)=-1
+8     GALAXY(IX,IY)=GALAXY(IX,IY)+10
+      BASEKL=0
+C*    -------POSITION ORDINARY KLINGON BATTLE CRUISERS
+      KREM=INKLNG-INCOM-NSCREM
+      KLUMPR=.25*SKILL*(9-LENGTH)+1
+      KLUMPR=MIN0(9,KLUMPR)
+10    KLUMP=(1-RND(0)**2)*KLUMPR
+      IF (KLUMP.GT.KREM) KLUMP=KREM
+      NUM=100*KLUMP
+15    CALL IRAN(8,IX,IY)
+      IF (IX.EQ.QUADX.AND.IY.EQ.QUADY) GOTO 15
+      IF (GALAXY(IX,IY)+NUM.GT.999) GOTO 15
+      GALAXY(IX,IY)=GALAXY(IX,IY)+NUM
+      KREM=KREM-KLUMP
+      IF (KREM.NE.0) GOTO 10
+C*    -------POSITION KLINGON COMMAND SHIPS
+      DO 18 I=1,INCOM
+16    CALL IRAN(8,IX,IY)
+      IF (IX.EQ.QUADX.AND.IY.EQ.QUADY) GOTO 16
+      IF (GALAXY(IX,IY).LT.99.AND.RND(0).LT..75) GOTO 16
+      IF (GALAXY(IX,IY).GT.899) GOTO 16
+      IF (I.EQ.1) GOTO 17
+      IM1=I-1
+      DO 1605 JJ=1,IM1
+      IF (CX(JJ).EQ.IX.AND.CY(JJ).EQ.IY) GOTO 16
+1605  CONTINUE
+17    GALAXY(IX,IY)=GALAXY(IX,IY)+100
+      CX(I)=IX
+18    CY(I)=IY
+C*    -------LOCATE PLNETS IN GALAXY
+      DO 20 I=1,INPLAN
+19    CALL IRAN(8,IX,IY)
+      IF (NEWSTF(IX,IY).GT.0) GOTO 19
+      NEWSTF(IX,IY)=1
+      PLNETS(I,1)=IX
+      PLNETS(I,2)=IY
+C*    -------DECIDE WHAT KIND OF PLANET  M=1, N=2, O=3.
+      PLNETS(I,3)=RND(0)*3+1
+C*    -------DECIDE WHETHER DILITHIUM CRYSTALS ARE PRESENT.
+      PLNETS(I,4)=1.2*RND(0)
+      PLNETS(I,5)=0
+20    CONTINUE
+C*    -------LOCATE ROMULANS.
+      DO 21 I=1,NROMRM
+200   CALL IRAN(8,IX,IY)
+      IF (IX.EQ.QUADX.AND.IY.EQ.QUADY) GOTO 200
+21    NEWSTF(IX,IY)=NEWSTF(IX,IY)+10
+C*    -------LOCATE THE SUPER-COMMANDER, IF NEEDED.
+      IF (NSCREM.LT.1) GOTO 23
+22    CALL IRAN(8,IX,IY)
+      IF (IX.EQ.QUADX.AND.IY.EQ.QUADY) GOTO 22
+      IF (GALAXY(IX,IY).GT.899) GOTO 22
+      ISX=IX
+      ISY=IY
+      GALAXY(IX,IY)=GALAXY(IX,IY)+100
+23    IDATE=DATE
+      CALL TONL
+      CALL TONL
+      CALL TONL
+      SNAP=0
+C*    -------DECIDE IF GALAXY NEEDS A "THING"
+      IF ((RND(0).GT..04).OR.(THINGX.EQ.-1)) GOTO 2301
+      CALL IRAN(8,THINGX,THINGY)
+      GOTO 2302
+2301  THINGX=0
+      THINGY=0
+C*    -------IF PLAYER IS A NOVICE, PRINT FULL INITIAL MESSAGE
+2302  IF (SKILL.NE.1) GOTO 24
+      CALL TNOUA('It is stardate ',15)
+      CALL TOVFD$(IDATE)
+      CALL TNOU('. The Federation is being attacked by',38)
+      CALL TNOU(
+     +'a deadly Klingon invasion force. As Captain of ',47)
+      CALL TNOU(
+     +'starship U.S.S. Enterprise, it is your mission to ',50)
+      CALL TNOUA('seek out and destroy this invasion force of ',44)
+      CALL TOVFD$(INKLNG)
+      CALL TONL
+      CALL TNOU('battle cruisers. You have an initial allotment',46)
+      CALL TNOUA('of ',3)
+      CALL TOVFD$(INTIME)
+      CALL TNOU(' stardates to complete your mission.',36)
+      CALL TNOU('As you proceed you may be given more time.',42)
+      CALL TONL
+      CALL TNOUA('You will have ',14)
+      CALL TOVFD$(INBASE)
+      CALL TNOU(' supporting starbases.',22)
+      CALL TONL
+      GOTO 30
+C*    -------IF PLAYER IS NOT A NOVICE, PRINT BRIEF INITIAL MESSAGE
+24    CALL TNOUA('Stardate ',9)
+      CALL TOVFD$(IDATE)
+      CALL TONL
+      CALL TONL
+      CALL TOVFD$(INKLNG)
+      CALL TNOU(' Klingons',9)
+      CALL TNOU('An unknown number of Romulans',29)
+      IF (NSCREM.NE.0) CALL TNOU('and one (GULP) <Super-Commander>.',33)
+      CALL TOVFD$(INTIME)
+      CALL TNOU(' stardates',10)
+      CALL TOVFD$(INBASE)
+      CALL TNOUA(' starbases:  quadrants  ',24)
+      GOTO 40
+30    CALL TNOUA('Starbase locations: ',20)
+40    DO 50 I=1,INBASE
+      CALL TOVFD$(BASEQX(I))
+      CALL TNOUA(' -  ',3)
+      CALL TOVFD$(BASEQY(I))
+      IF (I.LT.INBASE) CALL TNOUA(', ',2)
+50    CONTINUE
+      CALL TONL
+      CALL TONL
+      CALL TNOUA('The Enterprise is currently in',30)
+      CALL PRTLOC(3,QUADX,QUADY)
+      CALL TNOUA(',',1)
+      CALL PRTLOC(4,SECTX,SECTY)
+      CALL TONL
+      CALL TONL
+      CALL TNOUA('Good luck!',10)
+      IF (NSCREM.NE.0) CALL TNOUA(' You''ll need it.',16)
+      CALL TONL
+      CALL NEWQAD
+      IF (NEUTZ.NE.0) CALL ATTACK(0)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SETWRP
+$INSERT STARTREK.INS.FTN
+10    CALL SCAN(AITEM,KEY)
+      EOL=.TRUE.
+      IF (KEY.NE.'EL') GOTO 20
+      CALL TNOUA('Warp factor: ',13)
+      GOTO 10
+20    IF (KEY.NE.'RE') GOTO 40
+      IF (DAMAGE(6).GT.10) GOTO 70
+      IF (DAMAGE(6).GT.0.AND.AITEM.GT.4) GOTO 80
+      IF (AITEM.LT.1) GOTO 50
+      IF (AITEM.GT.10) GOTO 60
+      OLDFAC=WRPFAC
+      WRPFAC=AITEM
+      WFACSQ=WRPFAC*WRPFAC
+C*    -------GIVE ACCEPTANCE MESSAGE FOR WARP FACTORS <= 6 OR REDUCED
+      IF (WRPFAC.LE.OLDFAC.OR.WRPFAC.LE.6) GOTO 31
+      IF (WRPFAC.LT.8) GOTO 32
+      GOTO 33
+31    CALL TNOUA('Helsman Sulu:  "Warp factor ',28)
+      CALL PRTNUM(WRPFAC,0,1)
+      CALL TNOU(', Captain."',11)
+      RETURN
+C*    -------GIVE WARNING MESSAGES FOR WARP FACTORS ABOVE WARP 6
+32    CALL TNOU(
+     +'Engineer Scott:  "Aye, but our maximum safe speed is warp 6."',
+     +61)
+      RETURN
+33    IF (WRPFAC.EQ.10) GOTO 36
+      CALL TNOU(
+     +'Engineer Scott:  "Aye, Sir, but our engines may not take it."',
+     +61)
+      RETURN
+36    CALL TNOU('Engineer Scott:  "Aye, Captain, we''ll try it."',46)
+      RETURN
+C*    -------GIVE REFUSAL MESSAGES FOR BAD WARP COMMANDS
+40    CALL TNOU('"Beg your pardon, Captain?"',27)
+      RETURN
+50    CALL TNOU(
+     +'Helmsman Sulu:  "We can''t go below warp 1, Captian."',52)
+      RETURN
+60    CALL TNOU(
+     +'Helmsman Sulu:  "Our top speed is warp 10, Captain."',52)
+      RETURN
+70    CALL TNOU('Warp engines inoperative.',25)
+      RETURN
+80    CALL TNOU('Engineer Scott:  "I''m doing my best, Captain,',45)
+      CALL TNOU('but right now we can only make warp 4."',39)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SHIELS(IRQSHU)
+$INSERT STARTREK.INS.FTN
+      INTEGER*4 ITEM
+      LOGICAL MATCH
+      IF (IRQSHU.NE.0) GOTO 17
+      IDIDIT=0
+10    CALL SCAN(ITEM,KEY)
+      IF (KEY.NE.'EL') GOTO 30
+15    CALL TNOUA('Do you wish to change shield energy? ',37)
+      IF (JA(0)) GOTO 8010
+      IF (DAMAGE(8).NE.0) GOTO 60
+      IF (SHLDUP.NE.0) GOTO 20
+17    CALL TNOUA('Shileds are down.  Do you want them up? ',40)
+      IF (JA(0)) GOTO 40
+      GOTO 90
+20    CALL TNOUA('Shields are up.  Do you want them down? ',40)
+      IF (JA(0)) GOTO 50
+      GOTO 90
+30    IF (MATCH(ITEM,'TRAN')) GOTO 80
+      EOL=.TRUE.
+      IF (DAMAGE(8).NE.0) GOTO 60
+      IF (MATCH(ITEM,'UP  ')) GOTO 40
+      IF (MATCH(ITEM,'DOWN')) GOTO 50
+      GOTO 15
+C*    -------RAISE SHIELDS
+40    IF (SHLDUP.NE.0) GOTO 45
+      SHLDUP=1
+      SHDCHG=1
+      IF (CONDIT.NE.'DK') ENERGY=ENERGY-50
+      CALL TNOU('Shields raised.',15)
+      IF (ENERGY.LE.0) GOTO 70
+      IDIDIT=1
+      RETURN
+45    CALL TNOU('Shields already up.',19)
+      RETURN
+C*    -------LOWER SHIELDS
+50    IF (SHLDUP.EQ.0) GOTO 55
+      SHLDUP=0
+      SHDCHG=1
+      CALL TNOU('Shields lowered.',16)
+      IDIDIT=1
+      RETURN
+55    CALL TNOU('Shields already down.',21)
+      RETURN
+C*    -------SHIELD DAMAGE
+60    CALL TNOU('Shields damaged and down.',25)
+      RETURN
+C*    -------ENERGY TOTALLY DEPLETED
+70    CALL TONL
+      CALL TNOU('Shields use up last of energy.',30)
+      CALL FINISH(4)
+      RETURN
+C*    -------CHANGE SHIELD ENERGY.
+80    CALL SCAN(ETRANS,KEY)
+      IF (KEY.EQ.'RE') GOTO 81
+      EOL=.TRUE.
+8010  CALL TNOUA('Energy to transfer to shields: ',31)
+      GOTO 80
+81    IF (ETRANS.EQ.0) GOTO 90
+      IF (ETRANS.LT.ENERGY) GOTO 82
+      CALL TNOU('Insufficient ship energy.',25)
+      GOTO 90
+82    IDIDIT=1
+      IF (SHIELD+ETRANS.LE.INSHLD) GOTO 83
+      CALL TNOU('Shield energy maximised.',24)
+      CALL TNOU('Excess energy requested returned to ship energy',47)
+      ENERGY=ENERGY+SHIELD-INSHLD
+      SHIELD=INSHLD
+      GOTO 90
+C*    -------PREVENT SHIELD-DRAIN LOOPHOLE.
+83    IF (ETRANS.GT.0) GOTO 8310
+      IF (ENERGY-ETRANS.LE.INENRG) GOTO 8310
+      CALL TONL
+      CALL TNOU('"Engineering to Bridge - Scott here.  Power circuit',
+     +51)
+      CALL TNOU('problem, Captain.  I can''t drain the shields."',46)
+      IDIDIT=0
+      GOTO 90
+8310  IF (SHIELD+ETRANS.GE.0) GOTO 84
+      CALL TNOU('All shield energy transferred to ship.',38)
+      ENERGY=ENERGY+SHIELD
+      SHIELD=0
+      GOTO 90
+84    CALL TNOUA('Scotty:  "',10)
+      IF (ETRANS.GT.0) CALL TNOUA('Transferring',12)
+      IF (ETRANS.LT.0) CALL TNOUA('Draining',8)
+      CALL TNOUA(' energy ',8)
+      IF (ETRANS.GT.0) CALL TNOUA('to',2)
+      IF (ETRANS.LT.0) CALL TNOUA('from',4)
+      CALL TNOU(' shields."',10)
+      SHIELD=SHIELD+ETRANS
+      ENERGY=ENERGY-ETRANS
+90    EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SNOVA(INSX,INSY)
+$INSERT STARTREK.INS.FTN
+      INTEGER COMDED
+      NSX=INSX
+      NSY=INSY
+C*    -------IF SCHEDULED SUPERNOVA (INSX=INSY=0), SELECT STAR
+      IF (INSX.NE.0) GOTO 50
+      NUM=RND(0)*INSTAR+1
+      DO 10 NQX=1,8
+      DO 10 NQY=1,8
+      NUM=NUM-MOD(GALAXY(NQX,NQY),10)
+      IF (NUM.LE.0) GOTO 20
+10    CONTINUE
+C*    -------IF STAR IS ALREADY GONE, RETURN EMPTY-HANDED
+      RETURN
+C*    -------IF STARSHIP IS IN THIS QUADRANT, CHOOSE STAR EXACTLY
+20    IF (NQX.NE.QUADX.OR.NQY.NE.QUADY) GOTO 70
+C*    -------UNLESS STARSHIP JUST GOT HERE; THEN TREAT SUPERNOVA AS
+      IF (JUSTIN.NE.0) GOTO 70
+      NUM=RND(0)*MOD(GALAXY(NQX,NQY),10)+1
+      DO 30 NSX=1,10
+      DO 30 NSY=1,10
+      IF (QUAD(NSX,NSY).NE.'* ') GOTO 30
+      NUM=NUM-1
+      IF (NUM.EQ.0) GOTO 50
+30    CONTINUE
+C*    -------PRINT RED ALERT (INCIPIENT SUPERNOVA) MESSAGE
+50    CALL TONL
+      CALL TNOU('*** Red alert!  RED ALERT!! ***',31)
+      CALL TNOUA('*** Incipient supernova detected at',35)
+      CALL PRTLOC(4,NSX,NSY)
+      CALL TONL
+      NQX=QUADX
+      NQY=QUADY
+C*    -------SUPERNOVA ADJACENT TO STARSHIP ENDS GAME
+      DSQ=(NSX-SECTX)**2+(NSY-SECTY)**2
+      IF (DSQ.GT.2.1) GOTO 80
+      CALL TNOU(
+     +'Emergency automatic override attempts t***************',54)
+      CALL TNOU(ASTRS,54)
+      ALLDUN=1
+      GOTO 80
+C*    -------IF STARSHIP NOT IN SAME QUADRANT, JUST GET A MESSAGE
+70    IF (DAMAGE(9).NE.0) GOTO 80
+      CALL TONL
+      CALL TNOUA('Message from Starfleet Command:  "Stardate ',43)
+      CALL PRTNUM(DATE,0,1)
+      CALL TNOU('. ',1)
+      CALL TNOUA('Supernova in',12)
+      CALL PRTLOC(3,NQX,NQY)
+      CALL TNOU('.  Caution advised."',20)
+C*    -------DESTROY ANY KLINGONS IN SUPERNOVAED QUADRANT
+80    NUM=GALAXY(NQX,NQY)
+      KLDEAD=NUM/100
+      COMDED=0
+      ISCDED=0
+      IF ((NQX.NE.ISX).OR.(NQY.NE.ISY)) GOTO 85
+      NSCREM=0
+      ISX=0
+      ISY=0
+      ISATB=0
+      ISCATE=0
+      ISCDED=1
+      FUTURE(6)=1E38
+      FUTURE(7)=1E38
+85    IF (KLDEAD.EQ.0) GOTO 100
+      REMKL=REMKL-KLDEAD
+      IF (REMCOM.EQ.0) GOTO 100
+      MXLOOP=REMCOM
+      DO 90 L=1,MXLOOP
+      IF (CX(L).NE.NQX.OR.CY(L).NE.NQY) GOTO 90
+      CX(L)=CX(REMCOM)
+      CY(L)=CY(REMCOM)
+      CX(REMCOM)=0
+      CY(REMCOM)=0
+      REMCOM=REMCOM-1
+      KLDEAD=KLDEAD-1
+      COMDED=1
+      IF (REMCOM.EQ.0) FUTURE(2)=1E38
+90    CONTINUE
+C*    -------DESTROY ROMULANS AND PLNETS IN SUPERNOVAED QUADRANT.
+100   NUM=NEWSTF(NQX,NQY)
+      NEWSTF(NQX,NQY)=0
+      NRMDED=NUM/10
+      NROMRM=NROMRM-NRMDED
+      NPDEAD=NUM-NRMDED*10
+      IF (NPDEAD.EQ.0) GOTO 109
+      DO 106 L=1,INPLAN
+      IF ((PLNETS(L,1).NE.NQX).OR.(PLNETS(L,2).NE.NQY)) GOTO 106
+      DO 105 I=1,5
+105   PLNETS(L,I)=0
+106   CONTINUE
+C*    -------DESTROY ANY BASE IN SUPERNOVAED QUADRANT
+109   IF (REMBAS.EQ.0) GOTO 120
+      MXLOOP=REMBAS
+      DO 110 L=1,MXLOOP
+      IF (BASEQX(L).NE.NQX.OR.BASEQY(L).NE.NQY) GOTO 110
+      BASEQX(L)=BASEQX(REMBAS)
+      BASEQY(L)=BASEQY(REMBAS)
+      BASEQX(REMBAS)=0
+      BASEQY(REMBAS)=0
+      REMBAS=REMBAS-1
+110   CONTINUE
+C*    -------IF STARSHIP CAUSED SUPERNOVA, TALLY UP DESTRUCTION
+120   IF (INSX.EQ.0) GOTO 130
+      NUMBER=MOD(GALAXY(NQX,NQY),100)
+      STARKL=STARKL+MOD(NUMBER,10)
+      BASEKL=BASEKL+(NUMBER/10)
+      KILLK=KILLK+KLDEAD
+      KILLC=KILLC+COMDED
+      NROMKL=NROMKL+NRMDED
+      NPLNKL=NPLNKL+NPDEAD
+      NSCKIL=NSCKIL+ISCDED
+C*    -------MARK SUPERNOVA IN GALAXY AND IN STAR CHART
+130   IF (STARCH(NQX,NQY).GT.0.AND.DAMAGE(9).NE.0)
+     +STARCH(NQX,NQY)=1000+GALAXY(NQX,NQY)
+      IF (DAMAGE(9).EQ.0.OR.(QUADX.EQ.NQX.AND.QUADY.EQ.NQY))
+     +STARCH(NQX,NQY)=1
+      GALAXY(NQX,NQY)=1000
+C*    -------IF SUPERNOVA DESTROYS LAST KLINGONS, GIVE SPECIAL MESSAGE
+      IF (REMKL.NE.0.OR.(NQX.EQ.QUADX.AND.NQY.EQ.QUADY)) GOTO 140
+      CALL TONL
+      CALL TONL
+      CALL TNOU('Lucky you!',10)
+      CALL TNOUA('The supernova in',16)
+      CALL PRTLOC(3,NQX,NQY)
+      CALL TNOU(' has just destroyed the last Klingons.',38)
+      CALL FINISH(1)
+      RETURN
+C*    -------IF SOME KLINGONS REMAIN, CONTINUE (OR DIE IN SUPERNOVA)
+140   IF (ALLDUN.NE.0) CALL FINISH(8)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SORTKL
+$INSERT STARTREK.INS.FTN
+      INTEGER SWITCH
+      IF (NENHER.LE.1) RETURN
+      MINUS1=NENHER-1
+10    SWITCH=0
+      DO 20 J=1,MINUS1
+      IF (KDIST(J).LE.KDIST(J+1)) GOTO 20
+      T=KDIST(J)
+      KDIST(J)=KDIST(J+1)
+      KDIST(J+1)=T
+      T=KAVGD(J)
+      KAVGD(J)=KAVGD(J+1)
+      KAVGD(J+1)=T
+      K=KX(J)
+      KX(J)=KX(J+1)
+      KX(J+1)=K
+      K=KY(J)
+      KY(J)=KY(J+1)
+      KY(J+1)=K
+      T=KPOWER(J)
+      KPOWER(J)=KPOWER(J+1)
+      KPOWER(J+1)=T
+      SWITCH=1
+20    CONTINUE
+      IF (SWITCH.NE.0) GOTO 10
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE SRSCAN
+$INSERT STARTREK.INS.FTN
+      LOGICAL LEFSID,RITSID,MATCH
+      INTEGER*4 ITEM
+      IF (DAMAGE(1).NE.0) GOTO 160
+      LEFSID=.TRUE.
+      RITSID=.TRUE.
+      CALL SCAN(ITEM,KEY)
+      IF (KEY.EQ.'EL') GOTO 3
+      IF (MATCH(ITEM,'NO  ')) RITSID=.FALSE.
+3     EOL=.TRUE.
+      STARCH(QUADX,QUADY)=1
+      CALL TONL
+      CALL TNOU('   1 2 3 4 5 6 7 8 9 10',23)
+      K=0
+      CALL PRSTAT(K,LEFSID,RITSID)
+      RETURN
+160   EOL=.TRUE.
+      CALL TNOU('S. r. sensors damaged.',22)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE STATUS
+$INSERT STARTREK.INS.FTN
+      LOGICAL LEFSID,RITSID
+305   EOL=.TRUE.
+      LEFSID=.FALSE.
+      K=0
+      CALL TONL
+      CALL PRSTAT(K,LEFSID,RITSID)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE THAW
+$INSERT SYSCOM>KEYS.F
+$INSERT STARTREK.INS.FTN
+      COMMON /FREEZR/IFROZE
+      LOGICAL IFROZE
+      INTEGER INF(8),NAME(11),FULNAM(15)
+      PASSWD=0
+3     CALL RDTK$$(1,INF,NAME,11,ICD)
+      IF (INF(1).LT.5) GOTO 7
+      CALL TNOUA('Frozen name: ',13)
+      CALL COMANL
+      GOTO 3
+7     CALL MAKNAM(NAME,FULNAM)
+      CALL SRCH$$(K$READ+K$GETU,FULNAM,30,IFU,ITP,ICD)
+      CALL ERRPR$(K$IRTN,ICD,NAME,INF(2),'STARTREK',8)
+      IF (ICD.NE.0) GOTO 300
+      CALL PRWF$$(K$READ,IFU,LOC(SNAP),992,000000,ITP,ICD)
+      CALL SRCH$$(K$CLOS,0,0,IFU,0,ICD)
+      IF (ITP.NE.991.OR.ICD.NE.0) GOTO 500
+      IF (LENGTH.NE.1.AND.LENGTH.NE.2.AND.LENGTH.NE.4) GOTO 500
+      CALL SRCH$$(K$DELE,FULNAM,30,IFU,0,ICD)
+C*    TELL WHOMEVER WHAT KIND OF GAME HE HAS GOTTEN INTO
+      CALL TONL
+      CALL TNOUA('You are now playing a ',22)
+      IF (LENGTH.EQ.1) CALL TNOUA('short ',6)
+      IF (LENGTH.EQ.2) CALL TNOUA('medium ',7)
+      IF (LENGTH.EQ.4) CALL TNOUA('long ',5)
+      GOTO (10,20,30,40,50),SKILL
+10    CALL TNOUA('Novice',6)
+      GOTO 60
+20    CALL TNOUA('Fair',4)
+      GOTO 60
+30    CALL TNOUA('Good',4)
+      GOTO 60
+40    CALL TNOUA('Expert',6)
+      GOTO 60
+50    CALL TNOUA('Emeritus',8)
+60    CALL TNOU(' game.',6)
+      CALL TNOUA('Your secret password is ''',25)
+      CALL TNOUA(PASSWD,4)
+      CALL TNOU('''.',2)
+      KKK=KILLK+KILLC+NSCKIL
+      CALL TOVFD$(KKK)
+      CALL TNOUA(' of ',4)
+      CALL TOVFD$(INKLNG)
+      CALL TNOUA(' Klingons have been killed',26)
+      IF (KILLC.EQ.0) GOTO 205
+      CALL TNOUA(', including ',12)
+      CALL TOVFD$(KILLC)
+      CALL TNOUA(' Commander',10)
+      IF (KILLC.NE.1) CALL T1OU(:363)
+205   CALL TNOU('. ',1)
+      IF (SKILL.LE.2) GOTO 200
+      CALL TNOUA('The Super-Commander has ',24)
+      IF (NSCREM.EQ.1) CALL TNOUA('not ',4)
+      CALL TNOU('been destroyed.',15)
+200   IF (REMBAS.EQ.INBASE) GOTO 210
+      JBASE=INBASE-REMBAS
+      CALL TOVFD$(JBASE)
+      CALL TNOUA(' base',5)
+      IF (JBASE.NE.1) CALL T1OU(:363)
+      CALL TNOUA(' destroyed. ',12)
+210   CALL TNOUA('You have ',9)
+      IF (REMBAS.EQ.0) CALL TNOUA('no',2)
+      IF (REMBAS.GT.0) CALL TOVFD$(REMBAS)
+      IF (REMBAS.NE.INBASE) CALL TNOUA(' remaining',10)
+      CALL TNOUA(' base',5)
+      IF (REMBAS.NE.1) CALL T1OU(:363)
+      CALL TNOU('. ',1)
+      IF (FUTURE(5).GE.1E37) GOTO 240
+      CALL TNOUA('Starbase in',11)
+      CALL PRTLOC(3,BATX,BATY)
+      CALL TNOU(' is currently under attack',26)
+      CALL TNOUA('and can hold out until stardate ',32)
+      CALL PRTNUM(FUTURE(5),0,1)
+      CALL TNOU('. ',1)
+240   IF (ISATB.NE.1) GOTO 245
+      CALL TNOUA('Starbase in',11)
+      CALL PRTLOC(3,ISX,ISY)
+      CALL TNOU(' is being attacked by the Super-Commander',41)
+      CALL TNOUA('and can hold out until stardate ',32)
+      CALL PRTNUM(FUTURE(7),1)
+      CALL TNOU('. ',1)
+245   IF (CASUAL.EQ.0) GOTO 250
+      CALL TOVFD$(CASUAL)
+      CALL TNOUA(' casualt',8)
+      IF (CASUAL.EQ.1) CALL TNOUA('y ',2)
+      IF (CASUAL.NE.1) CALL TNOUA('ies ',4)
+      CALL TNOU('suffered so far.',16)
+250   CONTINUE
+      IF (NHELP.EQ.0) GOTO 260
+      CALL TNOUA('There ',6)
+      IF (NHELP.EQ.1) CALL TNOUA('was ',4)
+      IF (NHELP.GT.1) CALL TNOUA('were ',5)
+      CALL TOVFD$(NHELP)
+      CALL TNOUA(' call',5)
+      IF (NHELP.EQ.1) CALL T1OU(:363)
+      CALL TNOU(' for help.',10)
+260   CONTINUE
+      CALL TONL
+C*    -- AND LET HIM PLAY IT
+300   IFROZE=.TRUE.
+      RETURN
+C*    -- BAD FREEZE
+500   CALL TNOU('The file did not contain a frozen game.',39)
+      PASSWD=0
+      GOTO 300
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE TIMWRP
+$INSERT STARTREK.INS.FTN
+      CALL TNOU('*** Time warp entered ***',25)
+      IF (SNAP.NE.0.AND.RND(0).LT..5) GOTO 10
+C*    -------TRAVEL FORWARD IN TIME
+      TIME=-.5*INTIME*ALOG(RND(0))
+      CALL TNOU('You are travelling forward in time ',35)
+      CALL PRTNUM(TIME,0,2)
+      CALL TNOU(' stardates.',11)
+C*    -------CHEAT TO MAKE SURE NO TRACTOR BEAMS OCCUR DURING TIME WARP
+      FUTURE(2)=FUTURE(2)+TIME
+      GOTO 40
+C*    -------TRAVEL BACKWARD IN TIME
+10    XDATE=DATE
+      CALL IMOVE(SNPSHT,DATE,229)
+      CALL TNOUA('You are travelling backward in time ',36)
+      CALL PRTNUM(XDATE-DATE,0,2)
+      CALL TNOU(' stardates.',11)
+      SNAP=0
+      IF (REMCOM.EQ.0) GOTO 25
+      FUTURE(2)=DATE+EXPRAN(INTIME/REMCOM)
+      FUTURE(4)=DATE+EXPRAN(.3*INTIME)
+25    FUTURE(1)=DATE+EXPRAN(.5*INTIME)
+      FUTURE(3)=DATE+EXPRAN(.5*INTIME)
+      IF (NSCREM.NE.0) FUTURE(6)=.2777
+      ISATB=0
+      FUTURE(5)=1E38
+      FUTURE(7)=1E38
+      BATX=0
+      BATY=0
+C*    -------REVERT STAR CHART TO EARLIER ERA.
+      DO 30 L=1,8
+      DO 30 LL=1,8
+30    STARCH(L,LL)=MIN0(1,STARCH(L,LL))
+      CALL TNOU(
+     +'Spock has reconstructed the star chart from memory.',51)
+C*    -------MODIFY DESTINATION QUADRANT TO CORRESPOND TO NEW TIME
+40    CALL NEWQAD
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE WAIT
+$INSERT STARTREK.INS.FTN
+C*    -------DO COMMAND SCANNING
+      IDIDIT=0
+10    CALL SCAN(AITEM,KEY)
+      IF (KEY.NE.'EL') GOTO 20
+      CALL TNOUA('How long? ',10)
+      GOTO 10
+20    EOL=.TRUE.
+      IF (KEY.NE.'RE') GOTO 60
+      IF (AITEM.LE.0) RETURN
+      AITEM=AITEM+.005
+      IF (AITEM.LT.REMTIM.AND.NENHER.EQ.0) GOTO 30
+      CALL TNOUA('Are you sure? ',14)
+      IF (.NOT.JA(0)) RETURN
+C*    -------ALTERNATE REST PERIODS (EVENTS) WITH ATTACKS
+30    RSTING=1
+40    IF (AITEM.LE.0) RSTING=0
+      IF (RSTING.EQ.0) GOTO 50
+      TIME=AITEM
+      TEMP=AITEM
+      IF (NENHER.EQ.0) GOTO 45
+      TIME=AMIN1(AITEM,1+RND(0))
+      TEMP=TIME
+45    IF (TIME.LT.AITEM) CALL ATTACK(0)
+      IF (ALLDUN.NE.0) RETURN
+      CALL EVENTS
+      IDIDIT=1
+      IF (ALLDUN.NE.0) RETURN
+      AITEM=AITEM-TEMP
+      IF (GALAXY(QUADX,QUADY).NE.1000) GOTO 40
+      RSTING=0
+      TIME=0
+      RETURN
+50    CALL PRTNUM(REMTIM,0,2)
+      CALL TNOU(' stardates left.',16)
+      RETURN
+60    CALL TNOU('"Beg your pardon, Captain?"',27)
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE WARP
+$INSERT STARTREK.INS.FTN
+      IDIDIT=0
+      IF (DAMAGE(6).GT.10) GOTO 90
+      IF (DAMAGE(6).EQ.0.OR.WRPFAC.LE.4) GOTO 3
+      CALL TNOU(
+     +'Engineer Scott:  "Sorry, Captain.  Until this damage',52)
+      CALL TNOU('is repaired, I can only give you warp 4."',41)
+      GOTO 100
+C*    -------READ IN COURSE AND DISTANCE
+3     CALL GETCD
+      IF (DIREC.LT.0) RETURN
+C*    -------MAKE SURE STARSHIP HAS ENOUGH ENERGY TO MAKE THE TRIP
+      POWER=(DIST+.05)*WRPFAC*WRPFAC*WRPFAC*(SHLDUP+1)
+      IF (POWER.LT.ENERGY) GOTO 10
+      IDIDIT=0
+      CALL TONL
+      CALL TNOUA('"Engineering to Bridge.  We haven''t the energy',46)
+      IF (SHLDUP.EQ.0.OR.0.5*POWER.GT.ENERGY) GOTO 5
+      CALL TONL
+      CALL TNOU('to go that far with the shields up."',36)
+      RETURN
+5     IWARP=(ENERGY/(DIST+0.05))**0.3333
+      IF (IWARP.LE.0) GOTO 8
+      CALL TNOU('. ',1)
+      CALL TNOUA('But we could do it at warp ',27)
+      CALL TOVFD$(IWARP)
+      IF (SHLDUP.NE.0) GOTO 6
+      CALL TNOU('."',2)
+      RETURN
+6     CALL TNOU(', if you lower the shields."',28)
+      RETURN
+8     CALL TNOU(', ',1)
+      CALL TNOU('Captain.  We can''t make it."',28)
+      RETURN
+C*    -------MAKE SURE ENOUGH TIME IS LEFT FOR TRIP
+10    TIME=10*DIST/WFACSQ
+      IF (TIME.LT..80*REMTIM) GOTO 20
+      CALL TONL
+      CALL TNOU(
+     +'First Officer Spock:  "Captain, I compute that such',51)
+      CALL TNOUA('a trip would require approximately ',35)
+      CALL PRTNUM(100*TIME/REMTIM,0,2)
+      CALL TNOU('% of our',8)
+      CALL TNOU('remaining time.  Are you sure this is wise?"',44)
+      IF (JA(0)) GOTO 20
+      IDIDIT=0
+      RETURN
+20    CALL WARPX
+      RETURN
+C*    -------NO WARP ENGINES
+90    CALL TONL
+      CALL TNOU('Warp engines inoperative.',25)
+100   EOL=.TRUE.
+      RETURN
+      END
+C*
+C**************************************************************
+C*
+      SUBROUTINE WARPX
+$INSERT STARTREK.INS.FTN
+      INTEGER BLOOEY,TWARP
+20    BLOOEY=0
+      TWARP=0
+      IF (WRPFAC.LE.6) GOTO 50
+C*    -------DECIDE IF ENGINE DAMAGE WILL OCCUR
+      PROB=DIST*(6.0-WRPFAC)**2/66.6666
+      IF (PROB.GT.RND(0)) BLOOEY=1
+      IF (BLOOEY.NE.0) DIST=RND(0)*DIST
+C*    ---------DECIDE IF TIME WARP WILL OCCUR
+      TWARP=0
+      IF (WRPFAC.LT.10) GOTO 40
+      IF (.5*DIST.GT.RND(0)) TWARP=1
+40    IF (BLOOEY.EQ.0.AND.TWARP.EQ.0) GOTO 50
+C*    -------IF ENGINE DAMAGE OR TIME WARP SHOULD OCCUR, CHECK PATH
+      ANGLE=((15-DIREC)*.5235998)
+      DELTAX=-SIN(ANGLE)
+      DELTAY=COS(ANGLE)
+      BIGGER=AMAX1(ABS(DELTAX),ABS(DELTAY))
+      DELTAX=DELTAX/BIGGER
+      DELTAY=DELTAY/BIGGER
+      N=10*DIST*BIGGER+.5
+      X=SECTX
+      Y=SECTY
+      IF (N.EQ.0) GOTO 50
+      DO 45 L=1,N
+      X=X+DELTAX
+      IX=X+0.5
+      IF (IX.LT.1.OR.IX.GT.10) GOTO 50
+      Y=Y+DELTAY
+      IY=Y+.5
+      IF (IY.LT.1.OR.IY.GT.10) GOTO 50
+      IF (QUAD(IX,IY).EQ.'. ') GOTO 45
+      BLOOEY=0
+      TWARP=0
+45    CONTINUE
+C*    -------ACTIVATE WARP ENGINES AND PAY THE COST
+50    CALL MOVE
+      IF (ALLDUN.NE.0) RETURN
+      ENERGY=ENERGY-DIST*WRPFAC*WRPFAC*WRPFAC*(SHLDUP+1)
+      IF (ENERGY.GT.0) GOTO 55
+      CALL FINISH(4)
+      RETURN
+55    TIME=10*DIST/WFACSQ
+C*    -------ENTER TIME WARP
+      IF (TWARP.NE.0) CALL TIMWRP
+C*    -------DAMAGE WARP ENGINES
+      IF (BLOOEY.EQ.0) GOTO 60
+      DAMAGE(6)=DAMFAC*(3*RND(0)+1)
+      CALL TONL
+      CALL TNOU(
+     +'"Engineering to Bridge, Scott here.  The warp engines',53)
+      CALL TNOU(
+     +'are damaged.  We''ll have to reduce speed to warp 4."',52)
+60    IDIDIT=1
+      RETURN
+      END
+C*
+C********************************************************************
+C*
+      SUBROUTINE IMOVE(FROM,TO,LENGTH)
+C*
+      INTEGER*2 FROM(1),TO(1),LENGTH
+C*
+      DO 10 I=1,LENGTH
+            TO(I)=FROM(I)
+10    CONTINUE
+      RETURN
+      END

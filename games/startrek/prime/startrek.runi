@@ -1,0 +1,1362 @@
+.ofo/Star Trek//Page #/
+.efo/Page #//Star Trek/
+.bl @
+.nfile
+.ohe/PR1ME//Games/
+.ehe/Games//PR1ME/
+.tty
+.nfil
+.l 72
+
+
+
+
+
+
+
+
+                 *******  ********      *      *******
+                ********  ********     ***     ********
+               **            **        ***     **     **
+               ******        **       ** **    **     **
+                *******      **       ** **    ********
+                      **     **      *******   *******
+                      **     **      *******   **   **
+               ********      **     **     **  **    **
+               *******       **     **     **  **     **
+.sk1
+               ********  *******    *********  **     **
+               ********  ********   *********  **    **
+                  **     **     **  **         **   **
+                  **     **     **  ******     **  **
+                  **     ********   ******     ******
+                  **     *******    **         *****
+                  **     **   **    **         **  **
+                  **     **    **   *********  **   **
+                  **     **     **  *********  **    **
+.sk3
+.> Produced for your enjoyment
+.> by
+.> David Matusek
+.> and
+.> Paul Reynolds
+.> with modifications by
+.> Don Smith,
+.> George T. Shotwell,
+.> Norm Wheeler
+.> and
+.> Jack Merritt Cramer
+.adj
+.sk3
+Permision is hereby granted for the copying, distribution,
+modification and use of this program and associated documentation
+for recreational purposes, provided that all referances to the
+authors are retained. However, permision is not and will not be
+granted for the sale or promotional use of this program or program
+documentation, or use in any situation in which profit may be
+considered an objective, since it is the desire of the authors to
+respect the copyrights of the originators of Star Trek.
+.e
+.nfil
+.sk4
+.> {{Table of contents}}
+.sk3
+.i15
+Section                               Page
+.sk1
+Introduction to the game............... 3
+Game initialisation.................... 6
+How to issue commands.................. 7
+Command descriptions................... 8
+     Short-range scan.................. 8
+     Status report..................... 9
+     Long-range scan................... 10
+     Star chart........................ 11
+     Request........................... 11
+     Damage report..................... 12
+     Resting........................... 12
+     Docking at Starbase............... 12
+     Moving under warp drive........... 13
+     Warp factor....................... 14
+     Impulse engines................... 14
+     Deflector shields................. 15
+     Phasers........................... 16
+     Photon torpedoes.................. 17
+     Experimental death ray............ 18
+     Sensor-scan....................... 18
+     Planet report..................... 18
+     Entering standard orbit........... 19
+     Transport travel.................. 19
+     Shuttle craft..................... 19
+     Mining dilithium crystals......... 20
+     Loading dilithium crystals........ 20
+     Calling Starbase for help......... 21
+     Abandoning ship................... 21
+     Self-destruct..................... 21
+     Aborting the current game......... 22
+     Freezing the game..................22
+Miscellaneous notes.................... 23
+Scoring................................ 24
+Handy reference page................... 25
+References............................. 26
+.e
+.adj
+.u15
+.> {{Introduction to the game}}
+.sk2
+The Organian peace treaty has collapsed, and the Federation
+is at war with Klingon empire.  Joining the Klingons against
+the Federation are the members of the Romulan star empire. As
+Commander of the starship U.S.S. Enterprise, your job is to
+wipe out the Klingon invasion fleet and make the galaxy safe for
+democracy.
+.sk1
+Your battleground is the entire galaxy, which for convenience
+is divided up into eight rows of eight quadrants each, like a
+checkerboard.  Rows are numbered from top to bottom, and columns
+are numbered left to right, so quadrant 1 - 8 would be in the
+upper right hand corner of the galaxy.
+.sk1
+During battle you will be concerned only with those enemies
+that occupy the same quadrant as yourself.  Quadrants are divided
+up into sectors, ten rows of ten sectors each.   Sectors are
+numbered in the same way as quadrants, so the sector in the upper
+right corner is sector 1 - 10.  You have a short-range scanner
+which allows you to look at the entire quadrant in a single
+display.
+.sk1
+Enemies recharge during your absence.  If you leave a quadrant
+containing a weakened enemy, when you return to that quadrant he
+will be strong again.  Also, each time you enter a quadrant, the
+positions of everything in the quadrant  (except your ship) are
+randomized, to save you the trouble of trying to remember where
+everything in the quadrant is.  Notice that this refers only to
+the positions of things in the quadrant - the numbers of each kind
+of thing are not changed.  If you kill something, it stays dead.
+.sk1
+The Romulans are not as serious a threat to the Federation
+as the Klingons.  For one thing, there are not as many of them.
+For another, the Romulans are not as treacherous.  However, Romulans
+are not to be trifled with, especially when you  are in violation
+of the 'Romulan neutral zone'.
+.sk1
+There are two kinds of Klingons:  ordinary Klingons, which
+are bad enough, and Klingon Commanders, which are even worse.
+Commanders are about three times worse than ordinary Klingons.
+Commanders are more resistant to your weapons.  Commanders can
+move about during battle, while ordinary Klingons stay put. And
+finally, Commanders have a thing called a 'long range tractor
+beam' which they can use,  at random intervals, to yank you away
+from what you are doing and into their quadrant, to do battle with
+them.  There is also a special Commander, called the 'Super-Commander'.
+This character is so bad, he is reserved for the Good, Expert, and
+Emeritus games.  Fortunately, there is just one Super-Commander in
+the game.  In addition to the undesirable traits of Commanders, he
+can move from quadrant to quadrant at will, seeking out and destroying
+your Starbases, and any helpful planets he runs across.  He also has
+a spy planted aboard your ship, giving him valuable information
+about your condition.  Using this information, he can do dastardly
+things like tractor beam your ship when you are in bad shape.  And
+once you've been tractor beamed by the Super-Commander...
+.e
+But the advantages are not at all on the side of the enemy.
+Your ship is more powerful, and has better weapons.  Besides,
+in this galaxy there are two to five Starbases, at which
+you can stop to refuel and lick your wounds, safe from attack
+or tractor beams.  But you had best not dally there too long,
+since time is not on your side.  The Klingons are not just after
+you: they are attacking the entire Federation.  There is always
+a finite 'time left', which is how much longer the Federation can
+hold out if you just sit on your fat behind and do nothing.  As
+you wipe out Klingons, you reduce the rate at which the invasion
+fleet weakens the Federation, and so the 'time left' until
+the Federation collapses may actually increase.  Since Klingons
+are the main threat to the Federation, the Romulans do not figure
+into the 'time left'.  In fact, you need not kill all the Romulans
+to win.  If you can get all the Klingons, the Federation will
+abide forever, and you have won the game.
+.sk1
+Space is vast, and it takes precious time to move from one
+place to another.  In comparison, other things happen so quickly
+that we assume they take no time at all.  Two ways that time
+can pass are when you move, or when you issue a command to sit
+still and rest for a period of time.  You will sometimes want
+to do the latter, since the various devices aboard your starship
+may be damaged and  require time to repair.  Of course, repairs
+can be made more quickly at a Starbase than they can in flight.
+.sk1
+In addition to Klingons, Romulans and Starbases, the galaxy
+contains (surprise) stars.  Mostly, stars are a nuisance and
+just get in your way.  You can trigger a star into going nova
+by shooting one of your photon torpedoes at it.  When a star
+novas, it does a lot of damage to anything immediately adjacent
+to it.  If another star is adjacent to a nova, it too will go
+nova. Stars may also occasionally go supernova: a supernova
+in a quadrant destroys everything in the quadrant and makes
+the quadrant permanently uninhabitable.  You may 'jump over' a
+quadrant containing a supernova when you move, but you should
+not stop there.
+.sk1
+Supernovas may happen spontaneously, without provocation.  If
+a supernova occurs in the same quadrant you are in, your starship
+has an 'emergency automatic override' which picks some random
+direction and some random warp factor, and tries to throw you
+clear of the supernova.  If the supernova occurs in some other
+quadrant, you just get a warning message from starfleet about it
+(provided of course, that your subspace radio is working).
+.sk1
+Also a few planets are scattered through the galaxy.  These
+can sometimes be a great help since some of them will have
+dilithium crystals, which are capable of replenishing the
+ship's energy supply.  You can either beam down to the planet
+surface using the transporter, or take the shuttle craft Galileo.
+.sk1
+Star Trek is a rich game, full of detail.  These instructions
+are written at a moderate level - no attempt has been made fully
+to describe everything about the game, but there is quite a bit
+more here than you need to get started.  If you are new to the
+game, just get a rough idea of the kinds of commands available,
+and start playing.  After a game or two you will have learned
+everything important, and the detailed command descriptions which
+follow will be a lot more meaningful to you.
+.e
+You have weapons:  phasers and photon torpedoes.  You have
+a defense:  deflector shields.  You can look at things:  long-range
+scanners, short-range scanners, and a star chart.  You can
+move about, under warp drive or impulse power. You can also
+dock at a Starbase, rest while repairs are being made, abandon
+ship, self-destruct, or give up and start a new game.
+.sk5
+.> The Klingons are waiting.
+.e
+.> {{Game initialisation}}
+.sk2
+At the beginning of the game, you are offered a choice of
+regular, tournament, or frozen game.  The meaning of
+these terms is:
+.sk1
+.i3
+Regular@@-@@@begin a new game, initializing the random number
+.i 13
+generator according to a hash of user dependent
+parameters.
+.u 13
+.br
+Tournament@-@you will be asked to supply a tournament number,
+.i13
+which will be used to initialize the random number
+generator, thus allowing you to compete against
+others in play of that game.
+.u13
+.br
+Frozen@@@-@@@retrieve from a file the parameters of a game which
+.i13
+was suspended in progress.  The random number generator
+will be re-initialized.
+.u16
+.sk1
+You are further asked whether you would like a short, medium or long game.
+This relates to the number of ships in the Klingon invasion force and
+the number of stardates you are initially alloted for your task -
+7 stardates for a short game, 14 for medium and 28 for long.
+.sk1
+Next, you are requested to specify your level of expertise. There are
+five grades: novice, fair, good, expert and emeritus - the higher the grade,
+the more difficult the game.
+.sk1
+You should probably start out at the novice level, even if you
+are already familiar with one of the other versions of the Star Trek
+game - but, of course, the level of game you play is up to you.  If
+you want to start at the expert level, go ahead.  It's your funeral.
+The emeritus game is strictly for masochists.
+.sk1
+Finally, you are asked to enter a secret password of your choice, which
+you may need later in the game.
+.sk1
+Some, or all, of these items may be entered on one line as soon as you are
+asked what type of game you wish to play, in any order, provided the password
+is given as the last item.
+.e
+.> {{How to issue commands}}
+.sk2
+When the game is waiting for you to enter a command, it will
+print out 'Command:@'
+you may then type in your command.  All you have to remember for
+each commmand is the mnemonic.  For example, if you want to move
+straight up for one quadrant, you can type in the mnemonic MOVE
+and the computer will prompt you with 'Manual@or@automatic?@'.
+Say you type in MANUAL.  The computer then responds
+'X@and@Y@displacements:@'
+now you type in '0@1' which specifies an X movement of zero and
+a Y movement of 1.
+.sk1
+When you have learned the commands, you can avoid being
+prompted by simply typing in the information without waiting
+to be asked for it.  For example, in the above example, you
+could simply type in 'MOVE@MANUAL@0@1'
+and it shall be done.  Or you could type in 'MOVE@MANUAL'
+and when the computer responds with 'X@and@Y@displacements:@'
+you can type in '0@1'
+and it will understand.
+.sk1
+You can abbreviate most mnemonics.  For MOVE, you
+can use any of MOVE, MOV, MO or M.
+For your safety, certain critical commands (such
+as to abandon ship) require at least four characters.  Also, in a
+few cases two or more commands begin with the same letter, and
+in this case that letter refers to a particular one of the
+commands; to get the other, your abbreviation must be two or
+more letters long.  This sounds complicated, but you will learn
+the abbreviations quickly enough.
+.sk1
+What this all boils down to is:
+.br
+.nfil
+            (1) Everything abbreviates to at most 4 characters.
+            (2) If you forget, the computer will prompt you.
+            (3) If you remember,you can type it all on one line.
+.sk1
+.adj
+If you are part way through entering a command and you change
+your mind, you can cancel the command by typing a -1 as one of the
+parameters, with the exception of the manual move command.  Here
+(since negative numbers are valid) you can use 0 for both X and Y displacements
+to cancel the command.
+.sk1
+If anything is not clear to you, experiment.  The worst you can
+do is lose a game or two.
+.e
+.> {{Command descriptions}}
+.nfil
+.sk2
+********************
+* Short-range scan *
+********************
+.sk1
+Mnemonic:  SRSCAN
+Shortest abbreviation:  S
+Full commands:  SRSCAN
+                SRSCAN NO
+.sk1
+.adj
+The short-range scan gives you a considerable amount of
+information about the quadrant your starship is in.  A short-range
+scan is best described by an example.
+.nfil
+
+         1 2 3 4 5 6 7 8 9 10
+       1 * . . . . R . . . .  Stardate      2516.3
+       2 . . . E . . . . . .  Condition     red
+       3 . . . . . * . B . .  Position      5 - 1, 2 - 4
+       4 . . . S . . . . . .  Life support  damaged, reserves=2.3
+       5 . . . . . . . K . .  Warp factor   5.0
+       6 . K .   . . . . * .  Energy        2176.25
+       7 . . . . . P . . . .  Torpedoes     3
+       8 . . . . * . . . . .  Shields       up, 42 percent, 1050 units
+       9 . * . . * . . . C .  Klingons left 12
+      10 . . . . . . . . . .  Time left     3.72
+
+.adj
+The left part is a picture of the quadrant.  The E at sector
+2 - 4 represents the Enterprise, the B at sector 3 - 8 is a Starbase.
+There are ordinary Klingons (K) at sectors 5 - 8  and 6 - 2, and a
+Klingon Commander (C) at 9 - 9.  The (gulp) Super-Commander (S)
+occupies sector 4 - 4, and a Romulan (R) is at 1 - 6.  A planet (P)
+is at sector 7 - 6.  There are also a large number of stars (*).
+The periods (.) are just empty space - they are printed to help
+you get your bearings.  Sector 6 - 4 contains a black hole ( ).
+.sk1
+The information on the right is assorted status information.
+The status information will be absent if you type NO after
+srscan.  Otherwise, status information will be presented.
+.sk1
+Short-range scans are free.  That is, they use up no energy
+and no time.  If you are in battle, doing a short-range scan does
+not give the enemies another chance to hit you.  You can safely
+do a short-range scan anytime you like.
+.e
+.nfil
+*****************
+* Status report *
+*****************
+.sk1
+Mnemonic:  STATUS
+Shortest abbreviation:  ST
+.sk1
+.adj
+This command gives you information about the current state of
+your starship, as follows:
+.sk1
+.i 3
+Stardate - the current date. One stardate is
+.i3
+approximately equal one solar year.
+.u3
+.sk1
+Condition - there are four possible conditions:
+.br
+.i3
+Docked@-@@docked at Starbase
+.br
+Red@-@@@@@in battle
+.br
+Yellow@-@@low on energy (<1000 units)
+.br
+Green@-@@@none of the above.
+.u 3
+.sk1
+Position - quadrant is given first, then sector.
+.sk1
+Life support - if ACTIVE, life support systems are
+.i3
+functioning normally.  If on RESERVES, the number
+is how many stardates your reserve food, air, etc. Will
+last - you must get repairs made or get to Starbase
+before your reserves run out.
+.sk1
+.u3
+Warp factor - what your warp factor is currently set to.
+.sk1
+Energy - the amount of energy you have left.  If it drops to
+.i3
+zero you die.
+.u3
+.sk1
+Torpedoes - how many photon torpedoes you have left.
+.sk1
+Shields - whether you shields are up or down,
+.i3
+how strong they are (what percent of a hit they can deflect), and
+shield energy.
+.u3
+.sk1
+Klingons left -  how many of the Klingons are still out there.
+.sk1
+Time left - how long the Federation can hold out against the
+.i3
+present number of Klingons; that is, how long until the
+end if you do nothing in the meantime.  If you kill Klingons
+quickly, this number will go up - if not, it will go down.
+If it reaches zero, the Federation is conquered, and you
+lose.
+.u3
+.sk1
+.u 3
+Status information is free - it uses no time or energy, and if
+you are in battle, the Klingons are not given another chance to hit
+you.
+.sk1
+Status information can also be obtained by doing a short-range
+scan.  See the SRSCAN command for details.
+.e
+.nfil
+*******************
+* Long-range scan *
+*******************
+.sk1
+Mnemonic:  LRSCAN
+Shortest abbreviation:  L
+.sk1
+.adj
+A long-range scan gives you general information about where you
+are and what is around you.  Here is an example output.
+.sk1
+.> L. R. Scan for quadrant 5 - 1
+.sk1
+.> -1  107  103
+.> -1  316    5
+.> -1  105 1000
+.sk1
+This scan says that you are in row 5, column 1 of the 8 by 8
+galaxy.  The numbers in the scan indicate how many of each
+kind of thing there is in your quadrant and all adjacent
+quadrants.  The digits are interpreted as follows.
+.sk1
+.nfil
+    Thousands digit:  1000 indicates a supernova (only)
+    hundreds digit:   number of Klingons present
+    tens digit:       number of Starbases present
+    ones digit:       number of stars present
+.sk1
+.adj
+For example, in your quadrant (5 - 1) the number is 316, which
+indicates 3 Klingons, 1 Starbase and 6 stars.  (the long-range
+scanner does not distinguish between ordinary Klingons and
+Klingon command ships.)  if there is a supernova, as in the
+quadrant below and to your right (quadrant 6 - 2), there is
+nothing else in the quadrant.
+.sk1
+Romulans possess a 'cloaking device' which prevents their
+detection by long-range scan.  Because of this fact, Starfleet
+Command is never sure how many Romulans are 'out there'.
+When you kill the last Klingon, the remaining Romulans surrender
+to the Federation.
+.sk1
+Planets are also undetectable by long-range scan.  The
+only way to detect a planet is to find it in your current
+quadrant with short-range sensors.
+.sk1
+Since you are in column 1, there are no quadrants to your
+left.  The minus ones indicate the negative energy barrier at
+the edge of the galaxy, which you are not permitted to cross.
+.sk1
+Long-range scan are free.  They use up no energy or time,
+and can be done safely regardless of battle conditions.
+.e
+.nfil
+**************
+* Star chart *
+**************
+.sk1
+Mnemonic:  CHART
+Shortest abbreviation:  C
+.sk1
+.adj
+As you proceed in the game, you learn more and more about
+what things are where in the galaxy.  This information is
+automatically recorded for you (by spock) in your star chart.
+.sk1
+The chart looks like an 8 by 8 array of numbers.  These
+numbers are interpreted exactly as they are on a long-range
+scan.  A period (.) in place of a digit means you do not posess
+that information yet.  For example, ... means you know nothing
+about the quadrant, while .1. means you know that it contains
+a base, but an unknown number of Klingons and stars.
+.sk1
+Looking at the star chart is a free operation.  It costs
+you neither time nor energy, and can be done safely whether
+in or out of battle.
+.sk3
+.nfil
+***********
+* Request *
+***********
+.sk1
+Mnemonic:  REQUEST
+Shortest abbreviation:  REQ
+Full command:  REQUEST <item>
+.sk1
+.adj
+This command allows you to get any single piece of information
+from the STATUS command.  'Item' specifies which information as
+follows:
+.nfil
+.sk1
+ Information       Mnemonic for 'item'        Shortest abbreviation
+
+ Stardate              DATE                              D
+ Condition             CONDITION                         C
+ Position              POSITION                          P
+ Life support          LSUPPORT                          L
+ Warp factor           WARPFACTOR                        W
+ Energy                ENERGY                            E
+ Torpedoes             TORPEDOES                         TO
+ Shields               SHIELDS                           S
+ Klingons left         Klingons                          K
+ Time left             TIME                              T
+.e
+*****************
+* Damage report *
+*****************
+.sk1
+Mnemonic:  DAMAGES
+Shortest abbreviation:  DA
+.sk1
+.adj
+At any time you may ask for a damage report to find out what
+devices are damaged and how long it will take to repair them.
+Naturally, repairs proceed faster at a Starbase.
+.sk1
+If you suffer damages while moving, it is possible that a
+subsequent damage report will not show any damage.  This happens
+if the time spent on the move exceeds the repair time, since in
+this case the damaged devices were fixed en route.
+.sk1
+Damage reports are free.  They use no energy or time, and can
+be done safely even in the midst of battle.
+.sk3
+.nfil
+***********
+* Resting *
+***********
+.sk1
+Mnemonic:  REST
+Shortest abbreviation:  R
+Full command:  REST <number of stardates>
+.sk1
+.adj
+This command simply allows the specified number of stardates
+to go by.  This is useful if you have suffered damages and wish
+to wait until repairs are made before you go back into battle.
+.sk1
+It is not generally advisable to rest while you are under
+attack by Klingons.
+.sk3
+.nfil
+***********************
+* Docking at Starbase *
+***********************
+.sk1
+Mnemonic:  DOCK
+Shortest abbreviation:  D
+.sk1
+.adj
+You may dock your starship whenever you are in one of the
+eight sector positions immediately adjacent to a Starbase.  When
+you dock, your starship is resupplied with energy, shield energy,
+photon torpedoes, and life support reserves.  Repairs also proceed
+faster at Starbase, so if some of your devices are damaged,
+you may wish to stay at base (by using the REST command)
+until they are fixed.  If your ship has more than its normal
+maximum energy (which can happen if you've loaded crystals)
+the ship's energy is not changed.
+.sk1
+You may not dock while in standard orbit around a planet.
+.sk1
+Starbases have their own deflector shields, so you are
+completely safe from attack while docked.  You are also safe
+from long-range tractor beams.
+.e
+.nfil
+***************************
+* Moving under warp drive *
+***************************
+.sk1
+Mnemonic:  MOVE
+Shortest abbreviation:  M
+Full command:  MOVE <MANUAL> <displacement>
+               MOVE AUTOMATIC <destination>
+.sk1
+.adj
+This command is the usual way to move from one place to
+another within the galaxy.  You move under warp drive, according
+to the current warp factor (see 'Warp factor').
+.sk1
+There are two command modes for movement:  manual and automatic.
+The manual mode is default, and requires the following format:
+.sk1
+.> MOVE <MANUAL> <deltx delty>
+.sk1
+As indicated by the angle brackets,
+MANUAL is optional.  If omitted, manual movement is assumed.
+'deltx' and 'delty' are the horizontal and vertical displacements for
+your starship, in quadrants; a displacement of one sector is 0.1
+quadrants.  Specifying 'deltx' and 'delty' causes your ship to move
+in a straight line to the specified destination.  If 'delty' is
+omitted, it is assumed zero.  For example, the shortest possible
+command to move 1 sector to the right would be 'M@.1'
+.sk1
+The following examples of manual movement refer to the
+short-range scan on page 7:
+.nfil
+.sk1
+     Destination sector         manual movement command
+
+           2 - 1                       M -.3
+           1 - 2                       M -.2 .1
+           1 - 4                       M 0 .1
+     (Leaving quadrant)                M 0 .2
+           1 - 5                       M .1 .1
+.sk1
+.adj
+The automatic mode is as follows:
+.sk1
+.> MOVE AUTOMATIC <qrow qcol> <srow scol>
+.sk1
+where 'qrow' and 'qcol' are the row and column numbers of the
+destination quadrant, and 'srow' and 'scol' are the row and
+column numbers of the destination sector within that quadrant.
+This command also moves your ship in a straight line path to
+the destination.  AUTOMATIC (A is sufficient) must be present.
+For moving within a quadrant, 'qrow' and 'qcol' may be omitted.
+For example, to move to sector 2 - 9 within the current quadrant,
+the shortest command would be 'M@A@2@9'.
+To move to quadrant 3 - 7, sector 5 - 8, type 'M@A@3@7@5@8'
+and it shall be done.  In automatic mode, either two or four numbers
+must be supplied.
+.sk1
+Automatic mode utilizes the ship's Battle Computer. If
+the computer is damaged, manual movement must be used.
+.sk1
+It uses time and energy to move.  How much time and how much
+energy depends on your current warp factor, the distance you move,
+and whether your shields are up.  The higher the warp factor, the
+faster you move, but higher warp factors require more energy.
+You may move with your shields up, but this doubles the energy
+required.
+.sk1
+Each time you move in a quadrant containing Klingons, they
+have a chance to attack you.  In this case, the 'energy left'
+message you get refers to your energy after the attack but before
+the move.  As you move, the amount that the Klingons hit you with
+is dependent on your average distance from them.  This is also
+true if your move takes you out of the quadrant, when the Klingons
+have one last chance to hit you.
+.sk3
+.nfil
+***************
+* Warp factor *
+***************
+.sk1
+Mnemonic:  WARP
+Shortest abbreviation:  W
+Full command:  WARP <number>
+.sk1
+.adj
+Your warp factor controls the speed of your starship.  The
+larger the warp factor, the faster you go and the more energy
+you use.
+.sk1
+Your minimum warp factor is 1.0 and your maximum warp factor
+is 10.0 (which is 100 times as fast and uses 1000 times as much
+energy).  At speeds above warp 6 there is some danger of causing
+damage to your warp engines:  this damage is larger at higher
+warp factors and also depends on how far you go at that warp
+factor.
+.sk1
+At exactly warp 10 there is some probability of entering a
+so-called 'time warp' and being thrown forward or backward in
+time.  The farther you go at warp 10, the greater is the probability
+of entering the time warp.
+.sk3
+.nfil
+*******************
+* Impulse engines *
+*******************
+.sk1
+Mnemonic:  IMPULSE
+Shortest abbreviation:  I
+Full command:  IMPULSE <MANUAL> <displacement>
+               IMPULSE AUTOMATIC <destination>
+.sk1
+.adj
+The impulse engines give you a way to move when your warp
+engines are damaged.  They move you at a speed of 0.95 sectors
+per stardate, which is the equivalent of a warp factor of about
+0.975, so they are much too slow to use except in emergencies.
+.SK1
+Movements are indicated just as in the MOVE command.
+.sk1
+The impulse engines require 20 units of energy to engage,
+plus 10 units per sector (100 units per quadrant) travelled.
+It does not cost extra to move with the shields up.
+.e
+.nfil
+*********************
+* Deflector shields *
+*********************
+.sk1
+Mnemonic:  SHIELDS
+Shortest abbreviation:  SH
+Full commands:  SHIELDS UP
+                SHIELDS DOWN
+                SHIELDS TRANSFER <amount of energy to transfer>
+.sk 1
+.adj
+Your deflector shields are a defensive device to protect you
+from Klingon attacks (and nearby novas).  As the shields protect
+you, they gradually weaken.  A shield strength of 75 percent, for
+example, means that the next time a Klingon hits you, your shields
+will deflect 75 percent of the hit, and let 25 percent get through
+to hurt you.
+.sk1
+It costs 50 units of energy to raise the shields, nothing to lower
+them.  You may move with your shields up; this costs nothing extra
+under impulse power, but doubles the energy required for warp drive.
+.sk1
+Each time you raise or lower your shields, the Klingons have
+another chance to attack.  Since shields do not raise and lower
+instantaneously, the hits you receive will be intermediate between
+what they would be if the shields were completely up or completely down.
+.sk1
+You may not fire phasers through your shields.  However,
+you may use the 'high-speed shield control' to lower shields,
+fire phasers, and raise the shields again before the Klingons can
+react.  Since rapid lowering and raising of the shields requires
+more energy than normal speed operation, it costs you 200 units of
+energy to activate this control.  It is automatically activated when
+you fire phasers while shields are up.  You may fire photon torpedoes,
+but they may be deflected considerably from their intended course
+as they pass through the shields (depending on shield strength).
+.sk1
+You may transfer energy between the ship's energy (given as
+ENERGY in status) and the shields.  TRANSFER may be abbreviated
+T.  'Amount of energy to transfer' is the number of units of
+energy you wish to take from the ship's energy and put into the
+shields.  If you specify a negative number, energy is drained
+from the shields to the ship.  Transferring energy constitutes a
+turn.  If you transfer energy to the shields while under attack,
+they will be at the new energy level when you are next hit.
+.e
+.nfil
+***********
+* Phasers *
+***********
+.sk1
+Mnemonic:  PHASERS
+Shortest abbreviation:  P
+Full commands:  PHASERS AUTOMATIC <amount to fire> <NO>
+                PHASERS <amount to fire> <NO>
+                PHASERS MANUAL <NO> <amount 1> <amount 2> ...
+.sk1
+.adj
+Phasers are energy weapons.  As you fire phasers at Klingons,
+you specify an 'amount to fire' which is drawn from your energy
+reserves.  The amount of total hit required to kill an enemy is
+partly random, but also depends on skill level.
+.sk1
+The average hit required to kill an ordinary Klingon varies
+from 200 units in the novice game to 250 units in the emeritus
+game.  Commanders normally require from 600 (novice) to 700
+(emeritus).  The Super-Commander requires from 875 (good)
+to 1000 (emeritus).  Romulans require an average of 350 (novice)
+to 450 (emeritus).
+.sk1
+Hits on enemies are cumulative, as long as you do not leave
+the quadrant.
+.sk1
+In general, not all that you fire will reach the Klingons.
+The farther away they are, the less phaser energy will reach them.
+If a Klingon is adjacent to you, he will receive about 90 percent
+of the phaser energy directed at him; a Klingon 5 sectors away
+will receive about 60 percent, and a Klingon 10 sectors away will
+receive about 35 percent.  There is some randomness involved, so
+these figures are not exact.  Phasers have no effect beyond the
+boundaries of the quadrant you are in.
+.sk1
+Phasers may overheat (and be damaged) if you fire too large
+a burst at once.  Firing up to 1500 units is safe.  From 1500
+on up, the probability of overheat increases with the amount fired.
+.sk1
+If phaser firing is automatic, the computer decides how to
+divide up your 'amount to fire' among the Klingons present.  If
+phaser firing is manual, you specify how much energy to fire at
+each Klingon present (nearest first), rather than just specifying
+a total amount.  You can abbreviate MANUAL and AUTOMATIC to
+one or more letters; if you mention neither, automatic firing is
+usually assumed.
+.sk1
+A safety interlock prevents phasers from being fired through
+the shields.  If this were not so, the shields would contain
+your fire and you would fry yourself.  However, you may utilize
+the high-speed shield control to drop shields, fire phasers,
+and raise shields before the enemy can react.  Since it takes
+more energy to raise the shields rapidly after a shot, it costs
+you 200 units of energy each time you activate this control.  It
+is automatically activated when you fire phasers while shields are up.
+By specifying the NO option, shields are not raised after firing.
+.sk1
+Phasers have no effect on Starbases (which are shielded) or
+on stars.
+.e
+.nfil
+********************
+* Photon torpedoes *
+********************
+.sk1
+Mnemonic:  PHOTONS
+Shortest abbreviation:  PHO
+Full command:  PHOTONS <number> <targ1> <targ2> <targ3>
+.sk1
+.adj
+Photon torpedoes are projectile weapons - you either hit what
+you aim at, or you don't.  There are no 'partial hits'.
+.sk1
+One photon torpedo will usually kill one ordinary Klingon,
+but it usually takes about two for a Klingon Commander.  Photon
+torpedoes can also blow up stars and Starbases, if you aren't
+careful.
+.sk1
+You may fire photon torpedoes singly, or in bursts of two
+or three.  Each torpedo is individually targetable.  The computer
+will prompt you, asking for the target sector for each torpedo.
+Alternately, you may specify each target in the command line.
+.sk1
+Photon torpedoes cannot be aimed precisely - there is always
+some randomness involved in the direction they go.  Photon
+torpedoes may be fired with your shields up, but as they pass
+through the shields they are randomly deflected from their
+intended course even more.
+.sk1
+Photon torpedoes are proximity-fused.  The closer they
+explode to the enemy, the more damage they do.  There is a hit
+'window' about 1 sector wide.  If the torpedo misses the hit
+window, it does not explode and the enemy is unaffected.
+Photon torpedoes are only effective within the quadrant.  They
+have no effect on things in adjacent quadrants.
+.sk1
+If more than one torpedo is fired and only one target
+sector is specified, all torpedoes are fired at that sector.
+For example, to fire two torpedoes at sector 3 - 4, you type
+'PHO@2@3@4' or 'PHO@2@3@4@3@4'.
+To fire torpedoes at, consecutively, sectors 2 - 6, 1 - 10,
+and 4 - 7, type
+'PHO@3@2@6@1@10@4@7'.
+There is no restriction to fire directly at a sector.  For
+example, you can enter
+'PHO@1@3@2.5'
+to aim between two sectors.  However, sector numbers must be
+1 to 10 inclusive.
+.e
+.nfil
+**************************
+* Experimental death ray *
+**************************
+.sk1
+Mnemonic:  DEATHRAY
+Shortest abbreviation:  DEAT
+
+This command should be used only in those desperate cases
+where you have absolutely no alternative.  The death ray uses
+energy to rearrange matter.  Unfortunately, it's working principles
+are not yet thoroughly understood, and the results are highly
+unpredictable.
+.sk1
+The only good thing that can result is the destruction of
+all enemies in your current quadrant.  This will happen about
+5%% of the time.  Only enemies are destroyed;  Starbases, stars
+and planets are unaffected.
+.sk1
+Constituting the remaining 95%% are results varying from
+bad to fatal.
+.sk1
+The death ray requires no energy or time, but if you
+survive, enemies will hit you.
+.sk1
+The Faerie Queene has no death ray.
+.sk3
+.nfil
+***************
+* Sensor-scan *
+***************
+.sk1
+Mnemonic:  SENSORS
+Shortest abbreviation:  SE
+.sk1
+.adj
+Utilizing the short-range sensors, science officer
+Spock gives you a readout on any planet in your quadrant.
+Planets come in three classes:  M, N, and O.  Only class M
+planets have earth-like conditions.  Spock informs you if the
+planet has any dilithium crystals.  Sensor scans are free.
+.sk3
+.nfil
+*****************
+* Planet report *
+*****************
+.sk1
+Mnemonic:  PLANETS
+Shortest abbreviation:  PL
+.sk1
+.adj
+Mr. Spock presents you with a list of the available information
+on planets in the galaxy.  Since planets do not show up on
+long-range scans, the only way to obtain this information is
+with the SENSORS command.
+.e
+.nfil
+***************************
+* Entering standard orbit *
+***************************
+.sk1
+Mnemonic:  ORBIT
+Shortest abbreviation:  O
+.sk1
+.adj
+To land on a planet you must first be in standard orbit.
+You achieve this in a manner similar to docking at Starbase.
+Moving to one of the eight sector positions immediately adjacent
+to the planet, you give the orbit command which puts your ship
+into standard orbit about the planet.  Since this is a maneuver,
+a small amount of time is used; negligible energy is required.
+If enemies are present, they will attack.
+.sk3
+.nfil
+**********************
+* Transporter-travel *
+**********************
+.sk1
+Mnemonic:  TRANSPORT
+Shortest abbreviation:  T
+.sk1
+.adj
+The transporter is a device which can convert any physical
+object into energy, beam the energy through space, and reconstruct
+the physical object at some destination.  Transporting is one
+way to land on a planet.  Since the transporter has a limited
+range, you must be in standard orbit to beam down to a planet.
+Shields must be down while transporting.
+.sk1
+The transport command is used to beam a landing party onto
+a planet to mine dilithium crystals.  Each time the command
+is given the landing party (which you lead) moves from the ship
+to the planet, or vice-versa.
+.sk1
+You are advised against needless transporting, since like
+all devices, the transporter will sometimes malfunction.
+.sk1
+The transporter consumes negligible time and energy.  Its
+use does not constitute a 'turn'.
+.sk3
+.nfil
+*****************
+* Shuttle craft *
+*****************
+.sk1
+Mnemonic:  SHUTTLE
+Shortest abbreviation:  SHU
+.sk1
+.adj
+An alternate way to travel to and from planets.  Because
+of limited range, you must be in standard orbit to use the
+shuttle craft, named Galileo.  Shields must be down.
+.sk1
+Unlike transporting, use of the shuttle craft does constitute
+a 'turn' since time is consumed.  The time naturally depends
+on orbit altitude, and is equal to 3.0E-5*altitude.  Shuttling
+uses no ship energy.
+.e
+.nfil
+*****************************
+* Mining dilithium crystals *
+*****************************
+.sk1
+Mnemonic:  MINE
+Shortest abbreviation:  MI
+.sk
+.adj
+Once you and your mining party are on the surface of a
+planet which has dilithium crystals, this command will dig them
+for you.
+.sk1
+Mining requires time and constitutes a 'turn'.  No energy
+is used.  Class M planets require 0.1 to 0.3 stardates to mine.
+Class N planets take twice as long, and class O planets take
+three times as long.
+.sk1
+Dilithium crystals contain enormous energy in a form
+that is readily released in the ship's power system.  It
+is an excellent idea to mine them whenever possible, for use
+in emergencies.  Once you have mined crystals, and have them
+safely aboard ship, you have a supply that will last the entire
+game.  There is no need to go back for more (unles you abandon
+ship).
+.sk3
+.nfil
+******************************
+* Loading dilithium crystals *
+******************************
+.sk1
+Mnemonic:  CRYSTALS
+Shortest abbreviation:  CR
+.sk1
+.adj
+This is a very powerful command which should be used with
+caution.  Once you have dilithium crystals aboard ship, this
+command will instruct engineering officer scott and mr. Spock
+to place a raw dilithium crystal into the power channel of the
+ship's matter-antimatter converter.  When it works, this command
+will greatly boost the ship's energy.
+.sk1
+Because the crystals are raw and impure, instabilities
+can occur in the power channel.  Usually Scotty can control
+these.  When he cannot, the results are disastrous.
+.sk1
+Since using raw dilithium crystals for this purpose entails
+considerable risk, starfleet regulations allow its use only during
+'condition yellow'.  No time or energy is used.
+.e
+.nfil
+*****************************
+* Calling Starbase for help *
+*****************************
+.sk1
+Mnemonic:  HELP
+(No abbreviation)
+.sk1
+.adj
+When you get into serious trouble, you may call Starbase for
+help.  Starbases have a device called a long-range transporter
+beam which they can use to teleport you to base.  This works by
+dematerializing your starship at its current position and (hopefully)
+re-materializing it adjacent to the nearest Starbase.  Teleportation
+is instantaneous, and Starbase supplies the required energy - all you
+have to do is let them know (via subspace radio) that you need help.
+This command should be employed only when absolutely necessary.
+In the first place, calling for help is an admission on your part
+that you got yourself into something you cannot get yourself out
+of, and you are heavily penalized for this in the final scoring.
+Secondly, the long-range transporter beam is not reliable - Starbase
+can always manage to dematerialize your starship, but (depending
+on distance) may or may not be able to re-materialize you again.
+The long-range transporter beam has no absolute maximum range;
+if you are in the same quadrant as a Starbase, you have a good
+chance (about 90 percent) of re-materializing successfully.
+Your chances drop to roughly 50-50 at just over 3 quadrants.
+.sk3
+.nfil
+*******************
+* Abandoning ship *
+*******************
+.sk1
+Mnemonic:  ABANDON
+Shortest abbreviation:  ABAN
+.sk1
+.adj
+You may abandon the Enterprise if necessary.  If there is
+still a Starbase in the galaxy, you will be sent there and put
+in charge of a weaker ship, the Faerie Queene.
+.sk1
+The Faerie Queene cannot be abandoned.
+.sk3
+.nfil
+*****************
+* Self-destruct *
+*****************
+.sk1
+Mnemonic:  DESTRUCT
+Shortest abbreviation:  DEST
+.sk1
+.adj
+You may self-destruct, thus killing yourself and ending the
+game.  If there are nearby Klingons, you may take a few of them
+with you (the more energy you have left, the bigger the bang).
+.sk1
+In order to self-destruct you must remember the password you
+typed in at the beginning of the game.
+.e
+.nfil
+*****************************
+* Aborting the current game *
+*****************************
+.sk1
+Mnemonic:  QUIT
+Shortest abbreviation:  Q
+.sk1
+.adj
+Immediately cancel the current game. No conclusion is reached
+and no score is computed.  You will be given an opportunity to
+start a new game or to leave the Star Trek program.
+.sk3
+.nfil
+*********************
+* Freezing the game *
+*********************
+.sk1
+Mnemonic:  FREEZE
+Shortest abbreviation:  F
+Full command: FREEZE <filename>
+.sk1
+.adj
+The FREEZE command saves the current state of the game in
+a file.  At a later time, the game may be resumed from the
+point at which it was frozen by specifying 'frozen' as the
+type of game at the beginning.
+.sk1
+The first time a game is frozen, you may continue playing from the
+current point. The game can be frozen an indefinite number of times, but
+in the second and subsequent freezes the current game will be aborted.
+.sk1
+When the game is thawed, all information necessary for
+the conduct of the game will be displayed.
+.e
+.> {{Miscellaneous notes}}
+.sk2
+Starbases can be attacked by either Commanders or by the
+Super-Commander.  When this happens, you will be notified
+by subspace radio, provided it is working.  The message will
+inform you how long the base under attack can last.  Since the
+Super-Commander is more powerful than an ordinary Commander,
+he can destroy a base more quickly.
+.sk1
+The Super-Commander travels around the galaxy at a speed
+of about warp 6 or 7.  His movement is strictly time based; the
+more time passes, the further he can go.
+.sk1
+You can observe the galactic movements of the Super-Commander
+on the star chart, provided he is in territory you have scanned.
+.sk1
+Periodically, you will receive intelligence reports from
+starfleet command, indicating the current quadrant of the
+Super-Commander.  Your subspace radio must be working, of
+course.
+.sk1
+Scattered through the galaxy are certain zones of control,
+collectively designated the 'Romulan neutral zone'.  Any
+quadrant which contains Romulans without Klingons is part of the
+neutral zone, except if a base is present.  Since Romulans do not
+show on either the long-range scan or the star chart, it is easy
+for you to stumble into this zone.  When you do, if your subspace
+radio is working, you will receive a warning message from the
+Romulan, politely asking you to leave.
+.sk1
+In general, Romulans are a galactic nuisance.
+.sk1
+The high-speed shield control is fairly reliable, but it has
+been known to malfunction.
+.sk1
+Each quadrant will contain from 0 to 3 black holes.
+Torpedoes going within 0.1 sectors of a black hole are swallowed.
+If they pass within 0.5 sectors, but more than 0.1 sectors from
+the center, they are deflected from 0 to 180 degrees.  If you can
+displace an enemy into a black hole, he is a goner.  You should not
+move into a black hole.
+.sk1
+Battle computer information is available by firing phasers
+manually, and allowing the computer to prompt you.  If you enter
+zero for the amount to fire at each enemy, you will get a
+complete report, without cost.  The battle computer will tell you how
+much energy to fire at each enemy for a sure kill.  This
+info appears in parentheses prior to the prompt for each enemy.
+Since the amount is computed from sensor data, if either the computer
+or S.R. Sensors are damaged, this info will be unavailable, and
+phasers must be fired manually.
+.sk1
+If warp engines are damaged less than 10 stardates (undocked)
+you can still go warp 4.
+.sk1
+Commanders will ram your ship, killing themselves and
+inflicting heavy damage to you, if they should happen to decide
+to advance into your sector.
+.e
+.> {{Scoring}}
+.sk2
+Scoring is fairly simple.  You get points for good things, and
+you lose points for bad things.
+.sk1
+.nfil
+ You gain -
+
+     (1)   10 points for each ordinary Klingon you kill,
+     (2)   50 points for each Commander you kill,
+     (3)  200 points for killing the Super-Commander,
+     (4)   20 points for each Romulan killed,
+     (5)    1 point for each Romulan captured.
+     (6)  500 times your average Klingon/stardate kill rate.  If you
+              lose the game, your kill rate is based on a minimum of
+              5 stardates.
+     (7)  you get a bonus if you win the game, based on your rating:
+              novice=100, fair=200, good=300, expert=400, emeritus=500.
+.sk1
+ You lose -
+
+     (8)  200 points if you get yourself killed,
+     (9)  100 points for each Starbase you destroy,
+    (10)  100 points for each starship you lose,
+    (11)   45 points for each time you had to call for help,
+    (12)   10 points for each planet you destroyed,
+    (13)    5 points for each star you destroyed, and
+    (14)    1 point for each casualty you incurred.
+
+.adj
+In addition to your score, you may also be promoted one grade
+in rank if you play well enough.  Promotion is based primarily on
+your Klingon/stardate kill rate, since this is the best indicator
+of whether you are ready to go on to the next higher rating.
+However, if you have lost 100 or more points in penalties, you
+will not receive a promotion.  The required kill rate for
+promotion is (skill*(skill+1))+1)/10.0 where skill ranges
+from 1 for novice to 5 for emeritus.
+.sk1
+You can be promoted from any level.  There is a special promotion
+available if you go beyond the 'expert' range.  You can also have
+a certificate of merit printed with your name, date, and
+Klingon kill rate, provided you are promoted from either the
+'expert' or 'emeritus' levels.
+.e
+.> {{Handy reference page}}
+.sk2
+.nfil
+Abbr    Full command                        Device used
+----    ------------                        -----------
+ABAN    ABANDON                             Shuttle craft
+C       CHART                               (none)
+CR      CRYSTALS                            (none)
+DA      DAMAGES                             (none)
+DEAT    DEATHRAY                            (none)
+DEST    DESTRUCT                            Computer
+D       DOCK                                (none)
+F       FREEZE                              (none)
+HELP    HELP                                Subspace radio
+I       IMPULSE <manual> <displacement>     Impulse engines
+        IMPULSE <automatic> <destination>   Impls engines & computer
+L       LRSCAN                              Long-range sensors
+MI      MINE                                (none)
+M       MOVE <manual> <displacement>        Warp engines
+        MOVE <automatic> <destination>      Warp engines & computer
+O       ORBIT                               Warp or impulse engines
+P       PHASERS <total amount>              Phasers,computer,sr.sensors
+        PHASERS automatic <total amount>    Phasers,computer,sr.sensors
+        PHASERS manual <amt1> <amt2> ...    Phasers
+PHO     PHOTONS <number> <targets>          Torpedo tubes
+PL      PLANETS                             (none)
+Q       QUIT                                (none)
+R       REST <number of stardates>          (none)
+SE      SENSORS                             Short-range sensors
+SH      SHIELDS <up, down, or transfer>     Deflector shields
+SHU     SHUTTLE                             Shuttle craft
+S       SRSCAN <no>                         Short-range sensors
+ST      STATUS                              (none)
+T       TRANSPORT                           Transporter
+
+ L. R. Scan:  thousands digit:  Supernova
+              hundreds digit:   Klingons
+              tens digit:       Starbases
+              ones digit:       Stars
+              period (.):       not known (star chart only)
+
+.adj
+{{Warp drive}} requires dist*w.factor**3 units of energy and results in
+the speed of w.factor**2/10 quadrants per stardate.
+Warp 6 is the fastest safe speed. At warp 10 a time warp can occur.
+.br
+{{Impulse engines}} achieve the speed of just under one quadrant/stardate
+and require 20 energy units to warm up plus 100 units/quadrant.
+.br
+{{Course specification:}} manual mode (default) - X,@Y
+displacements, automatic mode - destination quadrant and/or sector.
+A unit of distance is one quadrant. One sector is 0.1 quadrants.
+.br
+{{Enemy energy resources}} (approximate): ordinary Klingons 400 units,
+Commanders 1200, the (gulp) Super-Commander 1800, Romulans 800.
+.br
+{{Phaser effect}} diminishes to about 60%% at 5 sectors. The safe energy
+limit for a single burst is 1500 units.
+.br
+{{Shields}} double the power requirements of the warp drive and cost
+50 units of energy to raise. The high speed shield control requires 200 units.
+.e
+                   {{References}}
+.sk2
+1.@@Star Trek (the original television series), produced and
+directed by Gene Roddenberry.
+.sk1
+2.@@Star Trek (the animated television series), produced by Gene
+Roddenberry and directed by Hal Sutherland. Also excellent,
+and not just kiddie fare. If you enjoyed the original series
+you should enjoy this one (unless you have some sort of a
+hangup about watching cartoons).
+.sk1
+3.@@The making of Star Trek, by Steven E. Whitfield and Gene
+Roddenberry. The best and most complete readily available
+book about Star Trek. (Ballantine Books)
+.s1
+4.@@The world of Star Trek, by David Gerrold.  Similar in scope
+to the above book. (Bantam)
+.sk1
+5.@@The Star Trek guide, third revision 4/17/67, by Gene
+Roddenberry. The original writer's guide for the television
+series, but less comprehensive than (3) above.
+(Norway Productions)
+.sk1
+6.@@The Trouble with Tribbles, by David Gerrold.  Includes the
+complete script of this popular show. (Ballantine Books)
+.sk1
+7.@@Star Trek, Star Trek 2, ..., Star Trek 9, by James Blish.
+The original shows in short story form. (Bantam)
+.sk1
+8.@@Spock Must Die, by James Blish.  An original novel, but
+rather similar to the show The Enemy Within. (Bantam)
+.sk1
+9.@@Model kits of the Enterprise and a Klingon battle-cruiser
+by AMT Corporation are available at most hobby shops.
