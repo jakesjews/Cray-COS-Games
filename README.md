@@ -1,6 +1,6 @@
 # Cray COS Games
 
-These ports were developed using AI.
+**This was developed using AI.**
 
 Super Star Trek and Cray Blitz for the [CRAY X-MP core for MiSTer](https://github.com/jakesjews/Cray-XMP_MiSTer),
 built to run under its COS 1.17. You play them in an interactive session at the station
