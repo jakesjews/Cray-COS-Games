@@ -1,15 +1,14 @@
 /* The Primos library routines the University of Texas Super Star Trek
    calls, for COS on the X-MP.  FORTRAN passes every argument as the word
    address of the value; a character string is the bytes of the words from
-   that address on.  Output goes to the job's logfile a line at a time
-   (the kit's runtime sends stderr there), which the station shows; input
-   comes from the interactive input dataset through cosio.c. */
+   that address on.  Output goes to $OUT a line at a time and input comes
+   from $IN, which in a session at the station are the screen and the
+   keyboard. */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 
-extern int cos_readline(char *buf, int max);
 extern void COSDLY(long ms);
 extern long _irtc(void);
 
@@ -24,10 +23,11 @@ static int linelen;
 
 static void flush_line(void) {
     int n = linelen;
-    while (n > 0 && line[n - 1] == ' ') n -= 1;   /* the logfile keeps no trailing blanks anyway */
+    while (n > 0 && line[n - 1] == ' ') n -= 1;
     line[n] = 0;
-    fprintf(stderr, " %s\n", line);
-    fflush(stderr);
+    fputs(line, stdout);
+    fputc('\n', stdout);
+    fflush(stdout);
     linelen = 0;
 }
 
@@ -35,7 +35,7 @@ static void put_char(int c) {
     c &= 0x7F;                                  /* Prime ASCII has the parity bit set */
     if (c == '\n') { flush_line(); return; }
     if (c == '\r' || c == 0) return;
-    if (linelen >= 79) flush_line();           /* a logfile message holds 80 characters */
+    if (linelen >= 79) flush_line();           /* the station's screen is 80 wide */
     line[linelen++] = (char)c;
 }
 
@@ -67,10 +67,10 @@ static char *inpos;
 static int ineof;
 
 void COMANL(void) {
-    int n;
+    char *nl;
     if (linelen > 0) flush_line();              /* a prompt without its new line */
-    n = cos_readline(inbuf, sizeof inbuf);
-    if (n < 0) { ineof = 1; inbuf[0] = 0; }
+    if (fgets(inbuf, sizeof inbuf, stdin) == NULL) { ineof = 1; inbuf[0] = 0; }
+    else if ((nl = strchr(inbuf, '\n')) != NULL) *nl = 0;
     inpos = inbuf;
 }
 

@@ -23,10 +23,8 @@ software/startrek/build.sh
 
 `build/trek.abs` is the program for COS. `prime2cray.py` turns the Prime
 source into FORTRAN 77 the kit's compiler takes in Hollerith mode, and
-`lib/` holds the Primos routines the game calls, written for COS:
-the terminal output calls, a line reader on COS's circular I/O (the only way
-a program reads the station interactively), the random number generator and
-the delay.
+`lib/` holds the Primos routines the game calls, written for COS: the
+terminal output and input calls, the random number generator and the delay.
 
 ## Playing
 
@@ -52,6 +50,6 @@ so `MOVE` then `MANUAL` then `0 -1` works as well as `MOVE MANUAL 0 -1`.
 - Freezing a game to a file and thawing it are not there.
 - The citation for winning is a few lines, not the picture of the ship that
   went to a file.
-- A prompt without a line end is shown as a line of its own, since output
-  goes through the job's logfile.
+- A prompt without a line end is shown as a line of its own, since the
+  station shows whole lines.
 - `SLEEP$` delays are COS delays; `TIMDAT`, `GCHAR` and `SCHAR` are not needed.

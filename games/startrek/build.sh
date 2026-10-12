@@ -13,12 +13,11 @@ docker run --rm -v "$PWD":/work cray-ack sh -c '
   cd build
   kftc -H -l startrek.lst -o startrek.cal -s startrek.f
   cal -x -o startrek.o -l - -i startrek.cal > startrek.callst
-  ack -mcos -c -o cosrdc.o ../lib/cosrdc.s
-  ack -mcos -c -o cosio.o ../lib/cosio.c
+  ack -mcos -c -o cosdly.o ../lib/cosdly.s
   ack -mcos -c -o prime.o ../lib/prime.c
   F=/usr/local/share/ack/cos/fortran
   C=/usr/local/share/ack/cos
-  ldr -o trek.abs -m trek.map startrek.o prime.o cosio.o cosrdc.o \
+  ldr -o trek.abs -m trek.map startrek.o prime.o cosdly.o \
       $F/libio.lib $F/librt.lib $F/libintf.lib $C/libem.a $C/libsys.a $C/libc.a
 '
 ls -l build/trek.abs

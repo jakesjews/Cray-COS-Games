@@ -1,0 +1,72 @@
+         TITLE     'BITS'
+         SUBTITLE  'The bit functions of Cray FORTRAN, as functions'
+         IDENT     BITS
+         COMMENT   'BITS - AND, OR, XOR, NOT, IAND, ISHFT'
+*
+*  Cray Blitz calls the Boolean functions of Cray FORTRAN several hundred
+*  thousand times a second.  The kit's compiler does not know them, so
+*  they are functions here, in assembly language to make the calls as
+*  short as they can be.  A function finds the addresses of its arguments
+*  at 0,A7 and 1,A7 and returns its value in S7.
+*
+TEXT     SECTION   CODE
+
+         ENTRY     @AND
+         ENTRY     @IAND
+@AND     BSS       0
+@IAND    BSS       0
+         A1        0,A7
+         A2        1,A7
+         S1        ,A1
+         S2        ,A2
+         S7        S1&S2
+         J         B00
+
+         ENTRY     @OR
+@OR      BSS       0
+         A1        0,A7
+         A2        1,A7
+         S1        ,A1
+         S2        ,A2
+         S7        S1!S2
+         J         B00
+
+         ENTRY     @XOR
+@XOR     BSS       0
+         A1        0,A7
+         A2        1,A7
+         S1        ,A1
+         S2        ,A2
+         S7        S1\S2
+         J         B00
+
+         ENTRY     @NOT
+@NOT     BSS       0
+         A1        0,A7
+         S1        ,A1
+         S7        #S1
+         J         B00
+*
+*  ISHFT(I, N): I shifted left N places, or right -N places when N is
+*  negative, with zeros brought in.  A count of 64 or more gives zero.
+*
+         ENTRY     @ISHFT
+@ISHFT   BSS       0
+         A1        0,A7
+         A2        1,A7
+         S7        ,A1
+         S1        ,A2
+         S0        S1
+         JSM       ISHFTR
+         A1        S1
+         S7        S7<A1
+         J         B00
+ISHFTR   BSS       0
+         S1        -S1
+         A1        S1
+         S7        S7>A1
+         J         B00
+
+         SECTION   *
+
+         END
