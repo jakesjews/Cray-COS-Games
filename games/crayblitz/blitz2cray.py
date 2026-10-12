@@ -34,26 +34,7 @@ import sys
 
 LEFT_OUT = {'cptime.f', 'asyncio.f', 'intrpt.f'}
 
-MPLIB = '''      subroutine memory(par,number)
-c     the hash tables stay the size they are declared (htable in global.f)
-      implicit integer (a-z)
-      return
-      end
-      subroutine mpcopy
-      implicit integer (a-z)
-      common /pdata/ pdata(8100)
-      common /task/ tdata(8100)
-      do 100 i=1,8100
-          tdata(i)=pdata(i)
-100   continue
-      return
-      end
-      integer function tst124(i)
-c     the machine type: 2 to 4 is a CRAY X-MP
-      tst124=2
-      return
-      end
-      subroutine dsname(name,tname)
+DSNAME = '''      subroutine dsname(name,tname)
 c     the first six letters and digits of a name, in capitals: what a
 c     COS dataset name can be made of
       character*20 name, tname
@@ -91,9 +72,33 @@ NAMES = {"'bookw'": "'BOOKW'", "'bookb'": "'BOOKB'", "'book'": "'BOOK'",
          "'default.scores'": "'SCORES'"}
 
 
+def mplib(text):
+    """mplib.f with MEMORY left empty (the hash tables stay the size they are
+    declared, htable in global.f), TST124 answering 2 (2 to 4 is a CRAY X-MP;
+    the port says 8) and DSNAME added."""
+    out = []
+    unit = ''
+    kept = 0
+    for line in text.split('\n'):
+        code = line.strip()
+        m = re.match(r'(?:integer\s+function|subroutine)\s+(\w+)', code)
+        if m:
+            unit = m.group(1)
+        if unit == 'memory':
+            if not re.match(r'(subroutine\b|implicit\b|return$|end$)', code):
+                continue
+            kept += 1
+        if unit == 'tst124' and code == 'tst124=8':
+            line = line.replace('tst124=8', 'tst124=2')
+            kept += 1
+        out.append(line)
+    assert kept == 5
+    return '\n'.join(out).rstrip('\n') + '\n' + DSNAME
+
+
 def convert(name, text):
     if name == 'mplib.f':
-        return MPLIB
+        return mplib(text)
     if name == 'setio.f':
         assert text.count(SETIO_OLD) == 1
         text = text.replace(SETIO_OLD, SETIO_NEW)
