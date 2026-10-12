@@ -2,8 +2,10 @@
 # Build the University of Texas Super Star Trek for COS on the CRAY X-MP:
 # build/trek.abs, to go on the expander disk as BIN/TREK.
 #
-#   docker build -t cray-ack tools/ack      once, for the cross-compilers
-#   software/startrek/build.sh
+#   docker build -t cray-ack Cray-XMP_MiSTer/tools/ack     once, for the cross-compilers
+#   games/startrek/build.sh
+#
+# tools/ack is in the core's repository, github.com/jakesjews/Cray-XMP_MiSTer.
 set -e
 cd "$(dirname "$0")"
 mkdir -p build

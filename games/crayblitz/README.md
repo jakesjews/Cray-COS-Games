@@ -12,34 +12,23 @@ this repository; the build fetches them.
 
 ## Building
 
-Needs Docker and the cross-compilers of `tools/ack`:
-
-```sh
-docker build -t cray-ack tools/ack
-software/crayblitz/build.sh
-```
-
-`build/blitz.abs` is the program and `build/mkbook.abs` a small program that
-makes the three opening books it opens, empty.
+The [setup steps](../../README.md#setup) build the game and put it on the
+core's expander disk. `build.sh` leaves the program in `build/blitz.abs` and
+in `build/mkbook.abs` a small program that makes the three opening books it
+opens, empty.
 
 ## Playing
 
-1. Put both programs on the expander disk of the SD card and start the core
-   (`docs/DEVELOPMENT.md` has the tool):
-
-   ```sh
-   python3 tools/py/expdisk.py put exp_disk.img BIN/BLITZ software/crayblitz/build/blitz.abs
-   python3 tools/py/expdisk.py put exp_disk.img BIN/MKBOOK software/crayblitz/build/mkbook.abs
-   ```
-
-2. Open a session at the station as the README says (`IAIOP LOG` on the
-   operator's console, `IAC`, `/LOGON`, `ACCOUNT,AC=CRAY,US=SYSTEM.`).
-3. Type `FETCH,DN=MKBOOK,MF=AP,TEXT=BIN/MKBOOK.` then `MKBOOK.`
-4. Type `FETCH,DN=BLITZ,MF=AP,TEXT=BIN/BLITZ.`, wait for the `!` (the program
+1. Open a session at the station (**F2**) as the core's README says under
+   [Working at the station](https://github.com/jakesjews/Cray-XMP_MiSTer#working-at-the-station), up to the `ACCOUNT`
+   statement.
+2. Type `FETCH,DN=MKBOOK,MF=AP,TEXT=BIN/MKBOOK.` then `MKBOOK.` It answers
+   `made BOOK`, `made BOOKW` and `made BOOKB`.
+3. Type `FETCH,DN=BLITZ,MF=AP,TEXT=BIN/BLITZ.`, wait for the `!` (the program
    is large), then `BLITZ.`
-5. Give your name, then answer `n` twice: you are not continuing a game
+4. Give your name, then answer `n` twice: you are not continuing a game
    (that does not work here), and the program plays black.
-6. Type a move at each `?`: `e4`, `Nf3`, `exd5`, `o-o`.
+5. Type a move at each `?`: `e4`, `Nf3`, `exd5`, `o-o`.
 
 **Pieces are capital letters and files are small ones**: `Nf3`, not `nf3`.
 A pawn move is the square alone.

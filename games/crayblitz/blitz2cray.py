@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-"""Prepare the Cray Blitz sources in research/source/cray-blitz for the kit's
-FORTRAN compiler (kftc -H): blitz2cray.py SRC DST.
+"""Prepare the Cray Blitz sources for the kit's FORTRAN compiler (kftc -H):
+blitz2cray.py SRC DST.
 
 The sources are the 1991 program as Robert Hyatt released it, brought to a
 modern FORTRAN compiler by him; what is changed here is what that port left

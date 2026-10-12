@@ -14,31 +14,21 @@ them are retained; not for sale or profit. Nothing in `prime/` is changed.
 
 ## Building
 
-Needs Docker and the cross-compilers of `tools/ack`:
-
-```sh
-docker build -t cray-ack tools/ack
-software/startrek/build.sh
-```
-
-`build/trek.abs` is the program for COS. `prime2cray.py` turns the Prime
-source into FORTRAN 77 the kit's compiler takes in Hollerith mode, and
-`lib/` holds the Primos routines the game calls, written for COS: the
-terminal output and input calls, the random number generator and the delay.
+The [setup steps](../../README.md#setup) build the game and put it on the
+core's expander disk. `build.sh` leaves the program for COS in
+`build/trek.abs`. `prime2cray.py` turns the Prime source into FORTRAN 77 the
+kit's compiler takes in Hollerith mode, and `lib/` holds the Primos routines
+the game calls, written for COS: the terminal output and input calls, the
+random number generator and the delay.
 
 ## Playing
 
-1. Put the program on the expander disk of the SD card and start the core
-   (`docs/DEVELOPMENT.md` has the tool):
-
-   ```sh
-   python3 tools/py/expdisk.py put exp_disk.img BIN/TREK software/startrek/build/trek.abs
-   ```
-
-2. Open a session at the station as the README says (`IAIOP LOG` on the
-   operator's console, `IAC`, `/LOGON`, `ACCOUNT,AC=CRAY,US=SYSTEM.`).
-3. Type `FETCH,DN=TREK,MF=AP,TEXT=BIN/TREK.` then `TREK.`
-4. Answer the questions: `REGULAR`, `SHORT`, `NOVICE`, a password. Commands
+1. Open a session at the station (**F2**) as the core's README says under
+   [Working at the station](https://github.com/jakesjews/Cray-XMP_MiSTer#working-at-the-station), up to the `ACCOUNT`
+   statement.
+2. Type `FETCH,DN=TREK,MF=AP,TEXT=BIN/TREK.` and wait for
+   `SS004 - DATASET RECEIVED FROM FRONT END`, then type `TREK.`
+3. Answer the questions: `REGULAR`, `SHORT`, `NOVICE`, a password. Commands
    are words such as `SRSCAN`, `LRSCAN`, `CHART`, `STATUS`, `MOVE`, `PHASERS`,
    `SHIELDS`, `DOCK`, `REST`, `QUIT`; `HELP` lists them. Type one at each `?`.
 

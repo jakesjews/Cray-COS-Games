@@ -4,20 +4,22 @@
 # opening books the program opens, and the book builders build/bookp.abs
 # and build/books.abs.
 #
-#   docker build -t cray-ack tools/ack      once, for the cross-compilers
-#   software/crayblitz/build.sh
+#   docker build -t cray-ack Cray-XMP_MiSTer/tools/ack     once, for the cross-compilers
+#   games/crayblitz/build.sh
+#
+# tools/ack is in the core's repository, github.com/jakesjews/Cray-XMP_MiSTer.
 #
 # The program's sources are not in this repository.  They are taken from
-# BLITZ_SRC, or from research/source/cray-blitz if that is there, or else
-# fetched from https://github.com/swenson/cray-blitz (the release Robert
-# Hyatt put on craftychess.com) into build/.
+# BLITZ_SRC if that names them, or else fetched from
+# https://github.com/swenson/cray-blitz (the release Robert Hyatt put on
+# craftychess.com) into build/.
 #
 # KFTC=/path/to/kftc compiles the FORTRAN with that compiler on this
 # machine instead of the one in the image (for work on the compiler).
 set -e
 cd "$(dirname "$0")"
 mkdir -p build/src build/obj
-SRC=${BLITZ_SRC:-../../research/source/cray-blitz}
+SRC=${BLITZ_SRC:-build/cray-blitz}
 if [ ! -f "$SRC/main.f" ]; then
   SRC=build/cray-blitz
   if [ ! -f $SRC/main.f ]; then
