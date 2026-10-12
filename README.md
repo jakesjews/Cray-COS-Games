@@ -72,8 +72,9 @@ Reset: COS stops with `CRAY HALT` during start-up otherwise.
 
 ## Credits
 
-- David Matuszek, Paul Reynolds, Don Smith and George T. Shotwell for Super Star Trek, and
-  Mike Arnautov for [keeping the Prime version](https://mipmip.org/prime_games/). Its source is
+- David Matuszek and Paul Reynolds for Super Star Trek, Don Smith, George T. Shotwell,
+  Norm Wheeler and Jack Merritt Cramer for their additions to it, and Mike Arnautov for
+  [keeping the Prime version](https://mipmip.org/prime_games/). Its source is
   in `games/startrek/prime`, unchanged, under its authors' terms: copying, distribution,
   modification and use for recreational purposes, with all references to the authors kept, and
   not for sale or profit.

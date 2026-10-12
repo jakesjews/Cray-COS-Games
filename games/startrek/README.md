@@ -1,10 +1,10 @@
 # Super Star Trek for COS
 
 The University of Texas Super Star Trek, the 1970s FORTRAN game by David
-Matuszek and Paul Reynolds with additions by Don Smith and George T. Shotwell,
-built for COS 1.17 on the CRAY X-MP. It is played in an interactive session at
-the station: the game prints a line at a time and reads what you type at the
-`?` prompt.
+Matuszek and Paul Reynolds with additions by Don Smith, George T. Shotwell,
+Norm Wheeler and Jack Merritt Cramer, built for COS 1.17 on the CRAY X-MP. It
+is played in an interactive session at the station: the game prints a line at
+a time and reads what you type at the `?` prompt.
 
 The sources in `prime/` are the Prime FTN version of 1983 (rev. 19.1, "GGR
 version"), as kept in [Mike Arnautov's archive of Prime games](https://mipmip.org/prime_games/),
