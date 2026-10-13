@@ -31,10 +31,11 @@ built to run under its COS 1.17. You play them in an interactive session at the 
 2. Build the cross-compilers for COS. This is needed once.
 
    ```sh
-   docker build -t cray-ack Cray-XMP_MiSTer/tools/ack
+   docker build -t cray-ack -f Cray-XMP_MiSTer/tools/ack/Dockerfile Cray-XMP_MiSTer/tools
    ```
 
-3. Build the games:
+3. Build the games. The second also makes the chess program's opening book, which takes
+   some minutes.
 
    ```sh
    Cray-COS-Games/games/startrek/build.sh
@@ -42,12 +43,12 @@ built to run under its COS 1.17. You play them in an interactive session at the 
    ```
 
 4. Copy `exp_disk.img` from `games/Cray-XMP` on the SD card to the computer and put the
-   programs on it:
+   programs and the book on it:
 
    ```sh
    python3 Cray-XMP_MiSTer/tools/py/expdisk.py put exp_disk.img BIN/TREK Cray-COS-Games/games/startrek/build/trek.abs
-   python3 Cray-XMP_MiSTer/tools/py/expdisk.py put exp_disk.img BIN/MKBOOK Cray-COS-Games/games/crayblitz/build/mkbook.abs
    python3 Cray-XMP_MiSTer/tools/py/expdisk.py put exp_disk.img BIN/BLITZ Cray-COS-Games/games/crayblitz/build/blitz.abs
+   python3 Cray-XMP_MiSTer/tools/py/expdisk.py put exp_disk.img BIN/BOOK Cray-COS-Games/games/crayblitz/build/book
    ```
 
 5. Copy `exp_disk.img` back to `games/Cray-XMP` on the SD card.
@@ -69,6 +70,8 @@ Reset: COS stops with `CRAY HALT` during start-up otherwise.
 - `expdisk: there is a file BIN/TREK already; rm it first`: the disk has an earlier build.
   Take it off with `python3 Cray-XMP_MiSTer/tools/py/expdisk.py rm exp_disk.img BIN/TREK`,
   then put the new one.
+- `cray-xmp-job: not found` while the chess program is built: the cross-compilers are from
+  before the book was added. Do step 2 again.
 
 ## Credits
 

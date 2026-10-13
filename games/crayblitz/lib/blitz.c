@@ -1,10 +1,18 @@
 /* What Cray Blitz takes from the Cray FORTRAN library and from COS: the
-   random number generator and the clocks.  (The bit functions are in
-   bits.cal.)  FORTRAN passes every argument as the word address of its
-   value and takes the result from S7, where a C function leaves it. */
+   random number generator and the clocks.  (The bit functions, AND, OR,
+   XOR and ISHFT, the kit's compiler does in line.)  FORTRAN passes every
+   argument as the word address of its value and takes the result from S7,
+   where a C function leaves it. */
 
 #define WORD(a) ((long *)((a) << 3))
 #define IVAL(a) (*WORD(a))
+
+/* ---- room for the heap ----
+   The opening book is a direct access file, which the FORTRAN runtime
+   holds in memory while it is open: 3,000 records of 100 words.  The
+   startup code asks COS for this many words for the heap and the stack. */
+
+long _heapwds = 380000;
 
 extern long _irtc(void);        /* the real-time clock, in clock periods */
 extern double _cputim(void);    /* the job's CPU time, in seconds */
@@ -13,17 +21,12 @@ extern double _cputim(void);    /* the job's CPU time, in seconds */
    The generator is the kind the Cray library's RANF is, with its
    multiplier: x(n+1) = 44485709377909 x(n) mod 2**48, and the result is
    x / 2**48.  The seed is an odd number of this file's own, so the hash
-   keys the program draws are not those of a real Cray.  The product is
-   done in halves, since the kit's multiply traps when 64 bits overflow. */
+   keys the program draws are not those of a real Cray. */
 
 static unsigned long ranx = 04510112377116321UL;
 
 double RANF(void) {
-    unsigned long a = 44485709377909UL;
-    unsigned long xh = ranx >> 24, xl = ranx & 0xFFFFFF;
-    unsigned long ah = a >> 24, al = a & 0xFFFFFF;
-    unsigned long mid = (xh * al + xl * ah) & 0xFFFFFF;
-    ranx = (xl * al + (mid << 24)) & 0xFFFFFFFFFFFFUL;
+    ranx = (ranx * 44485709377909UL) & 0xFFFFFFFFFFFFUL;
     return (double)ranx / 281474976710656.0;
 }
 
