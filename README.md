@@ -28,7 +28,7 @@ built to run under its COS 1.17. You play them in an interactive session at the 
    git clone https://github.com/jakesjews/Cray-XMP_MiSTer
    ```
 
-2. Build the cross-compilers for COS. This is needed once.
+2. Build the cross-compilers for COS, and again whenever you update the core's repository.
 
    ```sh
    docker build -t cray-ack -f Cray-XMP_MiSTer/tools/ack/Dockerfile Cray-XMP_MiSTer/tools
@@ -70,8 +70,9 @@ Reset: COS stops with `CRAY HALT` during start-up otherwise.
 - `expdisk: there is a file BIN/TREK already; rm it first`: the disk has an earlier build.
   Take it off with `python3 Cray-XMP_MiSTer/tools/py/expdisk.py rm exp_disk.img BIN/TREK`,
   then put the new one.
-- `cray-xmp-job: not found` while the chess program is built: the cross-compilers are from
-  before the book was added. Do step 2 again.
+- `cray-xmp-job: not found` or `Unsatisfied external reference` while a game is built: the
+  cross-compilers are older than the game. Update the core with
+  `git -C Cray-XMP_MiSTer pull` and do step 2 again.
 
 ## Credits
 

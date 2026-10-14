@@ -13,19 +13,34 @@ behind and what the kit's compiler and COS want, nothing of the game:
     program declares everything integer unless said otherwise, and the
     compiler does not know RANF);
   - the datasets the program opens get COS names: SCORES for
-    default.scores; BOOK for all three opening books (the two the program
-    looks in first, bookw and bookb, are copies of the third as its authors
-    built them, and the FORTRAN runtime holds a dataset that is opened
-    more than once in memory once); and the three it names after the
-    player (the game's history, the saved game and the log) are A, B and L
-    with the first six letters and digits of the name, in capitals;
+    default.scores, TMODE and BMODE for the commands it can take at the
+    start of tournament and blitz mode (default.tm, default.bm), AGAME
+    for a game it analyses; BOOK for all three opening books (the two
+    the program looks in first, bookw and bookb, are copies of the third
+    as its authors built them, and the FORTRAN runtime holds a dataset
+    that is opened more than once in memory once); and the three it
+    names after the player (the game's history, the saved game and the
+    log) are A, B and L with the first six letters and digits of the
+    name, in capitals;
+  - the hash tables (htable, blank common in global.f) get one word more:
+    the last entry of the second pawn table is the word after the 971,776
+    the port declares, which leave out the word the tables keep free
+    between the king safety and the pawn tables.  The original asked COS
+    for its memory and wrote into what COS gives beyond it; here the word
+    after was a flag of the search (abort), which a pawn hash entry then
+    set, or the heap;
   - setup.f takes the 16 bits for a hash key from where a Cray number has
     them (the port took them from where an IEEE number does, where a Cray
     number has the top of its fraction, whose first bit is always one);
   - the search looks at the clock every 400 positions instead of every
     20,000 (and every 100 instead of 1,500 before the first iteration is
     done).  20,000 positions are about four seconds on the core, and the
-    program ran that far past its time for a move.
+    program ran that far past its time for a move;
+  - main.f has the station's attention (/ATTENTION, the BREAK key) set the
+    flag the search watches for one (broke), with ONATTN in lib/blitz.c:
+    while the program thinks on the opponent's time that is how a move is
+    typed, as the program's comments say for COS (later a task of the
+    multitasking version read the terminal and set it).
 
 cptime.f (the clocks) and asyncio.f (an input task of the multitasking
 version) are left out: lib/blitz.c has the clocks.
@@ -98,8 +113,17 @@ SETIO_NEW = '''      call dsname(name,tname)
       fname3='L'//tname
 '''
 
+# The station's attention sets the flag the search watches for a line
+# typed while it runs (ONATTN, lib/blitz.c).
+MAIN_OLD = '''      call mpcopy
+'''
+MAIN_NEW = '''      call mpcopy
+      call onattn(broke)
+'''
+
 NAMES = {"'bookw'": "'BOOK'", "'bookb'": "'BOOK'", "'book'": "'BOOK'",
-         "'default.scores'": "'SCORES'"}
+         "'default.scores'": "'SCORES'", "'default.tm'": "'TMODE'",
+         "'default.bm'": "'BMODE'", "'agame'": "'AGAME'"}
 
 
 def mplib(text):
@@ -132,9 +156,15 @@ def convert(name, text):
     if name == 'setio.f':
         assert text.count(SETIO_OLD) == 1
         text = text.replace(SETIO_OLD, SETIO_NEW)
+    if name == 'global.f':
+        assert text.count('common htable(971776)') == 1
+        text = text.replace('common htable(971776)', 'common htable(971777)')
     if name == 'iterate.f':
         assert text.count('dnodes=20000') == 1
         text = text.replace('dnodes=20000', 'dnodes=400')
+    if name == 'main.f':
+        assert text.count(MAIN_OLD) == 1
+        text = text.replace(MAIN_OLD, MAIN_NEW)
     if name == 'bdata.f':
         assert text.count('data dnodes, xnodes / 1500, 1500 /') == 1
         text = text.replace('data dnodes, xnodes / 1500, 1500 /', 'data dnodes, xnodes / 100, 100 /')

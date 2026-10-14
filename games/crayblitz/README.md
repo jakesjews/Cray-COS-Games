@@ -4,8 +4,9 @@ Cray Blitz, the chess program by Robert Hyatt, Albert Gower and Harry Nelson
 that was world computer chess champion in 1983 and 1986 on CRAY X-MP
 machines, built for COS 1.17 on the CRAY X-MP. You play it in an interactive
 session at the station: it prints its thinking and its move, and reads your
-move at the `?` prompt. It plays the opening from its book, and it searches
-with the assembly language routines it had on a CRAY.
+move at the `?` prompt. It plays the opening from its book, searches with the
+assembly language routines it had on a CRAY, and in blitz and tournament mode
+thinks on your time.
 
 The sources are version 49h of 1991 as Robert Hyatt released them, kept at
 [swenson/cray-blitz](https://github.com/swenson/cray-blitz). They are not in
@@ -24,10 +25,10 @@ its opening book in `build/book`.
    statement.
 2. Type `FETCH,DN=BOOK,MF=AP,TEXT=BIN/BOOK.` and wait for
    `SS004 - DATASET RECEIVED FROM FRONT END`.
-3. Type `FETCH,DN=BLITZ,MF=AP,TEXT=BIN/BLITZ.`, wait for the same answer (the
-   program is large), then type `BLITZ.`
-4. Give your name, then answer `n` twice: you are not continuing a game
-   (that does not work here), and the program plays black.
+3. Type `FETCH,DN=BLITZ,MF=AP,TEXT=BIN/BLITZ.`, wait for the same answer,
+   then type `BLITZ.`
+4. Give your name, then answer `n` twice: you start a new game, and the
+   program plays black.
 5. Type a move at each `?`: `e4`, `Nf3`, `exd5`, `o-o`.
 
 **Pieces are capital letters and files are small ones**: `Nf3`, not `nf3`.
@@ -44,6 +45,8 @@ Other commands, typed at the same prompt:
 - `d` shows the board. The program's pieces are doubled letters (`NN`).
 - `h` lists the moves of the game, `?` repeats the program's last move.
 - `pl` changes sides, `go` lets the program move.
+- `bm` starts blitz mode, five seconds a move, and `tm` tournament mode,
+  40 moves in two hours. In both the program thinks on your time.
 - `sc` shows how the program scores the position.
 - `he` lists all commands.
 - `end` leaves the program.
@@ -51,6 +54,24 @@ Other commands, typed at the same prompt:
 `SAVE,DN=BOOK.` and `SAVE,DN=BLITZ.` keep the two on the Cray's own drive.
 In a later session `ACCESS,DN=BOOK.` and `ACCESS,DN=BLITZ.` then take the
 place of steps 2 and 3.
+
+### Thinking on your time
+
+In blitz or tournament mode the program shows `pondering` and the move it
+expects from you after each of its moves, and works on its answer to that
+move. To give your move, type `/ATTENTION` (the station's break key), then
+your move at the `?`. If it is the one expected, the program says `ok.` and
+how long it has already thought, and plays on from there.
+
+COS answers `/ATTENTION` with two `EP006` lines: they are its log of the
+program taking the attention.
+
+### Continuing a game
+
+The program keeps the game in datasets named after you: `A`, `B` and `L`
+with the first six letters of your name. To go on with it later in the same
+session, type `BLITZ.`, give the same name and answer `y` to the first
+question. `h` then shows the moves so far.
 
 ## Troubleshooting
 
@@ -60,12 +81,10 @@ place of steps 2 and 3.
 ## What differs from the program as it ran then
 
 - One processor. The source as released has the multiprocessing search
-  switched off, and with it thinking on your time.
-- A game cannot be continued. The program keeps its history, the saved game
-  and a log in the datasets `A`, `B` and `L` followed by the first six
-  letters of your name, but it cannot add to the log of an earlier run.
+  switched off.
 - `SCORES: No such file or directory` at the start is the program looking
-  for scoring parameters of your own, which it does without.
+  for scoring parameters of your own, which it does without. `bm` and `tm`
+  do the same with `BMODE` and `TMODE`, commands of your own for the mode.
 - The program looks in three books, of which its authors made the two it
   looks in first as copies of the third. Here all three are the dataset
   `BOOK`.
@@ -75,4 +94,5 @@ collection of games, `book.source`: 2,458 games, of which the first 25 moves
 each go in. `blitz2cray.py` has the few changes the sources get before they
 are compiled and assembled, and what joins the assembly language routines to
 the FORTRAN. `lib/blitz.c` is what the program takes from the Cray library:
-the random number generator and the clocks.
+the random number generator, the clocks, and the break key, which the
+program watches for while it thinks on your time, as it did under COS.

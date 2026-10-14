@@ -1,8 +1,8 @@
 /* What Cray Blitz takes from the Cray FORTRAN library and from COS: the
-   random number generator and the clocks.  (The bit functions, AND, OR,
-   XOR and ISHFT, the kit's compiler does in line.)  FORTRAN passes every
-   argument as the word address of its value and takes the result from S7,
-   where a C function leaves it. */
+   random number generator, the clocks and the break key.  (The bit
+   functions, AND, OR, XOR and ISHFT, the kit's compiler does in line.)
+   FORTRAN passes every argument as the word address of its value and takes
+   the result from S7, where a C function leaves it. */
 
 #define WORD(a) ((long *)((a) << 3))
 #define IVAL(a) (*WORD(a))
@@ -40,4 +40,17 @@ void CPTIME(unsigned long r, unsigned long m) {
     if (ps == 0) ps = 9500;                          /* 105 MHz */
     *WORD(r) = (_irtc() / 1000000) * ps / 10000;     /* periods * ps / 1e10 */
     *WORD(m) = (long)(_cputim() * 100.0);
+}
+
+/* ---- ONATTN(flag): the break key ----
+   The station's attention (/ATTENTION, or BREAK) sets flag to -1 and the
+   program goes on, as a signal set it on UNIX.  The program watches the
+   flag in its search: while it thinks on the opponent's time it then reads
+   the opponent's move, otherwise a command.  The C library catches the
+   attention with COS's reprieve. */
+
+extern int _onattn(long *flag);
+
+void ONATTN(unsigned long flag) {
+    _onattn(WORD(flag));
 }
